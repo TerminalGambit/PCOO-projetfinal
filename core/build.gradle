@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+// Set encoding for Java compilation
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+// Set Eclipse project name
+eclipse.project.name = appName + '-core'
+
+// Dependencies for the project
+dependencies {
+  api "com.badlogicgames.gdx:gdx:$gdxVersion"
+}
+
+// Configure the main class for running the application
+application {
+  mainClassName = 'savetheking.game.Main' // Replace 'Main' with the actual main class if different
+}
+
+// Optional: tasks to make running test classes simpler
+task runKnightTest(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'savetheking.game.KnightTest'
+}
+
+task runRookTest(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'savetheking.game.RookTest'
+}
+
+// Specify Java version compatibility
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11

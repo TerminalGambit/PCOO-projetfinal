@@ -1,0 +1,139 @@
+@startuml
+
+class Point {
+    +x: int
+    +y: int
+    +equals(obj: Object): boolean
+    +hashCode(): int
+    +toString(): String
+    +isWithinBounds(boardSize: int): boolean
+}
+
+abstract class Tile {
+    #position: Point
+    #isDefended: boolean
+    +isOccupied(): boolean
+    +getPosition(): Point
+    +isDefended(): boolean
+    +setDefended(defended: boolean): void
+    +setPiece(piece: Piece): void
+    +getPiece(): Piece
+    +removePiece(): void
+}
+
+class EmptyTile extends Tile {
+    +isOccupied(): boolean
+    +setPiece(piece: Piece): void
+    +getPiece(): Piece
+    +removePiece(): void
+}
+
+class OccupiedTile extends Tile {
+    -piece: Piece
+    +getPiece(): Piece
+    +setPiece(piece: Piece): void
+    +removePiece(): void
+    +isOccupied(): boolean
+}
+
+abstract class Piece {
+    #color: String
+    #position: Point
+    +getPossibleMoves(board: Board): List<Point>
+    +move(newPosition: Point): void
+    +getDefendedTiles(board: Board): List<Point>
+}
+
+class King extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+    +getDefendedTiles(board: Board): List<Point>
+}
+
+class Knight extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+    +getDefendedTiles(board: Board): List<Point>
+}
+
+class Rook extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+    +getDefendedTiles(board: Board): List<Point>
+}
+
+class Queen extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+    +getDefendedTiles(board: Board): List<Point>
+}
+
+class Pawn extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+    +getDefendedTiles(board: Board): List<Point
+    +canPromote(): boolean
+}
+
+class Board {
+    -tiles: Tile[][]
+    -rows: int
+    -columns: int
+    +initializeBoard(): void
+    +getDefendedTiles(): List<Point>
+    +updateBoard(): void
+    +resizeBoard(rows: int, columns: int): void
+    +getTileAt(position: Point): Tile
+    +isWithinBounds(position: Point): boolean
+    +getRowCount(): int
+    +getColumnCount(): int
+    +placePiece(piece: Piece, position: Point): void
+    +removePiece(position: Point): void
+}
+
+class GameState {
+    -timer: int
+    -score: int
+    -difficulty: String
+    -round: int
+    +updateTimer(deltaTime: float): void
+    +checkGameOver(): boolean
+    +incrementScore(): void
+    +render(batch: SpriteBatch): void
+    +advanceRound(): void
+    +setDifficulty(level: String): void
+}
+
+class KnightTest {
+    +main(args: String[]): void
+    +testKnightCenterMoves(): void
+    +testKnightEdgeMoves(): void
+    +testKnightCornerMoves(): void
+    +printMoves(moves: List<Point>): void
+}
+
+class RookTest {
+    +main(args: String[]): void
+    +testRookCenterMoves(): void
+    +testRookEdgeMoves(): void
+    +testRookBlockedMoves(): void
+    +printMoves(moves: List<Point>): void
+}
+
+Tile <|-- EmptyTile
+Tile <|-- OccupiedTile
+OccupiedTile *-- Piece
+
+Piece <|-- King
+Piece <|-- Knight
+Piece <|-- Rook
+Piece <|-- Queen
+Piece <|-- Pawn
+
+Board *-- Tile
+GameState *-- Board
+KnightTest ..> Knight : tests
+KnightTest ..> Board : uses
+RookTest ..> Rook : tests
+RookTest ..> Board : uses
+
+Tile ..> Point : uses
+Piece ..> Point : uses
+Board ..> Point : uses
+
+@enduml

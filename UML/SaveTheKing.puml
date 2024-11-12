@@ -54,6 +54,11 @@ class Knight extends Piece {
     +getDefendedTiles(board: Board): List<Point>
 }
 
+class Bishop extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+    +getDefendedTiles(board: Board): List<Point>
+}
+
 class Rook extends Piece {
     +getPossibleMoves(board: Board): List<Point>
     +getDefendedTiles(board: Board): List<Point>
@@ -115,6 +120,22 @@ class RookTest {
     +printMoves(moves: List<Point>): void
 }
 
+class BishopTest {
+    +main(args: String[]): void
+    +testBishopCenterMoves(): void
+    +testBishopEdgeMoves(): void
+    +testBishopBlockedMoves(): void
+    +printMoves(moves: List<Point>): void
+}
+
+class QueenTest {
+    +main(args: String[]): void
+    +testQueenCenterMoves(): void
+    +testQueenEdgeMoves(): void
+    +testQueenBlockedMoves(): void
+    +printMoves(moves: List<Point>): void
+}
+
 Tile <|-- EmptyTile
 Tile <|-- OccupiedTile
 OccupiedTile *-- Piece
@@ -131,6 +152,10 @@ KnightTest ..> Knight : tests
 KnightTest ..> Board : uses
 RookTest ..> Rook : tests
 RookTest ..> Board : uses
+BishopTest ..> Bishop : tests
+BishopTest ..> Board : uses
+QueenTest ..> Queen : tests
+QueenTest ..> Board : uses
 
 Tile ..> Point : uses
 Piece ..> Point : uses

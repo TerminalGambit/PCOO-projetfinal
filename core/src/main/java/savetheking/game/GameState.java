@@ -1,7 +1,7 @@
 package savetheking.game;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,22 +9,35 @@ import java.util.List;
  * difficulty level, and move recording via PGN format.
  */
 public class GameState {
-    private int timer;           // Time remaining in seconds
-    private int score;           // Current score
-    private String difficulty;   // Difficulty level of the game
-    private int round;           // Current game round
-    private PGN pgn;             // PGN instance to manage move recording and history
+    private static GameState instance; // Singleton instance
+    private int timer;                 // Time remaining in seconds
+    private int score;                 // Current score
+    private String difficulty;         // Difficulty level of the game
+    private int round;                 // Current game round
+    private PGN pgn;                   // PGN instance to manage move recording and history
+    private List<Move> moves;          // Stores move history for the game
 
     /**
-     * Constructor to initialize the game state with default values.
-     * Sets the timer to a default, initializes the score, and prepares PGN for move recording.
+     * Private constructor to initialize the game state with default values.
      */
-    public GameState() {
+    private GameState() {
         this.timer = 300; // Default timer of 5 minutes
         this.score = 0;
         this.difficulty = "Normal";
         this.round = 1;
         this.pgn = new PGN();
+        this.moves = new ArrayList<Move>();
+    }
+
+    /**
+     * Provides access to the singleton instance of GameState.
+     * @return The singleton GameState instance.
+     */
+    public static GameState getInstance() {
+        if (instance == null) {
+            instance = new GameState();
+        }
+        return instance;
     }
 
     /**
@@ -57,7 +70,6 @@ public class GameState {
      */
     public void render(SpriteBatch batch) {
         // Placeholder: Use batch to render any game-related visuals, such as score, timer, etc.
-        // Example usage would be rendering text or UI components
     }
 
     /**
@@ -77,7 +89,7 @@ public class GameState {
     }
 
     /**
-     * Records a move in PGN format for later review, saving it to the game’s move history.
+     * Records a move in PGN format and adds it to the move history.
      * @param piece The piece being moved.
      * @param start The starting position of the piece.
      * @param end The ending position of the piece.
@@ -85,7 +97,17 @@ public class GameState {
      * @param enPassant Whether this move is an en passant capture (specific to pawns).
      */
     public void recordMove(Piece piece, Point start, Point end, boolean capture, boolean enPassant) {
+        Move move = new Move(piece, start, end, capture, enPassant);
+        moves.add(move); // Add move to history
         pgn.addMove(piece, start, end, capture, enPassant);
+    }
+
+    /**
+     * Retrieves the last move recorded in the move history.
+     * @return The last Move object, or null if there are no moves.
+     */
+    public Move getLastMove() {
+        return moves.isEmpty() ? null : moves.get(moves.size() - 1);
     }
 
     /**
@@ -113,7 +135,6 @@ public class GameState {
     }
 
     // Getters and Setters for the GameState attributes
-
     public int getTimer() {
         return timer;
     }

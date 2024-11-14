@@ -95,4 +95,14 @@ public class Board {
     public int getColumnCount() {
         return columnCount;
     }
+
+    /**
+     * Checks if a given position is within the bounds of the board.
+     * @param position The position to check.
+     * @return True if the position is within bounds, false otherwise.
+     */
+    public boolean isWithinBounds(Point position) {
+        return position.x >= 0 && position.x < this.rowCount &&
+            position.y >= 0 && position.y < this.columnCount;
+    }
 }

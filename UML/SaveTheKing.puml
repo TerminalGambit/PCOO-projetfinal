@@ -136,15 +136,10 @@ class QueenTest {
     +printMoves(moves: List<Point>): void
 }
 
-Tile <|-- EmptyTile
-Tile <|-- OccupiedTile
+
 OccupiedTile *-- Piece
 
-Piece <|-- King
-Piece <|-- Knight
-Piece <|-- Rook
-Piece <|-- Queen
-Piece <|-- Pawn
+
 
 Board *-- Tile
 GameState *-- Board

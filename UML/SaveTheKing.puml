@@ -136,6 +136,14 @@ class QueenTest {
     +printMoves(moves: List<Point>): void
 }
 
+class KingTest {
+    +main(args: String[]): void
+    +testKingCenterMoves(): void
+    +testKingEdgeMoves(): void
+    +testKingBlockedMoves(): void
+    +printMoves(moves: List<Point>): void
+}
+
 
 OccupiedTile *-- Piece
 
@@ -151,6 +159,8 @@ BishopTest ..> Bishop : tests
 BishopTest ..> Board : uses
 QueenTest ..> Queen : tests
 QueenTest ..> Board : uses
+KingTest ..> King : tests
+KingTest ..> Board : uses
 
 Tile ..> Point : uses
 Piece ..> Point : uses

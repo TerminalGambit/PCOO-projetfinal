@@ -113,47 +113,6 @@ class GameState {
     +addMoveToHistory(move: Move): void
 }
 
-
-class KnightTest {
-    +main(args: String[]): void
-    +testKnightCenterMoves(): void
-    +testKnightEdgeMoves(): void
-    +testKnightCornerMoves(): void
-    +printMoves(moves: List<Point>): void
-}
-
-class RookTest {
-    +main(args: String[]): void
-    +testRookCenterMoves(): void
-    +testRookEdgeMoves(): void
-    +testRookBlockedMoves(): void
-    +printMoves(moves: List<Point>): void
-}
-
-class BishopTest {
-    +main(args: String[]): void
-    +testBishopCenterMoves(): void
-    +testBishopEdgeMoves(): void
-    +testBishopBlockedMoves(): void
-    +printMoves(moves: List<Point>): void
-}
-
-class QueenTest {
-    +main(args: String[]): void
-    +testQueenCenterMoves(): void
-    +testQueenEdgeMoves(): void
-    +testQueenBlockedMoves(): void
-    +printMoves(moves: List<Point>): void
-}
-
-class KingTest {
-    +main(args: String[]): void
-    +testKingCenterMoves(): void
-    +testKingEdgeMoves(): void
-    +testKingBlockedMoves(): void
-    +printMoves(moves: List<Point>): void
-}
-
 class PGN {
     -moves: List<String>
     -moveNumber: int
@@ -161,13 +120,6 @@ class PGN {
     +saveToFile(filePath: String): void
     +loadFromFile(filePath: String): void
     +getMoveHistory(): List<String>
-}
-
-class PGNTest {
-    +main(args: String[]): void
-    +addMove(): void
-    +saveToFile(): void
-    +loadFromFile(): void
 }
 
 class Minimax {
@@ -195,17 +147,6 @@ Board *-- Tile
 GameState *-- Board
 GameState *-- PGN
 GameState *-- Move
-KnightTest ..> Knight : tests
-KnightTest ..> Board : uses
-RookTest ..> Rook : tests
-RookTest ..> Board : uses
-BishopTest ..> Bishop : tests
-BishopTest ..> Board : uses
-QueenTest ..> Queen : tests
-QueenTest ..> Board : uses
-KingTest ..> King : tests
-KingTest ..> Board : uses
-PGNTest ..> PGN : tests
 Minimax ..> Board : uses
 Minimax ..> Move : returns
 

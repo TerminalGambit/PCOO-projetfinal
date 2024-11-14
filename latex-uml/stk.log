@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.11.18)  13 NOV 2024 07:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.11.18)  14 NOV 2024 18:04
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -439,7 +439,7 @@ e
 Here is how much of TeX's memory you used:
  12753 strings out of 476025
  265002 string characters out of 5790016
- 1956388 words of memory out of 5000000
+ 1957388 words of memory out of 5000000
  32990 multiletter control sequences out of 15000+600000
  521982 words of font info for 45 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -449,7 +449,7 @@ Here is how much of TeX's memory you used:
 mmi10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cm
 r10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/amsfonts/cm/cmti
 10.pfb>
-Output written on stk.pdf (1 page, 66743 bytes).
+Output written on stk.pdf (1 page, 67533 bytes).
 PDF statistics:
  31 PDF objects out of 1000 (max. 8388607)
  19 compressed objects within 1 object stream

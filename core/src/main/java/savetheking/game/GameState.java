@@ -158,4 +158,50 @@ public class GameState {
     public int getRound() {
         return round;
     }
+
+    /**
+     * Checks if a given king is in check by any opposing piece.
+     * @param king The king piece to check.
+     * @param board The current game board.
+     * @return True if the king is in check, otherwise false.
+     */
+    public boolean isInCheck(King king, Board board) {
+        List<Piece> opponentPieces = board.getOpponentPieces(king.getColor());
+
+        for (Piece piece : opponentPieces) {
+            List<Point> possibleMoves = piece.getPossibleMoves(board);
+            for (Point move : possibleMoves) {
+                if (move.equals(king.getPosition())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determines if the specified king is in checkmate.
+     * @param king The king to check.
+     * @param board The current game board.
+     * @return True if the king is in checkmate, otherwise false.
+     */
+
+    public boolean isCheckmate(King king, Board board) {
+        if (!isInCheck(king, board)) return false;
+
+        List<Piece> playerPieces = board.getPlayerPieces(king.getColor());
+
+        for (Piece piece : playerPieces) {
+            List<Point> possibleMoves = piece.getPossibleMoves(board);
+            for (Point move : possibleMoves) {
+                Board testBoard = board.copy();
+                testBoard.movePiece(piece.getPosition(), move);
+
+                if (!isInCheck((King) testBoard.getPieceAt(king.getPosition()), testBoard)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }

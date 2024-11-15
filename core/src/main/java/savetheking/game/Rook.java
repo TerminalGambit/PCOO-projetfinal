@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Rook extends Piece {
+    private boolean hasMoved = false;
 
     public Rook(String color, Point position) {
         super(color, position);
@@ -57,6 +58,11 @@ public class Rook extends Piece {
     @Override
     public void move(Point newPosition) {
         this.position = newPosition;
+        this.hasMoved = true;
+    }
+
+    public boolean hasMoved() {
+        return hasMoved;
     }
 
     @Override

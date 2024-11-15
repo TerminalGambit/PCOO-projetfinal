@@ -1,5 +1,7 @@
 package savetheking.game;
 
+import java.util.List;
+
 public class GameRulesTest {
     public static void main(String[] args) {
         testKingInCheck();
@@ -40,14 +42,18 @@ public class GameRulesTest {
     public static void testCastling() {
         Board board = new Board(8);
         King king = new King("white", new Point(0, 4));
-        Rook rook = new Rook("white", new Point(0, 7));
+        Rook kingsideRook = new Rook("white", new Point(0, 7));
+        Rook queensideRook = new Rook("white", new Point(0, 0));
 
         board.placePiece(king, new Point(0, 4));
-        board.placePiece(rook, new Point(0, 7));
+        board.placePiece(kingsideRook, new Point(0, 7));
+        board.placePiece(queensideRook, new Point(0, 0));
 
-        // Use the king instance to check for castling eligibility
-        boolean canCastle = king.canCastle(board, rook); // Assuming canCastle is now in King class
+        List<Point> kingMoves = king.getPossibleMoves(board);
+        boolean kingsideCastling = kingMoves.contains(new Point(0, 6));
+        boolean queensideCastling = kingMoves.contains(new Point(0, 2));
 
-        System.out.println("Castling test: " + (canCastle ? "Passed" : "Failed"));
+        System.out.println("Kingside castling test: " + (kingsideCastling ? "Passed" : "Failed"));
+        System.out.println("Queenside castling test: " + (queensideCastling ? "Passed" : "Failed"));
     }
 }

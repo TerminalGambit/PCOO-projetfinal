@@ -1,5 +1,7 @@
 package savetheking.game;
 
+import java.util.Objects;
+
 public class Point {
     public int x;
     public int y;
@@ -15,17 +17,13 @@ public class Point {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-
         Point point = (Point) obj;
         return x == point.x && y == point.y;
     }
 
-    // HashCode method, useful for collections that use hashing
     @Override
     public int hashCode() {
-        int result = Integer.hashCode(x);
-        result = 31 * result + Integer.hashCode(y);
-        return result;
+        return Objects.hash(x, y);
     }
 
     // ToString for easy printing and debugging

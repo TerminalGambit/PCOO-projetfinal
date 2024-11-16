@@ -49,7 +49,7 @@ public class King extends Piece {
             Rook kingsideRook = board.getPieceAt(new Point(position.x, board.getColumnCount() - 1)) instanceof Rook
                 ? (Rook) board.getPieceAt(new Point(position.x, board.getColumnCount() - 1))
                 : null;
-            if (kingsideRook != null && !kingsideRook.hasMoved() && board.isPathClear(position, kingsideRook.getPosition()) && !board.isPositionUnderAttack(new Point(position.x, position.y + 1), this.color) && !board.isPositionUnderAttack(new Point(position.x, position.y + 2), this.color)) {
+            if (kingsideRook != null && !kingsideRook.hasMoved() && board.isPathClear(position, kingsideRook.getPosition()) && board.isPositionUnderAttack(new Point(position.x, position.y + 1), this.color) && board.isPositionUnderAttack(new Point(position.x, position.y + 2), this.color)) {
                 possibleMoves.add(new Point(position.x, position.y + 2));
             }
 
@@ -57,7 +57,7 @@ public class King extends Piece {
             Rook queensideRook = board.getPieceAt(new Point(position.x, 0)) instanceof Rook
                 ? (Rook) board.getPieceAt(new Point(position.x, 0))
                 : null;
-            if (queensideRook != null && !queensideRook.hasMoved() && board.isPathClear(position, queensideRook.getPosition()) && !board.isPositionUnderAttack(new Point(position.x, position.y - 1), this.color) && !board.isPositionUnderAttack(new Point(position.x, position.y - 2), this.color)) {
+            if (queensideRook != null && !queensideRook.hasMoved() && board.isPathClear(position, queensideRook.getPosition()) && board.isPositionUnderAttack(new Point(position.x, position.y - 1), this.color) && board.isPositionUnderAttack(new Point(position.x, position.y - 2), this.color)) {
                 possibleMoves.add(new Point(position.x, position.y - 2));
             }
         }

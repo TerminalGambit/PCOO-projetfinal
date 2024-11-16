@@ -72,6 +72,22 @@ public class Board {
     }
 
     /**
+     * Checks if a given tile is occupied by a piece of a specific color.
+     * @param position The position to check.
+     * @param color The color to match.
+     * @return True if the tile is occupied by a piece of the specified color, otherwise false.
+     */
+    public boolean isOccupiedByColor(Point position, String color) {
+        Tile tile = getTileAt(position);
+        if (tile instanceof OccupiedTile) {
+            Piece piece = ((OccupiedTile) tile).getPiece();
+            return piece.getColor().equals(color);
+        }
+        return false;
+    }
+
+
+    /**
      * Retrieves the tile at a specified position on the board.
      * @param position The position to retrieve the tile from.
      * @return The tile at the specified position or null if out of bounds.
@@ -97,6 +113,75 @@ public class Board {
      */
     public int getColumnCount() {
         return columnCount;
+    }
+
+    /**
+     * Updates the board state based on the current positions of the pieces.
+     * This can be used to refresh defended tiles or other dynamic attributes.
+     */
+    public void updateBoard() {
+        // Reset all defended states
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < columnCount; j++) {
+                tiles[i][j].setDefended(false);
+            }
+        }
+
+        // Recalculate defended tiles
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < columnCount; j++) {
+                Tile tile = tiles[i][j];
+                if (tile instanceof OccupiedTile) {
+                    Piece piece = ((OccupiedTile) tile).getPiece();
+                    List<Point> defendedTiles = piece.getDefendedTiles(this);
+                    for (Point point : defendedTiles) {
+                        Tile defendedTile = getTileAt(point);
+                        if (defendedTile != null) {
+                            defendedTile.setDefended(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Resizes the board to a new number of rows and columns.
+     * This method clears the current board state and reinitializes the board.
+     * @param rows The new number of rows.
+     * @param columns The new number of columns.
+     */
+    public void resizeBoard(int rows, int columns) {
+        this.rowCount = rows;
+        this.columnCount = columns;
+        tiles = new Tile[rows][columns];
+        initializeBoard(); // Reinitialize with the new dimensions
+    }
+
+
+
+    /**
+     * Retrieves all empty tiles on the board.
+     * @return A list of empty tiles (positions) on the board.
+     */
+    public List<Point> getEmptyTiles() {
+        List<Point> emptyTiles = new ArrayList<Point>();
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < columnCount; j++) {
+                Tile tile = tiles[i][j];
+                if (tile instanceof EmptyTile) {
+                    emptyTiles.add(tile.getPosition());
+                }
+            }
+        }
+        return emptyTiles;
+    }
+
+    /**
+     * Resets the board by clearing all pieces and reinitializing all tiles.
+     */
+    public void resetBoard() {
+        initializeBoard();
     }
 
     /**
@@ -222,6 +307,9 @@ public class Board {
      * @return The piece at the specified position, or null if no piece is present.
      */
     public Piece getPieceAt(Point position) {
+        if (!isWithinBounds(position)) {
+            return null; // Prevent out-of-bounds access
+        }
         Tile tile = getTileAt(position);
         if (tile instanceof OccupiedTile) {
             return ((OccupiedTile) tile).getPiece();
@@ -238,7 +326,7 @@ public class Board {
     public boolean isPositionUnderAttack(Point position, String color) {
         List<Piece> opponentPieces = getOpponentPieces(color); // Retrieve all opponent pieces
 
-        // Check if any opponent piece can move to the given position
+        // Check if any opponent piec@e can move to the given position
         for (Piece piece : opponentPieces) {
             List<Point> possibleMoves = piece.getPossibleMoves(this);
             for (Point move : possibleMoves) {
@@ -255,13 +343,27 @@ public class Board {
      * Empty tiles are represented with '.', and pieces are shown with their color and type.
      */
     public void printBoard() {
-        System.out.println("   " + " a b c d e f g h ".substring(0, columnCount * 2 + 1)); // Column headers
+        final String EMPTY_TILE_REPRESENTATION = "."; // Representation for empty tiles
+        final String ROW_HEADER = "   "; // Spacing for column headers
+
+        // Print column headers
+        StringBuilder columnHeaders = new StringBuilder(ROW_HEADER);
+        for (int col = 0; col < columnCount; col++) {
+            columnHeaders.append((char) ('a' + col)).append(" ");
+        }
+        System.out.println(columnHeaders.toString());
+
+        // Print rows with tiles
         for (int i = 0; i < rowCount; i++) {
-            System.out.print((8 - i) + " "); // Row numbers
+            // Print row number on the left
+            System.out.print((rowCount - i) + " ");
+
             for (int j = 0; j < columnCount; j++) {
                 Tile tile = tiles[i][j];
+
+                // Represent empty tiles and pieces
                 if (tile instanceof EmptyTile) {
-                    System.out.print(" .");
+                    System.out.print(" " + EMPTY_TILE_REPRESENTATION);
                 } else if (tile instanceof OccupiedTile) {
                     Piece piece = ((OccupiedTile) tile).getPiece();
                     char pieceChar = piece.toString().charAt(0); // First letter of the piece type
@@ -269,8 +371,35 @@ public class Board {
                     System.out.print(" " + colorChar + pieceChar);
                 }
             }
-            System.out.println(" " + (8 - i)); // Row numbers on the right
+
+            // Print row number on the right
+            System.out.println(" " + (rowCount - i));
         }
-        System.out.println("   " + " a b c d e f g h ".substring(0, columnCount * 2 + 1)); // Column headers
+
+        // Print column headers again
+        System.out.println(columnHeaders.toString());
+    }
+
+    /**
+     * Retrieves all tiles that are defended by the player's pieces.
+     * A defended tile is one that can be reached by a move of any piece of the given color.
+     * @return A list of points representing the defended tiles on the board.
+     */
+    public List<Point> getDefendedTiles() {
+        List<Point> defendedTiles = new ArrayList<Point>();
+
+        // Iterate through all tiles on the board
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < columnCount; j++) {
+                Tile tile = tiles[i][j];
+                if (tile instanceof OccupiedTile) {
+                    Piece piece = ((OccupiedTile) tile).getPiece();
+                    // Add all tiles that this piece defends
+                    defendedTiles.addAll(piece.getDefendedTiles(this));
+                }
+            }
+        }
+
+        return defendedTiles;
     }
 }

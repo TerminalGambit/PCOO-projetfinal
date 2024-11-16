@@ -28,6 +28,11 @@ task runRookTest(type: JavaExec) {
   main = 'savetheking.game.RookTest'
 }
 
+task runGameRulesTest(type: JavaExec) {
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'savetheking.game.GameRulesTest'
+}
+
 // Specify Java version compatibility
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11

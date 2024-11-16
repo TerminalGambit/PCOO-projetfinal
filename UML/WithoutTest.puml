@@ -47,6 +47,8 @@ abstract class Piece {
 class King extends Piece {
     +getPossibleMoves(board: Board): List<Point>
     +getDefendedTiles(board: Board): List<Point>
+    +addCastlingMoves(board: Board, possibleMoves: List<Point>): void
+    +hasMoved(): boolean
 }
 
 class Knight extends Piece {
@@ -62,6 +64,7 @@ class Bishop extends Piece {
 class Rook extends Piece {
     +getPossibleMoves(board: Board): List<Point>
     +getDefendedTiles(board: Board): List<Point>
+    +hasMoved(): boolean
 }
 
 class Queen extends Piece {
@@ -90,6 +93,14 @@ class Board {
     +getColumnCount(): int
     +placePiece(piece: Piece, position: Point): void
     +removePiece(position: Point): void
+    +isPathClear(start: Point, end: Point): boolean
+    +getOpponentPieces(color: String): List<Piece>
+    +getPlayerPieces(color: String): List<Piece>
+    +copy(): Board
+    +movePiece(start: Point, end: Point): void
+    +getPieceAt(position: Point): Piece
+    +isPositionUnderAttack(position: Point, color: String): boolean
+    +printBoard(): void
 }
 
 class GameState {
@@ -111,6 +122,9 @@ class GameState {
     +getMoveHistory(): List<String>
     +getLastMove(): Move
     +addMoveToHistory(move: Move): void
+    +isInCheck(king: King, board: Board): boolean
+    +isCheckmate(king: King, board: Board): boolean
+    +canCastle(king: King, rook: Rook, board: Board): boolean
 }
 
 class PGN {

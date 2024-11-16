@@ -249,4 +249,28 @@ public class Board {
         }
         return false; // No opponent piece can attack this position
     }
+
+    /**
+     * Prints the board to the console with a visual representation.
+     * Empty tiles are represented with '.', and pieces are shown with their color and type.
+     */
+    public void printBoard() {
+        System.out.println("   " + " a b c d e f g h ".substring(0, columnCount * 2 + 1)); // Column headers
+        for (int i = 0; i < rowCount; i++) {
+            System.out.print((8 - i) + " "); // Row numbers
+            for (int j = 0; j < columnCount; j++) {
+                Tile tile = tiles[i][j];
+                if (tile instanceof EmptyTile) {
+                    System.out.print(" .");
+                } else if (tile instanceof OccupiedTile) {
+                    Piece piece = ((OccupiedTile) tile).getPiece();
+                    char pieceChar = piece.toString().charAt(0); // First letter of the piece type
+                    char colorChar = piece.getColor().charAt(0);  // First letter of the color
+                    System.out.print(" " + colorChar + pieceChar);
+                }
+            }
+            System.out.println(" " + (8 - i)); // Row numbers on the right
+        }
+        System.out.println("   " + " a b c d e f g h ".substring(0, columnCount * 2 + 1)); // Column headers
+    }
 }

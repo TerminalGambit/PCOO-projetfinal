@@ -166,16 +166,30 @@ public class GameState {
      * @return True if the king is in check, otherwise false.
      */
     public boolean isInCheck(King king, Board board) {
+        if (king == null || board == null) {
+            throw new NullPointerException("King or board cannot be null");
+        }
+
+        System.out.println("Checking if king is in check...");
+        System.out.println("King position: " + king.getPosition());
+        System.out.println("King color: " + king.getColor());
+
         List<Piece> opponentPieces = board.getOpponentPieces(king.getColor());
 
+        System.out.println("Opponent pieces: " + opponentPieces.size());
         for (Piece piece : opponentPieces) {
+            System.out.println("Checking opponent piece: " + piece);
             List<Point> possibleMoves = piece.getPossibleMoves(board);
+            System.out.println("Possible moves for " + piece + ": " + possibleMoves);
+
             for (Point move : possibleMoves) {
                 if (move.equals(king.getPosition())) {
+                    System.out.println("King is in check from: " + piece);
                     return true;
                 }
             }
         }
+        System.out.println("King is not in check.");
         return false;
     }
 
@@ -185,23 +199,50 @@ public class GameState {
      * @param board The current game board.
      * @return True if the king is in checkmate, otherwise false.
      */
-
     public boolean isCheckmate(King king, Board board) {
-        if (!isInCheck(king, board)) return false;
+        if (king == null || board == null) {
+            throw new NullPointerException("King or board cannot be null");
+        }
+
+        System.out.println("Checking if king is in checkmate...");
+        System.out.println("King object: " + king);
+        System.out.println("King position: " + king.getPosition());
+
+        // Check if the king is in check first
+        if (!isInCheck(king, board)) {
+            System.out.println("King is not in check, so not in checkmate.");
+            return false;
+        }
 
         List<Piece> playerPieces = board.getPlayerPieces(king.getColor());
+        System.out.println("Player pieces: " + playerPieces.size());
 
         for (Piece piece : playerPieces) {
+            System.out.println("Testing moves for piece: " + piece);
             List<Point> possibleMoves = piece.getPossibleMoves(board);
+            System.out.println("Possible moves for " + piece + ": " + possibleMoves);
+
             for (Point move : possibleMoves) {
+                System.out.println("Testing move: " + move);
+
+                // Copy the board and simulate the move
                 Board testBoard = board.copy();
                 testBoard.movePiece(piece.getPosition(), move);
 
-                if (!isInCheck((King) testBoard.getPieceAt(king.getPosition()), testBoard)) {
+                // Debug the state of the test board
+                System.out.println("After move, testBoard:");
+                testBoard.printBoard(); // Assuming a `printBoard` method for debugging
+                King testKing = (King) testBoard.getPieceAt(king.getPosition());
+                System.out.println("King object on testBoard: " + testKing);
+
+                // Check if the King is still in check
+                if (testKing != null && !isInCheck(testKing, testBoard)) {
+                    System.out.println("Found a move that prevents checkmate: " + move);
                     return false;
                 }
             }
         }
+        System.out.println("King is in checkmate.");
         return true;
     }
 }

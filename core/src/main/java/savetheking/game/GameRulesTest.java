@@ -25,18 +25,22 @@ public class GameRulesTest {
 
     public static void testCheckmate() {
         Board board = new Board(8);
-        King king = new King("white", new Point(0, 4));
+        King king = new King("white", new Point(0, 4)); // e1
         board.placePiece(king, new Point(0, 4));
 
-        Rook rook1 = new Rook("black", new Point(1, 0));
-        Rook rook2 = new Rook("black", new Point(1, 7));
-        board.placePiece(rook1, new Point(1, 0));
-        board.placePiece(rook2, new Point(1, 7));
+        Rook rook1 = new Rook("black", new Point(0, 0)); // a1
+        Rook rook2 = new Rook("black", new Point(1, 1)); // b2
+        board.placePiece(rook1, new Point(0, 0));
+        board.placePiece(rook2, new Point(1, 1));
 
         GameState gameState = GameState.getInstance();
+
+        // Add diagnostic print to check if king is initialized
+        System.out.println("King object before isCheckmate: " + king);
+
         boolean isCheckmate = gameState.isCheckmate(king, board);
 
-        System.out.println("Checkmate test: " + (isCheckmate ? "Passed" : "Failed"));
+        System.out.println("Ladder mate test (Rooks on a1 and b2, King on e1): " + (isCheckmate ? "Passed" : "Failed"));
     }
 
     public static void testCastling() {

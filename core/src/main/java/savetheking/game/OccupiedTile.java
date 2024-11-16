@@ -1,16 +1,17 @@
 package savetheking.game;
 
 /**
- * OccupiedTile represents a tile on the board that currently holds a piece.
- * It allows getting, setting, and removing the piece it holds.
+ * La classe OccupiedTile représente une case sur l'échiquier qui contient actuellement une pièce.
+ * Elle permet de récupérer, définir ou retirer la pièce occupant cette case.
  */
 public class OccupiedTile extends Tile {
-    private Piece piece; // The piece currently occupying this tile
+    private Piece piece; // La pièce occupant actuellement cette case
 
     /**
-     * Constructor to initialize an occupied tile with a position and a piece.
-     * @param position The position of this tile on the board.
-     * @param piece The piece occupying this tile.
+     * Constructeur pour initialiser une case occupée avec une position et une pièce.
+     *
+     * @param position La position de cette case sur l'échiquier.
+     * @param piece La pièce occupant cette case.
      */
     public OccupiedTile(Point position, Piece piece) {
         super(position);
@@ -18,8 +19,9 @@ public class OccupiedTile extends Tile {
     }
 
     /**
-     * Sets a piece on this occupied tile.
-     * @param piece The piece to set on this tile.
+     * Définit une pièce sur cette case occupée.
+     *
+     * @param piece La pièce à placer sur cette case.
      */
     @Override
     public void setPiece(Piece piece) {
@@ -27,8 +29,9 @@ public class OccupiedTile extends Tile {
     }
 
     /**
-     * Retrieves the piece currently occupying this tile.
-     * @return The piece on this tile.
+     * Récupère la pièce occupant actuellement cette case.
+     *
+     * @return La pièce occupant cette case.
      */
     @Override
     public Piece getPiece() {
@@ -36,7 +39,7 @@ public class OccupiedTile extends Tile {
     }
 
     /**
-     * Removes the piece from this tile, making it effectively empty.
+     * Retire la pièce de cette case, la rendant effectivement vide.
      */
     @Override
     public void removePiece() {

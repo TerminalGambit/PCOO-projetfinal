@@ -1,60 +1,88 @@
 package savetheking.game;
 
 /**
- * Tile is an abstract class representing a tile on the board.
- * It provides methods for checking if the tile is defended or occupied, and handles its position.
+ * La classe abstraite Tile représente une case sur l'échiquier.
+ * Elle fournit des méthodes pour vérifier si la case est défendue ou occupée et gère sa position.
  */
 public abstract class Tile {
-    protected Point position; // The position of the tile on the board
-    protected boolean isDefended; // Flag indicating if the tile is defended by a piece
+    protected Point position; // Position de la case sur l'échiquier
+    protected boolean isDefended; // Indique si la case est défendue par une pièce
 
     /**
-     * Constructor to initialize the tile with a position.
-     * @param position The position of this tile on the board.
+     * Constructeur pour initialiser une case avec une position donnée.
+     * Par défaut, une case n'est pas défendue.
+     *
+     * @param position La position de cette case sur l'échiquier.
      */
     public Tile(Point position) {
         this.position = position;
-        this.isDefended = false; // By default, a tile is not defended
+        this.isDefended = false; // Par défaut, la case n'est pas défendue
     }
 
+    /**
+     * Constructeur par défaut. Utilisé pour initialiser sans position.
+     * Par défaut, une case n'est pas défendue.
+     */
     public Tile() {
         this.isDefended = false;
     }
 
     /**
-     * Checks if this tile is occupied by a piece.
-     * @return True if the tile is an instance of OccupiedTile; otherwise, false.
+     * Vérifie si cette case est occupée par une pièce.
+     * Une case est considérée occupée si elle est une instance de {@link OccupiedTile}.
+     *
+     * @return true si la case est occupée, sinon false.
      */
     public boolean isOccupied() {
         return this instanceof OccupiedTile;
     }
 
     /**
-     * Gets the position of this tile.
-     * @return The position of the tile.
+     * Récupère la position de cette case sur l'échiquier.
+     *
+     * @return La position de la case sous forme d'un objet {@link Point}.
      */
     public Point getPosition() {
         return position;
     }
 
     /**
-     * Checks if this tile is defended.
-     * @return True if the tile is defended; otherwise, false.
+     * Vérifie si cette case est défendue.
+     *
+     * @return true si la case est défendue, sinon false.
      */
     public boolean isDefended() {
         return isDefended;
     }
 
     /**
-     * Sets the defended status of this tile.
-     * @param defended The new defended status.
+     * Définit si cette case est défendue ou non.
+     *
+     * @param defended Le nouvel état défendu de la case.
      */
     public void setDefended(boolean defended) {
         this.isDefended = defended;
     }
 
-    // Abstract methods for managing pieces
+    /**
+     * Méthode abstraite pour définir une pièce sur cette case.
+     * À implémenter dans les sous-classes.
+     *
+     * @param piece La pièce à placer sur cette case.
+     */
     public abstract void setPiece(Piece piece);
+
+    /**
+     * Méthode abstraite pour récupérer la pièce située sur cette case.
+     * À implémenter dans les sous-classes.
+     *
+     * @return La pièce située sur cette case ou null si aucune pièce n'est présente.
+     */
     public abstract Piece getPiece();
+
+    /**
+     * Méthode abstraite pour retirer une pièce de cette case.
+     * À implémenter dans les sous-classes.
+     */
     public abstract void removePiece();
 }

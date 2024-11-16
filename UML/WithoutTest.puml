@@ -6,12 +6,15 @@ class Point {
     +equals(obj: Object): boolean
     +hashCode(): int
     +toString(): String
-    +isWithinBounds(boardWidth: int, boardHeight: int): boolean
+    +isWithinBounds(boardSize: int): boolean
+    +toChessNotation(boardSize: int): String
 }
 
 abstract class Tile {
     #position: Point
     #isDefended: boolean
+    +Tile(position: Point)
+    +Tile()
     +isOccupied(): boolean
     +getPosition(): Point
     +isDefended(): boolean
@@ -22,6 +25,7 @@ abstract class Tile {
 }
 
 class EmptyTile extends Tile {
+    +EmptyTile(position: Point)
     +isOccupied(): boolean
     +setPiece(piece: Piece): void
     +getPiece(): Piece
@@ -30,6 +34,7 @@ class EmptyTile extends Tile {
 
 class OccupiedTile extends Tile {
     -piece: Piece
+    +OccupiedTile(position: Point, piece: Piece)
     +getPiece(): Piece
     +setPiece(piece: Piece): void
     +removePiece(): void

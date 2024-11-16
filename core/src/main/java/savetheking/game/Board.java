@@ -308,13 +308,10 @@ public class Board {
      */
     public Piece getPieceAt(Point position) {
         if (!isWithinBounds(position)) {
-            return null; // Prevent out-of-bounds access
+            throw new IllegalArgumentException("Position out of bounds: " + position);
         }
         Tile tile = getTileAt(position);
-        if (tile instanceof OccupiedTile) {
-            return ((OccupiedTile) tile).getPiece();
-        }
-        return null;
+        return (tile instanceof OccupiedTile) ? ((OccupiedTile) tile).getPiece() : null;
     }
 
     /**
@@ -324,9 +321,7 @@ public class Board {
      * @return True if the position is under attack, false otherwise.
      */
     public boolean isPositionUnderAttack(Point position, String color) {
-        List<Piece> opponentPieces = getOpponentPieces(color); // Retrieve all opponent pieces
-
-        // Check if any opponent piec@e can move to the given position
+        List<Piece> opponentPieces = getOpponentPieces(color);
         for (Piece piece : opponentPieces) {
             List<Point> possibleMoves = piece.getPossibleMoves(this);
             for (Point move : possibleMoves) {
@@ -335,7 +330,7 @@ public class Board {
                 }
             }
         }
-        return false; // No opponent piece can attack this position
+        return false; // Position is not under attack
     }
 
     /**

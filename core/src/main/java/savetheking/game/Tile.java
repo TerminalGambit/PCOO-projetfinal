@@ -17,6 +17,10 @@ public abstract class Tile {
         this.isDefended = false; // By default, a tile is not defended
     }
 
+    public Tile() {
+        this.isDefended = false;
+    }
+
     /**
      * Checks if this tile is occupied by a piece.
      * @return True if the tile is an instance of OccupiedTile; otherwise, false.

@@ -6,7 +6,7 @@ class Point {
     +equals(obj: Object): boolean
     +hashCode(): int
     +toString(): String
-    +isWithinBounds(boardSize: int): boolean
+    +isWithinBounds(boardWidth: int, boardHeight: int): boolean
 }
 
 abstract class Tile {
@@ -40,8 +40,11 @@ abstract class Piece {
     #color: String
     #position: Point
     +getPossibleMoves(board: Board): List<Point>
-    +move(newPosition: Point): void
     +getDefendedTiles(board: Board): List<Point>
+    +getColor(): String
+    +getPosition(): Point
+    +move(newPosition: Point, boardSize: int): void
+    +toString(): String
 }
 
 class King extends Piece {
@@ -100,6 +103,9 @@ class Board {
     +movePiece(start: Point, end: Point): void
     +getPieceAt(position: Point): Piece
     +isPositionUnderAttack(position: Point, color: String): boolean
+    +getEmptyTiles(): List<Point>
+    +resetBoard(): void
+    +isOccupiedByColor(position: Point, color: String): boolean
     +printBoard(): void
 }
 

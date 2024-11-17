@@ -297,7 +297,7 @@ public class Board {
             Piece piece = ((OccupiedTile) startTile).getPiece();
             removePiece(start); // Remove from start position
             placePiece(piece, end); // Place at end position
-            piece.move(end); // Update piece's position
+            piece.move(end, this.rowCount); // Update piece's position
         }
     }
 

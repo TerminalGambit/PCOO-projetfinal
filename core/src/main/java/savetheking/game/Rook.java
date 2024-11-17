@@ -55,7 +55,7 @@ public class Rook extends Piece {
         return getPossibleMoves(board);
     }
 
-    @Override
+    // @Override
     public void move(Point newPosition) {
         this.position = newPosition;
         this.hasMoved = true;

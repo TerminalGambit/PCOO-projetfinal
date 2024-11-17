@@ -84,7 +84,7 @@ public class Pawn extends Piece {
         return defendedTiles;
     }
 
-    @Override
+    // @Override
     public void move(Point newPosition) {
         this.position = newPosition;
         this.firstMove = false;

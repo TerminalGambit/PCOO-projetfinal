@@ -63,7 +63,9 @@ class King extends Piece {
     +getPossibleMoves(board: Board): List<Point>
     +getDefendedTiles(board: Board): List<Point>
     +addCastlingMoves(board: Board, possibleMoves: List<Point>): void
+    +move(newPosition: Point, boardSize: int): void
     +hasMoved(): boolean
+    +toString(): String
 }
 
 class Knight extends Piece {

@@ -58,7 +58,7 @@ public class Queen extends Piece {
         return getPossibleMoves(board);
     }
 
-    @Override
+    // @Override
     public void move(Point newPosition) {
         this.position = newPosition;
     }

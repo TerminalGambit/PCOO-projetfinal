@@ -44,13 +44,20 @@ class OccupiedTile extends Tile {
 abstract class Piece {
     #color: String
     #position: Point
+    #hasMoved: boolean
+    +Piece(color: String, position: Point)
     +getPossibleMoves(board: Board): List<Point>
     +getDefendedTiles(board: Board): List<Point>
     +getColor(): String
     +getPosition(): Point
     +move(newPosition: Point, boardSize: int): void
+    +hasMoved(): boolean
+    +hasNotMoved(): boolean
     +toString(): String
+    -isWithinBounds(point: Point, boardSize: int): boolean
+    -isAlly(point: Point, board: Board): boolean
 }
+
 
 class King extends Piece {
     +getPossibleMoves(board: Board): List<Point>

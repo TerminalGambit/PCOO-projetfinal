@@ -2,7 +2,9 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 // Set encoding for Java compilation
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+}
 
 // Set Eclipse project name
 eclipse.project.name = appName + '-core'
@@ -18,21 +20,17 @@ application {
 }
 
 // Optional: tasks to make running test classes simpler
-task runKnightTest(type: JavaExec) {
+tasks.register('runKnightTest', JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
   main = 'savetheking.game.KnightTest'
 }
 
-task runRookTest(type: JavaExec) {
+tasks.register('runRookTest', JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
   main = 'savetheking.game.RookTest'
 }
 
-task runGameRulesTest(type: JavaExec) {
+tasks.register('runGameRulesTest', JavaExec) {
   classpath = sourceSets.main.runtimeClasspath
   main = 'savetheking.game.GameRulesTest'
 }
-
-// Specify Java version compatibility
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11

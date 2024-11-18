@@ -74,13 +74,18 @@ class Knight extends Piece {
 }
 
 class Bishop extends Piece {
+    +Bishop(color: String, position: Point)
     +getPossibleMoves(board: Board): List<Point>
     +getDefendedTiles(board: Board): List<Point>
+    +move(newPosition: Point, boardSize: int): void
+    +toString(): String
 }
 
 class Rook extends Piece {
+    +Rook(color: String, position: Point)
     +getPossibleMoves(board: Board): List<Point>
     +getDefendedTiles(board: Board): List<Point>
+    +move(newPosition: Point, boardSize: int): void
     +hasMoved(): boolean
 }
 

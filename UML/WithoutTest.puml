@@ -58,7 +58,6 @@ abstract class Piece {
     -isAlly(point: Point, board: Board): boolean
 }
 
-
 class King extends Piece {
     +getPossibleMoves(board: Board): List<Point>
     +getDefendedTiles(board: Board): List<Point>
@@ -157,7 +156,7 @@ class PGN {
     -moveNumber: int
     +addMove(Piece piece, Point start, Point end, boolean capture, boolean enPassant): void
     +saveToFile(filePath: String): void
-    +loadFromFile(filePath: String): void
+    +loadGame(filePath: String): void
     +getMoveHistory(): List<String>
 }
 
@@ -181,16 +180,54 @@ class Move {
     +isEnPassant(): boolean
 }
 
+interface Player {
+    +makeMove(board: Board): Move
+}
+
+class HumanPlayer implements Player {
+    +makeMove(board: Board): Move
+}
+
+class AIPlayer implements Player {
+    +makeMove(board: Board): Move
+}
+
+class MoveHistory {
+    -moves: Stack<Move>
+    -redoStack: Stack<Move>
+    +recordMove(move: Move): void
+    +undo(): Move
+    +redo(): Move
+}
+
+class GameManager {
+    -board: Board
+    -gameState: GameState
+    -player1: Player
+    -player2: Player
+    +startGame(): void
+    +endGame(): void
+    +handleMove(start: Point, end: Point): boolean
+}
+
+GameManager *-- Board
+GameManager *-- GameState
+GameManager *-- Player
+GameManager *-- MoveHistory
+Player ..> Move : returns
+
 OccupiedTile *-- Piece
 Board *-- Tile
 GameState *-- Board
 GameState *-- PGN
 GameState *-- Move
+GameState *-- MoveHistory
 Minimax ..> Board : uses
 Minimax ..> Move : returns
 
 Tile ..> Point : uses
 Piece ..> Point : uses
 Board ..> Point : uses
+AIPlayer ..> Minimax : uses
 
 @enduml

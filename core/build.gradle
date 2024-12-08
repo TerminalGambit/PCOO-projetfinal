@@ -6,31 +6,85 @@ tasks.withType(JavaCompile) {
   options.encoding = 'UTF-8'
 }
 
-// Set Eclipse project name
-eclipse.project.name = appName + '-core'
+// Define common properties
+ext {
+  gdxVersion = '1.12.1' // Define your gdx version here for consistency
+  junitVersion = '5.10.0' // JUnit version for testing
+}
+
+// Set Eclipse project name (if using Eclipse integration)
+eclipse {
+  project {
+    name = "${appName}-core"
+  }
+}
 
 // Dependencies for the project
 dependencies {
+  // LibGDX core dependency
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
+
+  // JUnit 5 for testing
+  testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+
+  // Add additional libraries if needed, such as mockito for mocking
+  testImplementation "org.mockito:mockito-core:4.11.0"
 }
 
 // Configure the main class for running the application
 application {
-  mainClassName = 'savetheking.game.Main' // Replace 'Main' with the actual main class if different
+  mainClassName = 'savetheking.game.Main' // Replace 'Main' with the actual main class
 }
 
-// Optional: tasks to make running test classes simpler
+// Configure Java test tasks for JUnit 5
+tasks.withType(Test) {
+  useJUnitPlatform() // Enables JUnit 5 for test execution
+}
+
+// Create custom tasks for running specific test classes
 tasks.register('runKnightTest', JavaExec) {
-  classpath = sourceSets.main.runtimeClasspath
-  main = 'savetheking.game.KnightTest'
+  description = 'Run KnightTest as a standalone Java application'
+  classpath = sourceSets.test.runtimeClasspath
+  main = 'savetheking.game.KnightTest' // Fully qualified name of the test class
 }
 
 tasks.register('runRookTest', JavaExec) {
-  classpath = sourceSets.main.runtimeClasspath
+  description = 'Run RookTest as a standalone Java application'
+  classpath = sourceSets.test.runtimeClasspath
   main = 'savetheking.game.RookTest'
 }
 
 tasks.register('runGameRulesTest', JavaExec) {
-  classpath = sourceSets.main.runtimeClasspath
+  description = 'Run GameRulesTest as a standalone Java application'
+  classpath = sourceSets.test.runtimeClasspath
   main = 'savetheking.game.GameRulesTest'
+}
+
+// Add a clean and build pipeline task for convenience
+tasks.register('cleanBuild') {
+  group = 'Build'
+  description = 'Cleans and builds the project'
+  dependsOn 'clean', 'build'
+}
+
+// Ensure test outputs are more user-friendly
+test {
+  testLogging {
+    events "PASSED", "FAILED", "SKIPPED"
+    exceptionFormat "full"
+    showCauses true
+    showExceptions true
+  }
+}
+
+// Optional: Add a task to create a fat JAR (if needed for distribution)
+tasks.register('fatJar', Jar) {
+  group = 'Build'
+  description = 'Creates a standalone JAR with all dependencies included'
+  archiveBaseName.set('savetheking')
+  archiveVersion.set('1.0')
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+  with jar
 }

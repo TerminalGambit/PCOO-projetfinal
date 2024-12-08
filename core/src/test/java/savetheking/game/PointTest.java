@@ -1,6 +1,6 @@
 package savetheking.game;
 
-public class TestPoint {
+public class PointTest {
     public static void main(String[] args) {
         Point point = new Point(0, 0); // Coin inférieur gauche
         System.out.println(point.toChessNotation(8)); // Affiche "a8"

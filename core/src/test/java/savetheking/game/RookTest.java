@@ -1,85 +1,69 @@
 package savetheking.game;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
- * Classe de test pour la pièce "Tour" (Rook).
- * Cette classe vérifie les mouvements possibles de la tour dans différents scénarios.
+ * Classe de test JUnit pour la pièce "Tour" (Rook).
+ * Cette classe vérifie les mouvements possibles de la tour dans divers scénarios.
  */
 public class RookTest {
 
-    public static void main(String[] args) {
-        runTests();
-    }
-
     /**
-     * Méthode pour exécuter tous les tests de la classe.
+     * Vérifie les mouvements possibles de la tour lorsqu'elle est placée au centre du plateau.
      */
-    public static void runTests() {
-        testRookCenterMoves();
-        testRookEdgeMoves();
-        testRookBlockedMoves();
-    }
-
-    /**
-     * Teste les mouvements de la tour placée au centre du plateau.
-     */
-    private static void testRookCenterMoves() {
+    @Test
+    public void testRookCenterMoves() {
         Board board = new Board(8, 8);
         Rook rook = new Rook("white", new Point(4, 4));
 
         // Place la tour au centre du plateau
         board.placePiece(rook, new Point(4, 4));
 
-        System.out.println("Test des mouvements de la tour depuis (4, 4) sur un plateau 8x8 :");
         List<Point> moves = rook.getPossibleMoves(board);
-        printMoves(moves);
-        System.out.println("Attendu : Mouvements horizontaux et verticaux complets depuis (4, 4).\n");
+
+        assertFalse(moves.isEmpty(), "Les mouvements de la tour ne doivent pas être vides.");
+        assertTrue(moves.contains(new Point(4, 7)), "La tour doit pouvoir se déplacer en (4, 7).");
+        assertTrue(moves.contains(new Point(0, 4)), "La tour doit pouvoir se déplacer en (0, 4).");
     }
 
     /**
-     * Teste les mouvements de la tour placée au bord du plateau.
+     * Vérifie les mouvements possibles de la tour lorsqu'elle est placée au bord du plateau.
      */
-    private static void testRookEdgeMoves() {
+    @Test
+    public void testRookEdgeMoves() {
         Board board = new Board(8, 8);
         Rook rook = new Rook("black", new Point(0, 4));
 
         // Place la tour au bord du plateau
         board.placePiece(rook, new Point(0, 4));
 
-        System.out.println("Test des mouvements de la tour depuis (0, 4) sur un plateau 8x8 :");
         List<Point> moves = rook.getPossibleMoves(board);
-        printMoves(moves);
-        System.out.println("Attendu : Mouvements horizontaux et verticaux disponibles jusqu'aux limites du plateau.\n");
+
+        assertFalse(moves.isEmpty(), "Les mouvements de la tour au bord ne doivent pas être vides.");
+        assertTrue(moves.contains(new Point(7, 4)), "La tour doit pouvoir se déplacer en (7, 4).");
+        assertTrue(moves.contains(new Point(0, 7)), "La tour doit pouvoir se déplacer en (0, 7).");
     }
 
     /**
-     * Teste les mouvements de la tour avec des bloqueurs sur son chemin.
+     * Vérifie les mouvements possibles de la tour lorsqu'elle est bloquée par d'autres pièces.
      */
-    private static void testRookBlockedMoves() {
+    @Test
+    public void testRookBlockedMoves() {
         Board board = new Board(8, 8);
         Rook rook = new Rook("white", new Point(3, 3));
 
         // Place la tour et des bloqueurs sur le plateau
         board.placePiece(rook, new Point(3, 3));
         board.placePiece(new Knight("white", new Point(3, 5)), new Point(3, 5)); // Bloqueur allié
-        board.placePiece(new Pawn("black", new Point(3, 1), 1), new Point(3, 1));   // Adversaire capturable
+        board.placePiece(new Pawn("black", new Point(3, 1), 1), new Point(3, 1)); // Adversaire capturable
 
-        System.out.println("Test des mouvements de la tour depuis (3, 3) avec des bloqueurs sur le plateau :");
         List<Point> moves = rook.getPossibleMoves(board);
-        printMoves(moves);
-        System.out.println("Attendu : Bloquée par le cavalier allié ; peut capturer le pion adverse.\n");
-    }
 
-    /**
-     * Imprime les mouvements possibles d'une pièce dans un format lisible.
-     *
-     * @param moves Liste des positions possibles.
-     */
-    private static void printMoves(List<Point> moves) {
-        for (Point move : moves) {
-            System.out.print("(" + move.x + "," + move.y + ") ");
-        }
-        System.out.println();
+        assertTrue(moves.contains(new Point(3, 1)), "La tour doit pouvoir capturer la pièce adverse en (3, 1).");
+        assertFalse(moves.contains(new Point(3, 6)), "La tour ne doit pas pouvoir se déplacer au-delà du bloqueur allié.");
     }
 }

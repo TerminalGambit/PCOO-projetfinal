@@ -1,15 +1,24 @@
 package savetheking.game;
 
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.List;
 
+/**
+ * Classe de test pour vérifier les règles spécifiques du jeu d'échecs.
+ * Elle inclut des tests pour les situations suivantes :
+ * - Roi en échec
+ * - Échec et mat
+ * - Roque (petit et grand)
+ */
 public class GameRulesTest {
-    public static void main(String[] args) {
-        testKingInCheck();
-        testCheckmate();
-        testCastling();
-    }
 
-    public static void testKingInCheck() {
+    /**
+     * Teste si le roi est correctement détecté en position d'échec.
+     */
+    @Test
+    public void testKingInCheck() {
         Board board = new Board(8);
         King king = new King("white", new Point(0, 4));
         board.placePiece(king, new Point(0, 4));
@@ -20,10 +29,14 @@ public class GameRulesTest {
         GameState gameState = GameState.getInstance();
         boolean isInCheck = gameState.isInCheck(king, board);
 
-        System.out.println("King in check test: " + (isInCheck ? "Passed" : "Failed"));
+        assertTrue(isInCheck, "Le roi devrait être en échec.");
     }
 
-    public static void testCheckmate() {
+    /**
+     * Teste si l'échec et mat est correctement détecté.
+     */
+    @Test
+    public void testCheckmate() {
         Board board = new Board(8);
         King king = new King("white", new Point(0, 4)); // e1
         board.placePiece(king, new Point(0, 4));
@@ -34,16 +47,16 @@ public class GameRulesTest {
         board.placePiece(rook2, new Point(1, 1));
 
         GameState gameState = GameState.getInstance();
-
-        // Add diagnostic print to check if king is initialized
-        System.out.println("King object before isCheckmate: " + king);
-
         boolean isCheckmate = gameState.isCheckmate(king, board);
 
-        System.out.println("Ladder mate test (Rooks on a1 and b2, King on e1): " + (isCheckmate ? "Passed" : "Failed"));
+        assertTrue(isCheckmate, "Le roi devrait être en échec et mat (mate en échelle).");
     }
 
-    public static void testCastling() {
+    /**
+     * Teste si le roque (petit et grand) est correctement détecté.
+     */
+    @Test
+    public void testCastling() {
         Board board = new Board(8);
         King king = new King("white", new Point(0, 4));
         Rook kingsideRook = new Rook("white", new Point(0, 7));
@@ -54,10 +67,8 @@ public class GameRulesTest {
         board.placePiece(queensideRook, new Point(0, 0));
 
         List<Point> kingMoves = king.getPossibleMoves(board);
-        boolean kingsideCastling = kingMoves.contains(new Point(0, 6));
-        boolean queensideCastling = kingMoves.contains(new Point(0, 2));
 
-        System.out.println("Kingside castling test: " + (kingsideCastling ? "Passed" : "Failed"));
-        System.out.println("Queenside castling test: " + (queensideCastling ? "Passed" : "Failed"));
+        assertTrue(kingMoves.contains(new Point(0, 6)), "Le roi devrait pouvoir faire un petit roque.");
+        assertTrue(kingMoves.contains(new Point(0, 2)), "Le roi devrait pouvoir faire un grand roque.");
     }
 }

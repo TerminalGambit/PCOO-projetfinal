@@ -3,20 +3,18 @@ package savetheking.game;
 import java.util.List;
 
 /**
- * Classe abstraite représentant une pièce d’échecs.
+ * Classe abstraite représentant une pièce d’échecs pour le mode Solo Chess.
  * Chaque pièce a une couleur, une position et des comportements spécifiques définis par ses sous-classes.
- * Cette classe fournit des méthodes générales pour gérer les mouvements, vérifier les limites du plateau
- * et les relations avec les autres pièces.
  */
 public abstract class Piece {
-    protected String color; // La couleur de la pièce (Blanc ou Noir)
+    protected String color; // La couleur de la pièce ("Blanc" ou "Noir")
     protected Point position; // La position actuelle de la pièce sur le plateau
-    protected boolean hasMoved = false; // Indique si la pièce a été déplacée au moins une fois
+    protected int moveCount = 0; // Nombre de déplacements effectués par la pièce
 
     /**
      * Constructeur de base pour initialiser une pièce avec une couleur et une position.
      *
-     * @param color La couleur de la pièce (ex. "Blanc" ou "Noir").
+     * @param color    La couleur de la pièce (ex. "Blanc").
      * @param position La position initiale de la pièce sur le plateau.
      */
     public Piece(String color, Point position) {
@@ -25,9 +23,9 @@ public abstract class Piece {
     }
 
     /**
-     * Retourne la couleur de la pièce.
+     * Retourne la couleur actuelle de la pièce.
      *
-     * @return La couleur de la pièce (ex. "Blanc" ou "Noir").
+     * @return La couleur de la pièce ("Blanc" ou "Noir").
      */
     public String getColor() {
         return color;
@@ -43,38 +41,33 @@ public abstract class Piece {
     }
 
     /**
-     * Déplace la pièce vers une nouvelle position si elle est dans les limites du plateau.
-     * Met également à jour l'état indiquant que la pièce a été déplacée.
+     * Déplace la pièce vers une nouvelle position et met à jour la couleur après deux mouvements.
      *
      * @param newPosition La nouvelle position cible.
-     * @param boardSize La taille du plateau (un plateau carré est supposé ici).
+     * @param boardSize   La taille du plateau.
      * @throws IllegalArgumentException Si la nouvelle position est hors des limites du plateau.
      */
     public void move(Point newPosition, int boardSize) {
         if (isWithinBounds(newPosition, boardSize)) {
             this.position = newPosition;
-            this.hasMoved = true;
+            this.moveCount++;
+
+            // Change color to "Noir" after the second move
+            if (this.moveCount >= 2 && "Blanc".equals(this.color)) {
+                this.color = "Noir";
+            }
         } else {
             throw new IllegalArgumentException("Position hors limites : " + newPosition);
         }
     }
 
     /**
-     * Vérifie si la pièce a été déplacée au moins une fois.
+     * Retourne le nombre de déplacements effectués par la pièce.
      *
-     * @return `true` si la pièce a été déplacée, sinon `false`.
+     * @return Le nombre de déplacements.
      */
-    public boolean hasMoved() {
-        return hasMoved;
-    }
-
-    /**
-     * Vérifie si la pièce n'a jamais été déplacée.
-     *
-     * @return `true` si la pièce n'a pas encore été déplacée, sinon `false`.
-     */
-    public boolean hasNotMoved() {
-        return !hasMoved;
+    public int getMoveCount() {
+        return moveCount;
     }
 
     /**
@@ -86,18 +79,9 @@ public abstract class Piece {
     public abstract List<Point> getPossibleMoves(Board board);
 
     /**
-     * Méthode abstraite à implémenter par chaque sous-classe pour déterminer les cases défendues.
-     * Les cases défendues sont celles où la pièce peut se déplacer ou attaquer.
-     *
-     * @param board L'état actuel du plateau.
-     * @return Une liste des positions défendues par la pièce.
-     */
-    public abstract List<Point> getDefendedTiles(Board board);
-
-    /**
      * Vérifie si une position est dans les limites du plateau.
      *
-     * @param point La position à vérifier.
+     * @param point     La position à vérifier.
      * @param boardSize La taille du plateau (supposée carrée).
      * @return `true` si la position est dans les limites du plateau, sinon `false`.
      */
@@ -106,24 +90,12 @@ public abstract class Piece {
     }
 
     /**
-     * Retourne une représentation textuelle de la pièce, incluant son type et sa couleur.
+     * Retourne une représentation textuelle de la pièce.
      *
      * @return Une chaîne décrivant la pièce.
      */
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + " (" + color + ")";
-    }
-
-    /**
-     * Vérifie si une pièce alliée occupe une position donnée sur le plateau.
-     *
-     * @param point La position à vérifier.
-     * @param board L'état actuel du plateau.
-     * @return `true` si une pièce alliée est présente à la position donnée, sinon `false`.
-     */
-    protected boolean isAlly(Point point, Board board) {
-        Piece piece = board.getPieceAt(point);
-        return piece != null && piece.getColor().equals(this.color);
     }
 }

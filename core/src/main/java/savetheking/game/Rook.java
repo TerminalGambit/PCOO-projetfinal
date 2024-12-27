@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Classe représentant une tour dans le jeu d'échecs.
+ * Classe représentant une tour dans Solo Chess.
  * La tour peut se déplacer horizontalement ou verticalement sur n'importe quel nombre de cases,
  * tant qu'il n'y a pas d'obstacles.
  */
 public class Rook extends Piece {
-    private boolean hasMoved = false; // Indique si la tour a été déplacée
+    private int moveCount = 0; // Nombre de mouvements effectués par la tour
 
     /**
      * Constructeur pour initialiser une tour avec une couleur et une position.
@@ -58,12 +58,7 @@ public class Rook extends Piece {
                 if (tile instanceof EmptyTile) {
                     possibleMoves.add(newPoint);
                 } else if (tile instanceof OccupiedTile) {
-                    Piece pieceOnTile = ((OccupiedTile) tile).getPiece();
-                    if (pieceOnTile.getColor().equals(this.color)) {
-                        // Bloqué par une pièce alliée
-                        break;
-                    }
-                    // Peut capturer une pièce ennemie
+                    // Peut capturer une pièce à la position
                     possibleMoves.add(newPoint);
                     break;
                 }
@@ -73,48 +68,40 @@ public class Rook extends Piece {
     }
 
     /**
-     * Retourne une liste des cases défendues par la tour.
-     * Les cases défendues sont les mêmes que les mouvements possibles.
-     *
-     * @param board L'état actuel du plateau.
-     * @return Une liste des positions défendues par la tour.
-     */
-    @Override
-    public List<Point> getDefendedTiles(Board board) {
-        return getPossibleMoves(board);
-    }
-
-    /**
-     * Déplace la tour vers une nouvelle position et marque qu'elle a été déplacée.
+     * Déplace la tour vers une nouvelle position et augmente son compteur de mouvements.
      *
      * @param newPosition La nouvelle position cible.
+     * @param boardSize   La taille du plateau.
      */
     @Override
     public void move(Point newPosition, int boardSize) {
         if (isWithinBounds(newPosition, boardSize)) {
             this.position = newPosition;
-            this.hasMoved = true; // Marque que la pièce a été déplacée
+            moveCount++; // Incrémente le compteur de mouvements
+            if (moveCount >= 2) {
+                this.color = "Noir"; // Change la couleur après deux mouvements
+            }
         } else {
             throw new IllegalArgumentException("Position hors limites : " + newPosition);
         }
     }
 
     /**
-     * Vérifie si la tour a été déplacée au moins une fois.
+     * Retourne le nombre de mouvements effectués par la tour.
      *
-     * @return `true` si la tour a été déplacée, sinon `false`.
+     * @return Le nombre de mouvements.
      */
-    public boolean hasMoved() {
-        return hasMoved;
+    public int getMoveCount() {
+        return moveCount;
     }
 
     /**
-     * Retourne une représentation textuelle de la tour, incluant sa position.
+     * Retourne une représentation textuelle de la tour, incluant sa position et son statut.
      *
      * @return Une chaîne de caractères décrivant la tour.
      */
     @Override
     public String toString() {
-        return "Tour à " + position;
+        return "Tour (" + color + ") à " + position + ", mouvements : " + moveCount;
     }
 }

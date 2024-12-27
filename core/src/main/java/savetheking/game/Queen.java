@@ -10,6 +10,8 @@ import java.util.List;
  */
 public class Queen extends Piece {
 
+    private int moveCount = 0; // Compteur de mouvements pour gérer les règles de Solo Chess
+
     /**
      * Constructeur pour initialiser une reine avec une couleur et une position.
      *
@@ -52,7 +54,7 @@ public class Queen extends Piece {
                 Point newPoint = new Point(newX, newY);
 
                 // Vérifie si la nouvelle position est dans les limites du plateau
-                if (!newPoint.isWithinBounds(board.getRowCount())) {
+                if (newPoint.isWithinBounds(board.getRowCount())) {
                     break;
                 }
 
@@ -74,19 +76,8 @@ public class Queen extends Piece {
     }
 
     /**
-     * Retourne les cases défendues par la reine.
-     * Par défaut, les cases défendues sont identiques aux mouvements possibles.
-     *
-     * @param board L'état actuel du plateau.
-     * @return Une liste des positions défendues par la reine.
-     */
-    @Override
-    public List<Point> getDefendedTiles(Board board) {
-        return getPossibleMoves(board);
-    }
-
-    /**
-     * Déplace la reine vers une nouvelle position et marque qu'elle a été déplacée.
+     * Déplace la reine vers une nouvelle position et gère les règles de Solo Chess.
+     * Change la couleur en noir si elle a effectué deux mouvements.
      *
      * @param newPosition La nouvelle position cible.
      * @param boardSize La taille du plateau.
@@ -95,7 +86,12 @@ public class Queen extends Piece {
     public void move(Point newPosition, int boardSize) {
         if (isWithinBounds(newPosition, boardSize)) {
             this.position = newPosition;
-            this.hasMoved = true; // Marque que la pièce a été déplacée
+            moveCount++; // Incrémente le compteur de mouvements
+
+            // Si elle a bougé deux fois, change la couleur en "Noir"
+            if (moveCount >= 2) {
+                this.color = "Noir";
+            }
         } else {
             throw new IllegalArgumentException("Position hors limites : " + newPosition);
         }
@@ -104,10 +100,10 @@ public class Queen extends Piece {
     /**
      * Retourne une description textuelle de la reine, incluant sa position.
      *
-     * @return Une chaîne décrivant la reine.
+     * @return Une chaîne de caractères décrivant la reine.
      */
     @Override
     public String toString() {
-        return "Reine à " + position;
+        return "Reine à " + position + " (Couleur: " + color + ")";
     }
 }

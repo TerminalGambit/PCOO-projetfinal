@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The GameState class manages the main state of the game, including the score, timer, round progression,
- * difficulty level, and move recording via PGN format.
+ * The GameState class manages the main state of the game, including the score, timer, and round progression.
+ * It is simplified for Solo Chess mode.
  */
 public class GameState {
     private static GameState instance; // Singleton instance
@@ -14,7 +14,6 @@ public class GameState {
     private int score;                 // Current score
     private String difficulty;         // Difficulty level of the game
     private int round;                 // Current game round
-    private PGN pgn;                   // PGN instance to manage move recording and history
     private List<Move> moves;          // Stores move history for the game
 
     /**
@@ -25,7 +24,6 @@ public class GameState {
         this.score = 0;
         this.difficulty = "Normal";
         this.round = 1;
-        this.pgn = new PGN();
         this.moves = new ArrayList<Move>();
     }
 
@@ -50,7 +48,7 @@ public class GameState {
     }
 
     /**
-     * Checks if the game is over, which can occur if the timer reaches zero or other end conditions.
+     * Checks if the game is over, which can occur if the timer reaches zero.
      * @return true if the game is over, false otherwise.
      */
     public boolean checkGameOver() {
@@ -62,14 +60,6 @@ public class GameState {
      */
     public void incrementScore() {
         this.score += 10; // Arbitrary increment for each correct action or move
-    }
-
-    /**
-     * Renders the game state visually, such as drawing elements on the screen.
-     * @param batch A SpriteBatch instance to handle rendering.
-     */
-    public void render(SpriteBatch batch) {
-        // Placeholder: Use batch to render any game-related visuals, such as score, timer, etc.
     }
 
     /**
@@ -89,17 +79,15 @@ public class GameState {
     }
 
     /**
-     * Records a move in PGN format and adds it to the move history.
+     * Records a move in the move history.
      * @param piece The piece being moved.
      * @param start The starting position of the piece.
      * @param end The ending position of the piece.
      * @param capture Whether this move involved capturing an opponent's piece.
-     * @param enPassant Whether this move is an en passant capture (specific to pawns).
      */
-    public void recordMove(Piece piece, Point start, Point end, boolean capture, boolean enPassant) {
-        Move move = new Move(piece, start, end, capture, enPassant);
+    public void recordMove(Piece piece, Point start, Point end, boolean capture) {
+        Move move = new Move(piece, start, end, capture, false); // En passant is irrelevant in Solo Chess
         moves.add(move); // Add move to history
-        pgn.addMove(piece, start, end, capture, enPassant);
     }
 
     /**
@@ -111,27 +99,19 @@ public class GameState {
     }
 
     /**
-     * Saves the game’s current PGN move history to a file.
-     * @param filePath The path to the file where the PGN will be saved.
+     * Retrieves the move history.
+     * @return A list of Move objects representing the move history.
      */
-    public void saveGame(String filePath) {
-        pgn.saveToFile(filePath);
+    public List<Move> getMoveHistory() {
+        return new ArrayList<Move>(moves); // Return a copy of the move history
     }
 
     /**
-     * Loads a saved PGN move history from a file and restores it to the game’s move history.
-     * @param filePath The path to the file from which the PGN will be loaded.
+     * Renders the game state visually, such as drawing elements on the screen.
+     * @param batch A SpriteBatch instance to handle rendering.
      */
-    public void loadGame(String filePath) {
-        pgn.loadFromFile(filePath);
-    }
-
-    /**
-     * Retrieves the move history recorded in PGN format.
-     * @return A list of moves in PGN notation.
-     */
-    public List<String> getMoveHistory() {
-        return pgn.getMoveHistory();
+    public void render(SpriteBatch batch) {
+        // Placeholder: Render game state visuals, such as score and timer
     }
 
     // Getters and Setters for the GameState attributes
@@ -157,92 +137,5 @@ public class GameState {
 
     public int getRound() {
         return round;
-    }
-
-    /**
-     * Checks if a given king is in check by any opposing piece.
-     * @param king The king piece to check.
-     * @param board The current game board.
-     * @return True if the king is in check, otherwise false.
-     */
-    public boolean isInCheck(King king, Board board) {
-        if (king == null || board == null) {
-            throw new NullPointerException("King or board cannot be null");
-        }
-
-        System.out.println("Checking if king is in check...");
-        System.out.println("King position: " + king.getPosition());
-        System.out.println("King color: " + king.getColor());
-
-        List<Piece> opponentPieces = board.getOpponentPieces(king.getColor());
-
-        System.out.println("Opponent pieces: " + opponentPieces.size());
-        for (Piece piece : opponentPieces) {
-            System.out.println("Checking opponent piece: " + piece);
-            List<Point> possibleMoves = piece.getPossibleMoves(board);
-            System.out.println("Possible moves for " + piece + ": " + possibleMoves);
-
-            for (Point move : possibleMoves) {
-                if (move.equals(king.getPosition())) {
-                    System.out.println("King is in check from: " + piece);
-                    return true;
-                }
-            }
-        }
-        System.out.println("King is not in check.");
-        return false;
-    }
-
-    /**
-     * Determines if the specified king is in checkmate.
-     * @param king The king to check.
-     * @param board The current game board.
-     * @return True if the king is in checkmate, otherwise false.
-     */
-    public boolean isCheckmate(King king, Board board) {
-        if (king == null || board == null) {
-            throw new NullPointerException("King or board cannot be null");
-        }
-
-        System.out.println("Checking if king is in checkmate...");
-        System.out.println("King object: " + king);
-        System.out.println("King position: " + king.getPosition());
-
-        // Check if the king is in check first
-        if (!isInCheck(king, board)) {
-            System.out.println("King is not in check, so not in checkmate.");
-            return false;
-        }
-
-        List<Piece> playerPieces = board.getPlayerPieces(king.getColor());
-        System.out.println("Player pieces: " + playerPieces.size());
-
-        for (Piece piece : playerPieces) {
-            System.out.println("Testing moves for piece: " + piece);
-            List<Point> possibleMoves = piece.getPossibleMoves(board);
-            System.out.println("Possible moves for " + piece + ": " + possibleMoves);
-
-            for (Point move : possibleMoves) {
-                System.out.println("Testing move: " + move);
-
-                // Copy the board and simulate the move
-                Board testBoard = board.copy();
-                testBoard.movePiece(piece.getPosition(), move);
-
-                // Debug the state of the test board
-                System.out.println("After move, testBoard:");
-                testBoard.printBoard(); // Assuming a `printBoard` method for debugging
-                King testKing = (King) testBoard.getPieceAt(king.getPosition());
-                System.out.println("King object on testBoard: " + testKing);
-
-                // Check if the King is still in check
-                if (testKing != null && !isInCheck(testKing, testBoard)) {
-                    System.out.println("Found a move that prevents checkmate: " + move);
-                    return false;
-                }
-            }
-        }
-        System.out.println("King is in checkmate.");
-        return true;
     }
 }

@@ -3,100 +3,106 @@ package savetheking.game;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Représente un pion (Pawn) dans le mode Solo Chess.
+ * Le pion peut avancer et capturer en diagonale selon les règles de Solo Chess.
+ */
 public class Pawn extends Piece {
 
-    private boolean firstMove;
-    private int direction; // +1 for moving up the board, -1 for moving down
+    private final int direction; // +1 pour avancer vers le haut du plateau, -1 pour avancer vers le bas
 
+    /**
+     * Constructeur pour initialiser un pion avec une couleur et une position.
+     *
+     * @param color     La couleur du pion ("Blanc").
+     * @param position  La position initiale du pion sur le plateau.
+     * @param direction La direction du pion (+1 ou -1).
+     */
     public Pawn(String color, Point position, int direction) {
         super(color, position);
-        this.firstMove = true;
         this.direction = direction;
     }
 
+    /**
+     * Retourne une liste des mouvements possibles pour le pion.
+     *
+     * @param board L'état actuel du plateau.
+     * @return Une liste des positions où le pion peut se déplacer.
+     */
     @Override
     public List<Point> getPossibleMoves(Board board) {
         List<Point> possibleMoves = new ArrayList<Point>();
 
-        // Standard forward move
+        // Déplacement standard vers l'avant
         Point forwardMove = new Point(position.x + direction, position.y);
         if (board.isWithinBounds(forwardMove) && board.getTileAt(forwardMove) instanceof EmptyTile) {
             possibleMoves.add(forwardMove);
         }
 
-        // Double forward move if it's the pawn's first move
-        if (firstMove) {
-            Point doubleForwardMove = new Point(position.x + 2 * direction, position.y);
-            if (board.isWithinBounds(doubleForwardMove) && board.getTileAt(forwardMove) instanceof EmptyTile
-                && board.getTileAt(doubleForwardMove) instanceof EmptyTile) {
-                possibleMoves.add(doubleForwardMove);
-            }
-        }
-
-        // Diagonal capture moves
+        // Déplacements de capture en diagonale
         addCaptureMoves(board, possibleMoves);
 
-        // Check for en passant move
-        addEnPassantMove(board, possibleMoves);
+        // Si le pion est noir (après 2 mouvements), il ne peut plus se déplacer
+        if ("Noir".equals(this.color)) {
+            possibleMoves.clear();
+        }
 
         return possibleMoves;
     }
 
+    /**
+     * Ajoute les mouvements de capture possibles à la liste des mouvements.
+     *
+     * @param board          L'état actuel du plateau.
+     * @param possibleMoves  La liste des mouvements possibles.
+     */
     private void addCaptureMoves(Board board, List<Point> possibleMoves) {
         Point captureLeft = new Point(position.x + direction, position.y - 1);
         Point captureRight = new Point(position.x + direction, position.y + 1);
 
         if (board.isWithinBounds(captureLeft) && board.getTileAt(captureLeft) instanceof OccupiedTile) {
-            Piece leftPiece = board.getTileAt(captureLeft).getPiece();
+            Piece leftPiece = ((OccupiedTile) board.getTileAt(captureLeft)).getPiece();
             if (!leftPiece.getColor().equals(this.color)) {
                 possibleMoves.add(captureLeft);
             }
         }
         if (board.isWithinBounds(captureRight) && board.getTileAt(captureRight) instanceof OccupiedTile) {
-            Piece rightPiece = board.getTileAt(captureRight).getPiece();
+            Piece rightPiece = ((OccupiedTile) board.getTileAt(captureRight)).getPiece();
             if (!rightPiece.getColor().equals(this.color)) {
                 possibleMoves.add(captureRight);
             }
         }
     }
 
-    private void addEnPassantMove(Board board, List<Point> possibleMoves) {
-        // Retrieve the last move from the game state or PGN
-        GameState gameState = GameState.getInstance(); // assuming singleton pattern
-        Move lastMove = gameState.getLastMove(); // hypothetical method to get last move
-
-        if (lastMove != null && lastMove.getPiece() instanceof Pawn && Math.abs(lastMove.getStart().x - lastMove.getEnd().x) == 2) {
-            // Check if last move was a two-square advance by a pawn, and if it's adjacent
-            Point lastMoveEnd = lastMove.getEnd();
-            if (Math.abs(lastMoveEnd.y - position.y) == 1 && lastMoveEnd.x == position.x) {
-                // Eligible for en passant
-                Point enPassantSquare = new Point(lastMoveEnd.x + direction, lastMoveEnd.y);
-                possibleMoves.add(enPassantSquare);
-            }
-        }
-    }
-
+    /**
+     * Déplace le pion vers une nouvelle position et gère les règles de Solo Chess.
+     *
+     * @param newPosition La nouvelle position cible.
+     * @param boardSize   La taille du plateau.
+     */
     @Override
-    public List<Point> getDefendedTiles(Board board) {
-        List<Point> defendedTiles = new ArrayList<Point>();
-        defendedTiles.add(new Point(position.x + direction, position.y - 1));
-        defendedTiles.add(new Point(position.x + direction, position.y + 1));
-        return defendedTiles;
+    public void move(Point newPosition, int boardSize) {
+        super.move(newPosition, boardSize); // Utilise la logique définie dans la classe parente
     }
 
-    // @Override
-    public void move(Point newPosition) {
-        this.position = newPosition;
-        this.firstMove = false;
+    /**
+     * Vérifie si le pion peut être promu.
+     *
+     * @param board L'état actuel du plateau.
+     * @return `true` si le pion peut être promu, sinon `false`.
+     */
+    public boolean canPromote(Board board) {
+        int promotionRow = "Blanc".equals(this.color) ? board.getRowCount() - 1 : 0;
+        return this.position.x == promotionRow;
     }
 
+    /**
+     * Retourne une description textuelle du pion.
+     *
+     * @return Une chaîne décrivant le pion.
+     */
     @Override
     public String toString() {
-        return "Pawn at " + position;
-    }
-
-    public boolean canPromote(Board board) {
-        int promotionRow = this.getColor().equals("White") ? board.getRowCount() - 1 : 0;
-        return this.position.x == promotionRow;
+        return "Pion (" + color + ") à " + position;
     }
 }

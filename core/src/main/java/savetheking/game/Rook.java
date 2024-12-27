@@ -4,17 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Classe représentant une tour dans Solo Chess.
- * La tour peut se déplacer horizontalement ou verticalement sur n'importe quel nombre de cases,
- * tant qu'il n'y a pas d'obstacles.
+ * Classe représentant une tour (Rook) dans le mode Solo Chess.
+ * La tour peut se déplacer horizontalement ou verticalement jusqu'à rencontrer un obstacle.
  */
 public class Rook extends Piece {
-    private int moveCount = 0; // Nombre de mouvements effectués par la tour
 
     /**
      * Constructeur pour initialiser une tour avec une couleur et une position.
      *
-     * @param color    La couleur de la tour ("Blanc" ou "Noir").
+     * @param color    La couleur de la tour ("Blanc").
      * @param position La position initiale de la tour sur le plateau.
      */
     public Rook(String color, Point position) {
@@ -24,7 +22,7 @@ public class Rook extends Piece {
     /**
      * Retourne une liste des mouvements possibles pour la tour.
      * La tour peut se déplacer horizontalement et verticalement, dans toutes les directions,
-     * jusqu'à ce qu'elle rencontre un obstacle ou la limite du plateau.
+     * jusqu'à ce qu'elle rencontre un obstacle ou les limites du plateau.
      *
      * @param board L'état actuel du plateau.
      * @return Une liste des positions où la tour peut se déplacer.
@@ -49,7 +47,7 @@ public class Rook extends Piece {
                 Point newPoint = new Point(newX, newY);
 
                 // Vérifie si la position est dans les limites du plateau
-                if (!board.isWithinBounds(newPoint)) {
+                if (!isWithinBounds(newPoint, board.getRowCount())) {
                     break;
                 }
 
@@ -58,50 +56,42 @@ public class Rook extends Piece {
                 if (tile instanceof EmptyTile) {
                     possibleMoves.add(newPoint);
                 } else if (tile instanceof OccupiedTile) {
-                    // Peut capturer une pièce à la position
-                    possibleMoves.add(newPoint);
+                    Piece pieceOnTile = ((OccupiedTile) tile).getPiece();
+                    if (pieceOnTile.getColor().equals(this.color)) {
+                        break; // Arrête si la case est occupée par une pièce alliée
+                    }
+                    possibleMoves.add(newPoint); // Peut capturer une pièce ennemie
                     break;
                 }
             }
         }
+
+        // Si la pièce est noire (après 2 déplacements), elle ne peut plus se déplacer
+        if ("Noir".equals(this.color)) {
+            possibleMoves.clear();
+        }
+
         return possibleMoves;
     }
 
     /**
-     * Déplace la tour vers une nouvelle position et augmente son compteur de mouvements.
+     * Déplace la tour vers une nouvelle position et gère les règles de Solo Chess.
      *
      * @param newPosition La nouvelle position cible.
      * @param boardSize   La taille du plateau.
      */
     @Override
     public void move(Point newPosition, int boardSize) {
-        if (isWithinBounds(newPosition, boardSize)) {
-            this.position = newPosition;
-            moveCount++; // Incrémente le compteur de mouvements
-            if (moveCount >= 2) {
-                this.color = "Noir"; // Change la couleur après deux mouvements
-            }
-        } else {
-            throw new IllegalArgumentException("Position hors limites : " + newPosition);
-        }
+        super.move(newPosition, boardSize); // Utilise la logique définie dans la classe parente
     }
 
     /**
-     * Retourne le nombre de mouvements effectués par la tour.
-     *
-     * @return Le nombre de mouvements.
-     */
-    public int getMoveCount() {
-        return moveCount;
-    }
-
-    /**
-     * Retourne une représentation textuelle de la tour, incluant sa position et son statut.
+     * Retourne une représentation textuelle de la tour, incluant sa position.
      *
      * @return Une chaîne de caractères décrivant la tour.
      */
     @Override
     public String toString() {
-        return "Tour (" + color + ") à " + position + ", mouvements : " + moveCount;
+        return "Tour (" + color + ") à " + position;
     }
 }

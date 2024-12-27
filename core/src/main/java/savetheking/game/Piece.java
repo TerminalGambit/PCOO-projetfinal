@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * Classe abstraite représentant une pièce d’échecs pour le mode Solo Chess.
- * Chaque pièce a une couleur, une position et des comportements spécifiques définis par ses sous-classes.
+ * Chaque pièce a une couleur, une position et un compteur de déplacements.
  */
 public abstract class Piece {
     protected String color; // La couleur de la pièce ("Blanc" ou "Noir")
@@ -12,9 +12,9 @@ public abstract class Piece {
     protected int moveCount = 0; // Nombre de déplacements effectués par la pièce
 
     /**
-     * Constructeur de base pour initialiser une pièce avec une couleur et une position.
+     * Constructeur pour initialiser une pièce avec une couleur et une position.
      *
-     * @param color    La couleur de la pièce (ex. "Blanc").
+     * @param color    La couleur de la pièce ("Blanc").
      * @param position La position initiale de la pièce sur le plateau.
      */
     public Piece(String color, Point position) {
@@ -45,14 +45,13 @@ public abstract class Piece {
      *
      * @param newPosition La nouvelle position cible.
      * @param boardSize   La taille du plateau.
-     * @throws IllegalArgumentException Si la nouvelle position est hors des limites du plateau.
      */
     public void move(Point newPosition, int boardSize) {
         if (isWithinBounds(newPosition, boardSize)) {
             this.position = newPosition;
             this.moveCount++;
 
-            // Change color to "Noir" after the second move
+            // Change la couleur en "Noir" après deux mouvements.
             if (this.moveCount >= 2 && "Blanc".equals(this.color)) {
                 this.color = "Noir";
             }
@@ -64,30 +63,30 @@ public abstract class Piece {
     /**
      * Retourne le nombre de déplacements effectués par la pièce.
      *
-     * @return Le nombre de déplacements.
+     * @return Le nombre de déplacements effectués.
      */
     public int getMoveCount() {
         return moveCount;
     }
 
     /**
-     * Méthode abstraite à implémenter par chaque sous-classe pour déterminer les mouvements possibles.
-     *
-     * @param board L'état actuel du plateau.
-     * @return Une liste des positions possibles où la pièce peut se déplacer.
-     */
-    public abstract List<Point> getPossibleMoves(Board board);
-
-    /**
      * Vérifie si une position est dans les limites du plateau.
      *
      * @param point     La position à vérifier.
-     * @param boardSize La taille du plateau (supposée carrée).
+     * @param boardSize La taille du plateau.
      * @return `true` si la position est dans les limites du plateau, sinon `false`.
      */
     protected boolean isWithinBounds(Point point, int boardSize) {
         return point.x >= 0 && point.x < boardSize && point.y >= 0 && point.y < boardSize;
     }
+
+    /**
+     * Méthode abstraite pour déterminer les mouvements possibles pour une pièce.
+     *
+     * @param board L'état actuel du plateau.
+     * @return Une liste des positions possibles où la pièce peut se déplacer.
+     */
+    public abstract List<Point> getPossibleMoves(Board board);
 
     /**
      * Retourne une représentation textuelle de la pièce.

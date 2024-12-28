@@ -4,50 +4,44 @@ plugins {
 }
 
 ext {
-  gdxVersion = '1.12.1' // Define your gdx version here for consistency
-  junitVersion = '5.10.0' // JUnit version for testing
-}
-
-tasks.withType(JavaCompile) {
-  options.encoding = 'UTF-8'
+  gdxVersion = '1.12.1' // Define your LibGDX version
+  appName = 'SaveTheKing'
+  projectVersion = '1.0.0'
 }
 
 dependencies {
-  api "com.badlogicgames.gdx:gdx:$gdxVersion"
-  testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
-  testImplementation "org.mockito:mockito-core:4.11.0" // Optional: Add mocking library
+  implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+}
+
+tasks.withType(JavaCompile) {
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+  options.encoding = 'UTF-8'
 }
 
 application {
-  mainClass = 'savetheking.game.Main' // Replace 'Main' with your actual main class
+  // This doesn't need to be set here; it's handled by `lwjgl3`.
+  mainClass = 'savetheking.game.Main'
 }
 
-tasks.withType(Test) {
-  useJUnitPlatform()
-  testLogging {
-    events "PASSED", "FAILED", "SKIPPED"
-    exceptionFormat "full"
+jar {
+  archiveFileName.set("${appName}-${projectVersion}.jar")
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  dependsOn configurations.runtimeClasspath
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+  manifest {
+    attributes 'Main-Class': application.mainClass
+  }
+  doLast {
+    file(archiveFile).setExecutable(true, false)
   }
 }
 
+// Optional Task to simplify cleaning and rebuilding
 tasks.register('cleanBuild') {
   group = 'Build'
   description = 'Cleans and builds the project'
   dependsOn 'clean', 'build'
-}
-
-tasks.register('fatJar', Jar) {
-  group = 'Build'
-  description = 'Creates a standalone JAR with all dependencies included'
-  archiveBaseName.set('savetheking')
-  archiveVersion.set('1.0')
-  from {
-    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-  }
-  with jar
-}
-
-java {
-  sourceCompatibility = JavaVersion.VERSION_17
-  targetCompatibility = JavaVersion.VERSION_17
 }

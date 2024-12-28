@@ -1,5 +1,14 @@
 @startuml
 
+interface Observable {
+    +addObserver(observer: Observer): void
+    +notifyObservers(): void
+}
+
+interface Observer {
+    +update(): void
+}
+
 class Point {
     +x: int
     +y: int
@@ -14,7 +23,6 @@ abstract class Tile {
     #position: Point
     #isDefended: boolean
     +Tile(position: Point)
-    +Tile()
     +isOccupied(): boolean
     +getPosition(): Point
     +isDefended(): boolean
@@ -44,190 +52,91 @@ class OccupiedTile extends Tile {
 abstract class Piece {
     #color: String
     #position: Point
-    #hasMoved: boolean
     +Piece(color: String, position: Point)
     +getPossibleMoves(board: Board): List<Point>
-    +getDefendedTiles(board: Board): List<Point>
     +getColor(): String
     +getPosition(): Point
     +move(newPosition: Point, boardSize: int): void
-    +hasMoved(): boolean
-    +hasNotMoved(): boolean
     +toString(): String
-    -isWithinBounds(point: Point, boardSize: int): boolean
-    -isAlly(point: Point, board: Board): boolean
 }
 
 class King extends Piece {
     +getPossibleMoves(board: Board): List<Point>
-    +getDefendedTiles(board: Board): List<Point>
-    +addCastlingMoves(board: Board, possibleMoves: List<Point>): void
-    +move(newPosition: Point, boardSize: int): void
-    +hasMoved(): boolean
-    +toString(): String
-}
-
-class Knight extends Piece {
-    +getPossibleMoves(board: Board): List<Point>
-    +getDefendedTiles(board: Board): List<Point>
-}
-
-class Bishop extends Piece {
-    +Bishop(color: String, position: Point)
-    +getPossibleMoves(board: Board): List<Point>
-    +getDefendedTiles(board: Board): List<Point>
-    +move(newPosition: Point, boardSize: int): void
-    +toString(): String
-}
-
-class Rook extends Piece {
-    +Rook(color: String, position: Point)
-    +getPossibleMoves(board: Board): List<Point>
-    +getDefendedTiles(board: Board): List<Point>
-    +move(newPosition: Point, boardSize: int): void
-    +hasMoved(): boolean
 }
 
 class Queen extends Piece {
     +getPossibleMoves(board: Board): List<Point>
-    +getDefendedTiles(board: Board): List<Point>
 }
 
-class Pawn extends Piece {
+class Bishop extends Piece {
     +getPossibleMoves(board: Board): List<Point>
-    +getDefendedTiles(board: Board): List<Point>
-    +canPromote(): boolean
-    +addEnPassantMove(board: Board): void
 }
 
-class Board {
+class Rook extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+}
+
+class Board implements Observable {
     -tiles: Tile[][]
     -rows: int
     -columns: int
     +initializeBoard(): void
-    +getDefendedTiles(): List<Point>
-    +updateBoard(): void
-    +resizeBoard(rows: int, columns: int): void
-    +getTileAt(position: Point): Tile
-    +isWithinBounds(position: Point): boolean
-    +getRowCount(): int
-    +getColumnCount(): int
     +placePiece(piece: Piece, position: Point): void
     +removePiece(position: Point): void
-    +isPathClear(start: Point, end: Point): boolean
-    +getOpponentPieces(color: String): List<Piece>
-    +getPlayerPieces(color: String): List<Piece>
-    +copy(): Board
-    +movePiece(start: Point, end: Point): void
-    +getPieceAt(position: Point): Piece
-    +isPositionUnderAttack(position: Point, color: String): boolean
-    +getEmptyTiles(): List<Point>
-    +resetBoard(): void
-    +isOccupiedByColor(position: Point, color: String): boolean
-    +printBoard(): void
+    +getTileAt(position: Point): Tile
+    +isWithinBounds(position: Point): boolean
+    +addObserver(observer: Observer): void
+    +notifyObservers(): void
 }
 
-class GameState {
-    -timer: int
-    -score: int
-    -difficulty: String
-    -round: int
-    -moves: List<Move>
-    -pgn: PGN
-    +updateTimer(deltaTime: float): void
-    +checkGameOver(): boolean
-    +incrementScore(): void
-    +render(batch: SpriteBatch): void
-    +advanceRound(): void
-    +setDifficulty(level: String): void
-    +recordMove(Piece piece, Point start, Point end, boolean capture, boolean enPassant): void
-    +saveGame(filePath: String): void
-    +loadGame(filePath: String): void
-    +getMoveHistory(): List<String>
-    +getLastMove(): Move
-    +addMoveToHistory(move: Move): void
-    +isInCheck(king: King, board: Board): boolean
-    +isCheckmate(king: King, board: Board): boolean
-    +canCastle(king: King, rook: Rook, board: Board): boolean
+class PieceFactory {
+    +createPiece(type: String, color: String, position: Point): Piece
 }
 
-class PGN {
-    -moves: List<String>
-    -moveNumber: int
-    +addMove(Piece piece, Point start, Point end, boolean capture, boolean enPassant): void
-    +saveToFile(filePath: String): void
-    +loadGame(filePath: String): void
-    +getMoveHistory(): List<String>
+class Renderer implements Observer {
+    +update(): void
+    +render(batch: SpriteBatch, board: Board): void
 }
 
-class Minimax {
-    +evaluatePosition(board: Board, color: String): int
-    +getBestMove(board: Board, color: String): Move
-    +minimax(board: Board, depth: int, alpha: int, beta: int, maximizingPlayer: boolean): int
-}
-
-class Move {
-    -piece: Piece
-    -start: Point
-    -end: Point
-    -capture: boolean
-    -enPassant: boolean
-    +Move(piece: Piece, start: Point, end: Point, capture: boolean, enPassant: boolean)
-    +getPiece(): Piece
-    +getStart(): Point
-    +getEnd(): Point
-    +isCapture(): boolean
-    +isEnPassant(): boolean
-}
-
-interface Player {
-    +makeMove(board: Board): Move
-}
-
-class HumanPlayer implements Player {
-    +makeMove(board: Board): Move
-}
-
-class AIPlayer implements Player {
-    +makeMove(board: Board): Move
-}
-
-class MoveHistory {
-    -moves: Stack<Move>
-    -redoStack: Stack<Move>
-    +recordMove(move: Move): void
-    +undo(): Move
-    +redo(): Move
-}
-
-class GameManager {
+class Controller {
     -board: Board
-    -gameState: GameState
-    -player1: Player
-    -player2: Player
-    +startGame(): void
-    +endGame(): void
-    +handleMove(start: Point, end: Point): boolean
+    -gameState: GameStateInterface
+    +handleInput(input: Input): void
+    +update(deltaTime: float): void
+}
+
+interface GameStateInterface {
+    +update(deltaTime: float): void
+    +render(batch: SpriteBatch): void
+}
+
+class PlayingState implements GameStateInterface {
+    +update(deltaTime: float): void
+    +render(batch: SpriteBatch): void
+}
+
+class PausedState implements GameStateInterface {
+    +update(deltaTime: float): void
+    +render(batch: SpriteBatch): void
+}
+
+class GameOverState implements GameStateInterface {
+    +update(deltaTime: float): void
+    +render(batch: SpriteBatch): void
 }
 
 GameManager *-- Board
-GameManager *-- GameState
-GameManager *-- Player
-GameManager *-- MoveHistory
-Player ..> Move : returns
+GameManager *-- GameStateInterface
+GameManager *-- Controller
 
-OccupiedTile *-- Piece
-Board *-- Tile
-GameState *-- Board
-GameState *-- PGN
-GameState *-- Move
-GameState *-- MoveHistory
-Minimax ..> Board : uses
-Minimax ..> Move : returns
-
-Tile ..> Point : uses
-Piece ..> Point : uses
-Board ..> Point : uses
-AIPlayer ..> Minimax : uses
+PieceFactory ..> Piece
+Renderer ..> Board
+Controller ..> Board
+Controller ..> GameStateInterface
+Board ..|> Observable
+Renderer ..|> Observer
+GameStateInterface <|.. PlayingState
+GameStateInterface <|.. PausedState
+GameStateInterface <|.. GameOverState
 
 @enduml

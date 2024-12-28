@@ -6,6 +6,7 @@ plugins {
 
 import io.github.fourlastor.construo.Target
 
+// Define GDX and App details
 sourceSets.main.resources.srcDirs += [rootProject.file('assets').path]
 
 application {
@@ -81,5 +82,6 @@ distributions {
   }
 }
 
+// Ensure proper dependency linking
 startScripts.dependsOn(':lwjgl3:jar')
 startScripts.classpath = project.tasks.jar.outputs.files

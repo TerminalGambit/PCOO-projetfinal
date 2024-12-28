@@ -7,10 +7,11 @@ import java.util.List;
  * La classe Board représente une grille de type échiquier contenant des objets Tile.
  * Elle est adaptée au mode Solo Chess.
  */
-public class Board {
+public class Board implements Observable {
     private final Tile[][] tiles;
     private final int rowCount;
     private final int columnCount;
+    private final List<Observer> observers = new ArrayList<Observer>();
 
     /**
      * Constructeur pour un plateau carré.
@@ -132,6 +133,22 @@ public class Board {
                 System.out.print(tile instanceof OccupiedTile ? "O " : ". ");
             }
             System.out.println();
+        }
+    }
+
+    public int getColumnCount() {
+        return columnCount;
+    }
+
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update();
         }
     }
 }

@@ -1,5 +1,2 @@
 rootProject.name = 'final-project'
-
-include 'core'
-include 'lwjgl3'
-include 'html'
+include 'core', 'lwjgl3'

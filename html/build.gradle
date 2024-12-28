@@ -2,26 +2,6 @@ plugins {
   id "java"
   id "war"
   id "org.gretty" version "3.1.0"
-  id "com.google.gwt" version "1.0.11" // GWT plugin
-}
-
-apply plugin: "war"
-apply plugin: "org.gretty"
-
-gwt {
-  gwtVersion = "2.9.0" // Ensure compatibility with Java 17+
-  maxHeapSize = '1G' // Default 256m is not enough for the GWT compiler
-  minHeapSize = '512m'
-
-  src = files(file('src/main/java')) // Needs to be in front of "modules" below
-  modules 'savetheking.game.GdxDefinition'
-  devModules 'savetheking.game.GdxDefinitionSuperdev'
-  project.webAppDirName = 'webapp'
-
-  compiler.strict = true
-  compiler.disableCastChecking = true
-  // Uncomment the next line for more readable debug builds
-  // compiler.style = org.docstr.gradle.plugins.gwt.Style.DETAILED
 }
 
 java {
@@ -36,28 +16,17 @@ repositories {
 dependencies {
   implementation "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
   implementation "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
-  implementation project(path: ':core', configuration: 'default')
+  implementation project(":core")
 }
 
 gretty {
   httpPort = 8080
   contextPath = "/"
-  portPropertiesFileName = "TEMP_PORTS.properties"
   resourceBase = "${buildDir}/gwt/draftOut"
+  portPropertiesFileName = "TEMP_PORTS.properties"
 }
 
-task addSource {
-  doLast {
-    sourceSets.main.compileClasspath += files(project(':core').sourceSets.main.allJava.srcDirs)
-    sourceSets.main.compileClasspath += files("../core/build/generated/sources/annotationProcessor/java/main")
-  }
-}
-
-tasks.compileGwt.dependsOn(addSource)
-tasks.draftCompileGwt.dependsOn(addSource)
-tasks.checkGwt.dependsOn(addSource)
-
-task startHttpServer(dependsOn: [draftCompileGwt]) {
+task startHttpServer(type: Copy, dependsOn: build) {
   doFirst {
     copy {
       from "webapp"
@@ -70,51 +39,29 @@ task startHttpServer(dependsOn: [draftCompileGwt]) {
   }
 }
 
-task superDev(type: com.google.gwt.gradle.tasks.SuperDev) {
-  doFirst {
-    gwt.modules = gwt.devModules
-  }
-}
-
-task dist(dependsOn: [clean, compileGwt]) {
+task dist(type: Copy) {
+  dependsOn build
+  def outputPath = "build/dist/"
   doLast {
-    def outputPath = "build/dist/"
+    delete(file(outputPath))
     file(outputPath).mkdirs()
     copy {
-      from("build/gwt/out") {
-        exclude '**/*.symbolMap'
-      }
-      into outputPath
+      from("build/classes/java/main")
+      into(outputPath)
     }
     copy {
-      from("webapp") {
-        exclude 'index.html'
-        exclude 'refresh.png'
-      }
-      into outputPath
-    }
-    copy {
-      from("webapp") {
-        include 'index.html'
-        filter { String line -> line.replaceAll('<a class="superdev" .+', '') }
-      }
-      into outputPath
-    }
-    copy {
-      from "war"
-      into outputPath
+      from("webapp")
+      into(outputPath)
     }
   }
 }
 
 task distZip(type: Zip, dependsOn: dist) {
-  from("build/dist")
   archiveBaseName.set("${appName}-html-dist")
   destinationDirectory.set(file("build"))
+  from("build/dist")
 }
 
-clean {
-  delete file("war")
+tasks.clean {
+  delete file("build/dist")
 }
-
-eclipse.project.name = appName + "-html"

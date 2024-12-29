@@ -151,4 +151,24 @@ public class Board implements Observable {
             observer.update();
         }
     }
+
+    /**
+     * Retourne une liste de toutes les pièces restantes sur le plateau.
+     * @return Une liste contenant les pièces restantes.
+     */
+    public List<Piece> getRemainingPieces() {
+        List<Piece> remainingPieces = new ArrayList<Piece>();
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < columnCount; j++) {
+                Tile tile = tiles[i][j];
+                if (tile instanceof OccupiedTile) {
+                    Piece piece = ((OccupiedTile) tile).getPiece();
+                    if (piece != null) {
+                        remainingPieces.add(piece);
+                    }
+                }
+            }
+        }
+        return remainingPieces;
+    }
 }

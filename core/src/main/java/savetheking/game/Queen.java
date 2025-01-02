@@ -18,8 +18,8 @@ public class Queen extends Piece {
      * @param color La couleur de la reine ("Blanc" ou "Noir").
      * @param position La position initiale de la reine sur le plateau.
      */
-    public Queen(String color, Point position) {
-        super(color, position);
+    public Queen(String color, Point position, String texturePath) {
+        super(color, position, texturePath);
     }
 
     /**

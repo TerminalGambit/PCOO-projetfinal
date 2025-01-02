@@ -4,118 +4,114 @@ import com.badlogic.gdx.graphics.Texture;
 import java.util.List;
 
 /**
- * Abstract class representing a chess piece in the Solo Chess mode.
- * Each piece has a color, position, move count, and associated texture for rendering.
+ * Classe abstraite représentant une pièce d’échecs pour le mode Solo Chess.
+ * Chaque pièce a une couleur, une position et une image.
  */
 public abstract class Piece {
-    protected String color; // The color of the piece ("White" or "Black")
-    protected Point position; // The current position of the piece on the board
-    protected int moveCount = 0; // The number of moves the piece has made
-    private Texture texture; // Texture for rendering the piece
+    protected String color; // La couleur de la pièce ("White" ou "Black")
+    protected Point position; // La position actuelle de la pièce sur le plateau
+    protected String texturePath; // Le chemin vers l'image de la pièce
+    private Texture texture; // Texture pour le rendu graphique
 
     /**
-     * Constructor to initialize a chess piece with a color, position, and texture.
+     * Constructeur pour initialiser une pièce avec une couleur, une position et un chemin d'image.
      *
-     * @param color    The color of the piece ("White" or "Black").
-     * @param position The initial position of the piece on the board.
-     * @param texturePath The path to the texture file for this piece.
+     * @param color    La couleur de la pièce ("White" ou "Black").
+     * @param position La position initiale de la pièce sur le plateau.
+     * @param texturePath Le chemin vers l'image de la pièce.
      */
     public Piece(String color, Point position, String texturePath) {
         this.color = color;
         this.position = position;
-        this.texture = new Texture(texturePath);
+        this.texturePath = texturePath;
+        this.texture = new Texture(texturePath); // Charger la texture
     }
 
     /**
-     * Gets the color of the piece.
+     * Retourne la couleur actuelle de la pièce.
      *
-     * @return The color of the piece ("White" or "Black").
+     * @return La couleur de la pièce ("White" ou "Black").
      */
     public String getColor() {
         return color;
     }
 
     /**
-     * Gets the current position of the piece.
+     * Définit une nouvelle couleur pour la pièce.
      *
-     * @return The current position of the piece as a Point.
+     * @param color La nouvelle couleur ("White" ou "Black").
+     */
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    /**
+     * Retourne la position actuelle de la pièce.
+     *
+     * @return La position actuelle de la pièce sous forme de `Point`.
      */
     public Point getPosition() {
         return position;
     }
 
     /**
-     * Moves the piece to a new position and increments the move count.
+     * Retourne la texture de la pièce pour le rendu graphique.
      *
-     * @param newPosition The new position to move to.
-     * @param boardSize   The size of the board.
-     */
-    public void move(Point newPosition, int boardSize) {
-        if (isWithinBounds(newPosition, boardSize)) {
-            this.position = newPosition;
-            this.moveCount++;
-
-            // Change color to "Black" after two moves
-            if (this.moveCount >= 2 && "White".equals(this.color)) {
-                this.color = "Black";
-            }
-        } else {
-            throw new IllegalArgumentException("Position out of bounds: " + newPosition);
-        }
-    }
-
-    /**
-     * Gets the number of moves made by the piece.
-     *
-     * @return The move count of the piece.
-     */
-    public int getMoveCount() {
-        return moveCount;
-    }
-
-    /**
-     * Checks if a position is within the bounds of the board.
-     *
-     * @param point     The position to check.
-     * @param boardSize The size of the board.
-     * @return true if the position is within bounds, false otherwise.
-     */
-    protected boolean isWithinBounds(Point point, int boardSize) {
-        return point.x >= 0 && point.x < boardSize && point.y >= 0 && point.y < boardSize;
-    }
-
-    /**
-     * Abstract method to determine the possible moves for the piece.
-     *
-     * @param board The current state of the board.
-     * @return A list of valid moves for the piece.
-     */
-    public abstract List<Point> getPossibleMoves(Board board);
-
-    /**
-     * Gets the texture associated with this piece.
-     *
-     * @return The Texture object for rendering.
+     * @return La texture de la pièce.
      */
     public Texture getTexture() {
         return texture;
     }
 
     /**
-     * Disposes of the texture associated with this piece.
-     * Should be called when the piece is no longer needed.
+     * Déplace la pièce vers une nouvelle position.
+     *
+     * @param newPosition La nouvelle position cible.
+     * @param boardSize   La taille du plateau.
      */
-    public void dispose() {
-        texture.dispose();
+    public void move(Point newPosition, int boardSize) {
+        if (isWithinBounds(newPosition, boardSize)) {
+            this.position = newPosition;
+        } else {
+            throw new IllegalArgumentException("Position hors limites : " + newPosition);
+        }
     }
 
     /**
-     * Returns a string representation of the piece.
+     * Vérifie si une position est dans les limites du plateau.
      *
-     * @return A string describing the piece.
+     * @param point     La position à vérifier.
+     * @param boardSize La taille du plateau.
+     * @return `true` si la position est dans les limites du plateau, sinon `false`.
+     */
+    protected boolean isWithinBounds(Point point, int boardSize) {
+        return point.x >= 0 && point.x < boardSize && point.y >= 0 && point.y < boardSize;
+    }
+
+    /**
+     * Méthode abstraite pour déterminer les mouvements possibles pour une pièce.
+     *
+     * @param board L'état actuel du plateau.
+     * @return Une liste des positions possibles où la pièce peut se déplacer.
+     */
+    public abstract List<Point> getPossibleMoves(Board board);
+
+    /**
+     * Retourne une représentation textuelle de la pièce.
+     *
+     * @return Une chaîne décrivant la pièce.
      */
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + " (" + color + ")";
+    }
+
+    /**
+     * Libère les ressources liées à la texture de la pièce.
+     */
+    public void dispose() {
+        if (texture != null) {
+            texture.dispose();
+        }
     }
 }

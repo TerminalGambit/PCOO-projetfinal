@@ -15,8 +15,8 @@ public class Rook extends Piece {
      * @param color    La couleur de la tour ("Blanc").
      * @param position La position initiale de la tour sur le plateau.
      */
-    public Rook(String color, Point position) {
-        super(color, position);
+    public Rook(String color, Point position, String texturePath) {
+        super(color, position, texturePath);
     }
 
     /**

@@ -1,6 +1,6 @@
 package savetheking.game;
 
-import sun.jvm.hotspot.types.PointerType;
+import com.badlogic.gdx.graphics.Texture;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +10,9 @@ import java.util.List;
  */
 public class Pawn extends Piece {
 
-    public Pawn(String color, Point position) {
-        super(color, position, "Pawn");
+    public Pawn(String color, Point position, Texture texture) {
+
+        super(color, position, texture);
     }
 
     /**

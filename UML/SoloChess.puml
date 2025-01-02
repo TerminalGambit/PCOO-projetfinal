@@ -125,6 +125,21 @@ class GameOverState implements GameStateInterface {
     +render(batch: SpriteBatch): void
 }
 
+class TiledLoader {
+    +loadTiledMap(mapPath: String): TiledMap
+    +parseLayer(layerName: String): List<Tile>
+    +extractPieces(layerName: String): List<Piece>
+}
+
+class TiledMap {
+    +getLayer(layerName: String): TiledLayer
+}
+
+class TiledLayer {
+    +getTiles(): List<Tile>
+    +getCustomProperties(): Map<String, String>
+}
+
 GameManager *-- Board
 GameManager *-- GameStateInterface
 GameManager *-- Controller
@@ -138,5 +153,9 @@ Renderer ..|> Observer
 GameStateInterface <|.. PlayingState
 GameStateInterface <|.. PausedState
 GameStateInterface <|.. GameOverState
+TiledLoader ..> TiledMap
+TiledMap ..> TiledLayer
+TiledLoader ..> Board
+TiledLoader ..> PieceFactory
 
 @enduml

@@ -1,11 +1,14 @@
 package savetheking.game;
 
+import com.badlogic.gdx.graphics.Texture;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Knight extends Piece {
-    public Knight(String color, Point position, String texturePath) {
-        super(color, position, texturePath);
+    public Knight(String color, Point position, Texture texture) {
+
+        super(color, position, texture);
     }
 
     @Override

@@ -20,7 +20,7 @@ public class GameState {
      * Private constructor to initialize the game state with default values.
      */
     private GameState() {
-        this.timer = 300; // Default timer of 5 minutes
+        this.timer = 30000; // Default timer of 5 minutes
         this.score = 0;
         this.difficulty = "Normal";
         this.round = 1;

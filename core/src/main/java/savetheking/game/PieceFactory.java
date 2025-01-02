@@ -1,38 +1,33 @@
 package savetheking.game;
 
+import com.badlogic.gdx.graphics.Texture;
+
 /**
- * Classe pour créer des pièces d'échecs en fonction de leur type, couleur et position.
+ * A factory class to create chess pieces.
  */
 public class PieceFactory {
 
     /**
-     * Crée une pièce d'échecs en fonction du type, de la couleur et de la position donnés.
+     * Creates a new chess piece based on the given type and attributes.
      *
-     * @param type     Le type de la pièce (par exemple, "king", "queen").
-     * @param color    La couleur de la pièce ("Blanc" ou "Noir").
-     * @param position La position initiale de la pièce sur le plateau.
-     * @return Une instance de Piece correspondant au type spécifié.
-     * @throws IllegalArgumentException Si le type est invalide ou si un paramètre est null.
+     * @param type     The type of the piece (e.g., "Queen", "King").
+     * @param color    The color of the piece ("White" or "Black").
+     * @param position The initial position of the piece.
+     * @return The created chess piece.
      */
-    public static Piece createPiece(String type, String color, Point position) {
-        // Validation des paramètres
-        if (type == null || color == null || position == null) {
-            throw new IllegalArgumentException("Le type, la couleur et la position ne peuvent pas être null.");
-        }
+    public Piece createPiece(String type, String color, Point position) {
+        // Use correct path for textures based on your directory structure
+        String texturePath = "pieces/" + color.toLowerCase().charAt(0) + type.toLowerCase().charAt(0) + ".png";
+        Texture texture = new Texture(texturePath);
 
-        // Création en fonction du type de pièce
-        if (type.equalsIgnoreCase("king")) {
-            return new King(color, position);
-        } else if (type.equalsIgnoreCase("queen")) {
-            return new Queen(color, position);
-        } else if (type.equalsIgnoreCase("bishop")) {
-            return new Bishop(color, position);
-        } else if (type.equalsIgnoreCase("rook")) {
-            return new Rook(color, position);
-        } else if (type.equalsIgnoreCase("knight")) {
-            return new Knight(color, position);
-        } else {
-            throw new IllegalArgumentException("Type de pièce invalide : " + type);
-        }
+        return switch (type) {
+            case "Queen" -> new Queen(color, position, texture);
+            case "Bishop" -> new Bishop(color, position, texture);
+            case "Knight" -> new Knight(color, position, texture);
+            case "Rook" -> new Rook(color, position, texture);
+            case "Pawn" -> new Pawn(color, position, texture);
+            case "King" -> new King(color, position, texture);
+            default -> throw new IllegalArgumentException("Unknown piece type: " + type);
+        };
     }
 }

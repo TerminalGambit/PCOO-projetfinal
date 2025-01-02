@@ -1,47 +1,34 @@
 package savetheking.game;
 
+import com.badlogic.gdx.graphics.Texture;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Représente une reine (Queen) dans le jeu d'échecs.
- * La reine peut se déplacer horizontalement, verticalement ou en diagonale
- * sur n'importe quelle distance jusqu'à rencontrer un obstacle ou les limites du plateau.
+ * Represents a queen in chess.
+ * Combines the movement capabilities of the rook and bishop.
  */
 public class Queen extends Piece {
 
-    private int moveCount = 0; // Compteur de mouvements pour gérer les règles de Solo Chess
+    private int moveCount = 0; // Movement counter for Solo Chess rules
 
     /**
-     * Constructeur pour initialiser une reine avec une couleur et une position.
+     * Constructor for the Queen class.
      *
-     * @param color La couleur de la reine ("Blanc" ou "Noir").
-     * @param position La position initiale de la reine sur le plateau.
+     * @param color    The color of the queen ("White" or "Black").
+     * @param position The initial position of the queen.
+     * @param texture  The texture representing the queen.
      */
-    public Queen(String color, Point position, String texturePath) {
-        super(color, position, texturePath);
+    public Queen(String color, Point position, Texture texture) {
+        super(color, position, texture); // Pass the Texture object directly
     }
 
-    /**
-     * Retourne les mouvements possibles de la reine sur le plateau.
-     * La reine combine les mouvements de la tour et du fou, pouvant se déplacer
-     * dans les directions horizontales, verticales et diagonales.
-     *
-     * @param board L'état actuel du plateau.
-     * @return Une liste des positions possibles pour la reine.
-     */
     @Override
     public List<Point> getPossibleMoves(Board board) {
         List<Point> possibleMoves = new ArrayList<Point>();
         int[][] directions = {
-            {1, 0},  // Droite
-            {-1, 0}, // Gauche
-            {0, 1},  // Haut
-            {0, -1}, // Bas
-            {1, 1},  // Bas-droite
-            {1, -1}, // Bas-gauche
-            {-1, 1}, // Haut-droite
-            {-1, -1} // Haut-gauche
+            {1, 0}, {-1, 0}, {0, 1}, {0, -1}, // Straight directions (Rook)
+            {1, 1}, {1, -1}, {-1, 1}, {-1, -1} // Diagonal directions (Bishop)
         };
 
         for (int[] direction : directions) {
@@ -53,10 +40,7 @@ public class Queen extends Piece {
                 newY += direction[1];
                 Point newPoint = new Point(newX, newY);
 
-                // Vérifie si la nouvelle position est dans les limites du plateau
-                if (newPoint.isWithinBounds(board.getRowCount())) {
-                    break;
-                }
+                if (!newPoint.isWithinBounds(board.getRowCount())) break;
 
                 Tile tile = board.getTileAt(newPoint);
 
@@ -64,10 +48,8 @@ public class Queen extends Piece {
                     possibleMoves.add(newPoint);
                 } else if (tile instanceof OccupiedTile) {
                     Piece pieceOnTile = ((OccupiedTile) tile).getPiece();
-                    if (pieceOnTile.getColor().equals(this.color)) {
-                        break; // Arrête si la case est occupée par une pièce alliée
-                    }
-                    possibleMoves.add(newPoint); // Peut capturer une pièce ennemie
+                    if (pieceOnTile.getColor().equals(this.color)) break;
+                    possibleMoves.add(newPoint);
                     break;
                 }
             }
@@ -75,35 +57,16 @@ public class Queen extends Piece {
         return possibleMoves;
     }
 
-    /**
-     * Déplace la reine vers une nouvelle position et gère les règles de Solo Chess.
-     * Change la couleur en noir si elle a effectué deux mouvements.
-     *
-     * @param newPosition La nouvelle position cible.
-     * @param boardSize La taille du plateau.
-     */
     @Override
     public void move(Point newPosition, int boardSize) {
         if (isWithinBounds(newPosition, boardSize)) {
             this.position = newPosition;
-            moveCount++; // Incrémente le compteur de mouvements
-
-            // Si elle a bougé deux fois, change la couleur en "Noir"
+            moveCount++;
             if (moveCount >= 2) {
-                this.color = "Noir";
+                this.color = "Black";
             }
         } else {
-            throw new IllegalArgumentException("Position hors limites : " + newPosition);
+            throw new IllegalArgumentException("Position out of bounds: " + newPosition);
         }
-    }
-
-    /**
-     * Retourne une description textuelle de la reine, incluant sa position.
-     *
-     * @return Une chaîne de caractères décrivant la reine.
-     */
-    @Override
-    public String toString() {
-        return "Reine à " + position + " (Couleur: " + color + ")";
     }
 }

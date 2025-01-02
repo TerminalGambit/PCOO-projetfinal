@@ -1,5 +1,7 @@
 package savetheking.game;
 
+import com.badlogic.gdx.graphics.Texture;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +16,10 @@ public class Rook extends Piece {
      *
      * @param color    La couleur de la tour ("Blanc").
      * @param position La position initiale de la tour sur le plateau.
+     * @param texture
      */
-    public Rook(String color, Point position, String texturePath) {
-        super(color, position, texturePath);
+    public Rook(String color, Point position, Texture texture) {
+        super(color, position, texture);
     }
 
     /**

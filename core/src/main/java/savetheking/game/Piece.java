@@ -1,5 +1,6 @@
 package savetheking.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import java.util.List;
 
@@ -12,19 +13,20 @@ public abstract class Piece {
     protected Point position; // La position actuelle de la pièce sur le plateau
     protected String texturePath; // Le chemin vers l'image de la pièce
     private Texture texture; // Texture pour le rendu graphique
+    private int moveCount;
 
     /**
      * Constructeur pour initialiser une pièce avec une couleur, une position et un chemin d'image.
      *
      * @param color    La couleur de la pièce ("White" ou "Black").
      * @param position La position initiale de la pièce sur le plateau.
-     * @param texturePath Le chemin vers l'image de la pièce.
+     * @param texture Le chemin vers l'image de la pièce.
      */
-    public Piece(String color, Point position, String texturePath) {
+    public Piece(String color, Point position, Texture texture) {
         this.color = color;
         this.position = position;
-        this.texturePath = texturePath;
-        this.texture = new Texture(texturePath); // Charger la texture
+        this.texture = texture;
+        this.moveCount = 0;
     }
 
     /**
@@ -72,6 +74,7 @@ public abstract class Piece {
     public void move(Point newPosition, int boardSize) {
         if (isWithinBounds(newPosition, boardSize)) {
             this.position = newPosition;
+            this.moveCount++;
         } else {
             throw new IllegalArgumentException("Position hors limites : " + newPosition);
         }
@@ -113,5 +116,9 @@ public abstract class Piece {
         if (texture != null) {
             texture.dispose();
         }
+    }
+
+    public int getMoveCount() {
+        return this.moveCount;
     }
 }

@@ -1,73 +1,75 @@
 package savetheking.game;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-import java.util.HashMap;
-import java.util.Map;
-
+/**
+ * The Renderer class is responsible for rendering the chessboard and pieces.
+ */
 public class Renderer implements Observer {
     private final Board board;
-    private final Map<String, Texture> textures; // Map to store textures for each piece type
-    private final ShapeRenderer shapeRenderer; // For rendering the board grid
-    private static final int TILE_SIZE = 64; // Size of each tile in pixels
+    private final OrthographicCamera camera;
+    private final ShapeRenderer shapeRenderer;
+    private final SpriteBatch spriteBatch;
+    private final int tileSize;
 
     /**
-     * Constructor for the Renderer.
+     * Constructor for the Renderer class.
      *
-     * @param board The board to render.
+     * @param board The game board to render.
+     * @param tileSize The size of each tile in pixels.
      */
-    public Renderer(Board board) {
+    public Renderer(Board board, int tileSize) {
         this.board = board;
-        this.textures = new HashMap<String, Texture>();
+        this.tileSize = tileSize;
+        this.camera = new OrthographicCamera();
+        this.camera.setToOrtho(false, tileSize * board.getColumnCount(), tileSize * board.getRowCount());
         this.shapeRenderer = new ShapeRenderer();
-        loadTextures();
+        this.spriteBatch = new SpriteBatch();
+        this.board.addObserver(this); // Register this renderer as an observer
     }
 
     /**
-     * Load textures for all pieces.
+     * Called when the board is updated to trigger rendering changes.
      */
-    private void loadTextures() {
-        textures.put("King", new Texture("pieces/wk.png"));
-        textures.put("Queen", new Texture("pieces/wq.png"));
-        textures.put("Bishop", new Texture("pieces/wb.png"));
-        textures.put("Rook", new Texture("pieces/wr.png"));
-        textures.put("Knight", new Texture("pieces/wn.png"));
-        textures.put("Pawn", new Texture("pieces/wp.png"));
+    @Override
+    public void update() {
+        System.out.println("Renderer: Board updated, triggering re-render.");
     }
 
     /**
-     * Render the board and all pieces.
+     * Renders the chessboard and its pieces.
      *
-     * @param batch The SpriteBatch used for rendering.
+     * @param batch The SpriteBatch to use for rendering pieces.
      */
     public void render(SpriteBatch batch) {
-        // Render the chessboard grid
+        // Render the chessboard tiles
+        shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         for (int row = 0; row < board.getRowCount(); row++) {
-            for (int col = 0; col < board.getRowCount(); col++) {
+            for (int col = 0; col < board.getColumnCount(); col++) {
                 if ((row + col) % 2 == 0) {
                     shapeRenderer.setColor(Color.LIGHT_GRAY); // Light tiles
                 } else {
                     shapeRenderer.setColor(Color.DARK_GRAY); // Dark tiles
                 }
-                shapeRenderer.rect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                shapeRenderer.rect(col * tileSize, row * tileSize, tileSize, tileSize);
             }
         }
         shapeRenderer.end();
 
-        // Render pieces
+        // Render the pieces on the board
+        batch.setProjectionMatrix(camera.combined);
         batch.begin();
         for (int row = 0; row < board.getRowCount(); row++) {
-            for (int col = 0; col < board.getRowCount(); col++) {
+            for (int col = 0; col < board.getColumnCount(); col++) {
                 Tile tile = board.getTileAt(new Point(row, col));
                 if (tile instanceof OccupiedTile) {
                     Piece piece = ((OccupiedTile) tile).getPiece();
-                    Texture texture = textures.get(piece.getClass().getSimpleName());
-                    if (texture != null) {
-                        batch.draw(texture, col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    if (piece != null && piece.getTexture() != null) {
+                        batch.draw(piece.getTexture(), col * tileSize, row * tileSize, tileSize, tileSize);
                     }
                 }
             }
@@ -76,22 +78,10 @@ public class Renderer implements Observer {
     }
 
     /**
-     * Observer update method.
-     * Called when the board or game state changes.
-     */
-    @Override
-    public void update() {
-        System.out.println("Renderer notified of changes.");
-        // In a real application, you might trigger a re-render here
-    }
-
-    /**
-     * Dispose of resources to prevent memory leaks.
+     * Disposes of resources used by the Renderer.
      */
     public void dispose() {
-        for (Texture texture : textures.values()) {
-            texture.dispose();
-        }
         shapeRenderer.dispose();
+        spriteBatch.dispose();
     }
 }

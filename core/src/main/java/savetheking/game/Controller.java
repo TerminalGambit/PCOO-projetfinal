@@ -35,31 +35,35 @@ public class Controller {
             if (clickedTile instanceof OccupiedTile) {
                 selectedPiece = ((OccupiedTile) clickedTile).getPiece();
                 System.out.println("Selected piece: " + selectedPiece);
-                highlightValidMoves(selectedPiece); // Optional: Highlight valid moves for the selected piece
+                highlightValidMoves(selectedPiece); // Highlight valid moves for the selected piece
             } else {
                 System.out.println("Clicked on an empty tile, no piece selected.");
             }
         } else {
             // A piece is already selected, attempt to move it
-            if (clickedTile instanceof EmptyTile || clickedTile instanceof OccupiedTile) {
-                List<Point> validMoves = selectedPiece.getPossibleMoves(board);
+            List<Point> validMoves = selectedPiece.getPossibleMoves(board);
 
-                if (validMoves.contains(clickedPoint)) {
-                    System.out.println("Moving piece to: " + clickedPoint);
-                    board.movePiece(selectedPiece.getPosition(), clickedPoint);
-                    selectedPiece.move(clickedPoint, board.getRowCount()); // Update the piece's state
-                    gameState.recordMove(selectedPiece, selectedPiece.getPosition(), clickedPoint, clickedTile instanceof OccupiedTile);
+            if (validMoves.contains(clickedPoint)) {
+                System.out.println("Moving piece to: " + clickedPoint);
+                board.movePiece(selectedPiece.getPosition(), clickedPoint);
 
-                    // Check if the game is finished after the move
-                    checkGameFinished();
-
-                    // Deselect the piece
-                    selectedPiece = null;
-                } else {
-                    System.out.println("Invalid move for the selected piece.");
+                // Update the piece's state and handle two-move rule
+                selectedPiece.move(clickedPoint, board.getRowCount());
+                if (selectedPiece.getMoveCount() >= 2 && "White".equals(selectedPiece.getColor())) {
+                    selectedPiece.setColor("Black");
                 }
+
+                // Record the move in the game state
+                boolean isCapture = clickedTile instanceof OccupiedTile;
+                gameState.recordMove(selectedPiece, selectedPiece.getPosition(), clickedPoint, isCapture);
+
+                // Check if the game is finished
+                checkGameFinished();
+
+                // Deselect the piece
+                selectedPiece = null;
             } else {
-                System.out.println("Invalid tile clicked.");
+                System.out.println("Invalid move for the selected piece.");
             }
         }
     }
@@ -102,7 +106,7 @@ public class Controller {
             for (Point move : validMoves) {
                 Tile tile = board.getTileAt(move);
                 if (tile != null) {
-                    tile.setDefended(true); // Example of using the `setDefended` method
+                    tile.setDefended(true); // Highlight valid moves
                 }
             }
             System.out.println("Highlighted valid moves for the selected piece.");

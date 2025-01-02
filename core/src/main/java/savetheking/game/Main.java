@@ -1,81 +1,42 @@
 package savetheking.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.Gdx; // Import Gdx for accessing delta time and other utilities
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+/**
+ * The Main class serves as the entry point for the game.
+ */
 public class Main extends ApplicationAdapter {
-    private static final int TILE_SIZE = 64; // Size of each tile in pixels
-    private static final int BOARD_SIZE = 8; // Number of rows and columns
-
-    private OrthographicCamera camera;
     private SpriteBatch batch;
-    private ShapeRenderer shapeRenderer;
-
-    private Texture kingTexture;
-    private Texture queenTexture;
-    private Texture bishopTexture;
+    private Board board;
+    private Renderer renderer;
+    private Controller controller;
+    private PlayingState playingState;
 
     @Override
     public void create() {
-        camera = new OrthographicCamera();
-        camera.setToOrtho(false, TILE_SIZE * BOARD_SIZE, TILE_SIZE * BOARD_SIZE);
-
+        int tileSize = 64; // Define the size of each tile
+        board = new Board(8); // Create an 8x8 board
+        renderer = new Renderer(board, tileSize); // Pass both the board and tileSize to the Renderer
         batch = new SpriteBatch();
-        shapeRenderer = new ShapeRenderer();
-
-        // Load textures from the correct paths
-        kingTexture = new Texture(Gdx.files.internal("pieces/wk.png")); // White King
-        queenTexture = new Texture(Gdx.files.internal("pieces/wq.png")); // White Queen
-        bishopTexture = new Texture(Gdx.files.internal("pieces/wb.png")); // White Bishop
+        controller = new Controller(board);
+        playingState = new PlayingState(board, controller, renderer); // Updated to match PlayingState constructor
     }
 
     @Override
     public void render() {
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        camera.update();
+        ScreenUtils.clear(0, 0, 0, 1); // Clear the screen with a black background
 
-        // Render chessboard grid
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        renderBoard();
-
-        // Render pieces
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        batch.draw(kingTexture, 2 * TILE_SIZE, 4 * TILE_SIZE, TILE_SIZE, TILE_SIZE); // King at (2, 4)
-        batch.draw(queenTexture, 3 * TILE_SIZE, 4 * TILE_SIZE, TILE_SIZE, TILE_SIZE); // Queen at (3, 4)
-        batch.draw(bishopTexture, 4 * TILE_SIZE, 5 * TILE_SIZE, TILE_SIZE, TILE_SIZE); // Bishop at (4, 5)
-        batch.end();
-    }
-
-    private void renderBoard() {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        for (int row = 0; row < BOARD_SIZE; row++) {
-            for (int col = 0; col < BOARD_SIZE; col++) {
-                if ((row + col) % 2 == 0) {
-                    shapeRenderer.setColor(Color.LIGHT_GRAY); // Light tiles
-                } else {
-                    shapeRenderer.setColor(Color.DARK_GRAY); // Dark tiles
-                }
-                shapeRenderer.rect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            }
-        }
-
-        shapeRenderer.end();
+        float deltaTime = Gdx.graphics.getDeltaTime(); // Fix for 'Cannot resolve symbol Gdx'
+        playingState.update(deltaTime); // Update the current state
+        playingState.render(batch); // Render the current state
     }
 
     @Override
     public void dispose() {
         batch.dispose();
-        shapeRenderer.dispose();
-        kingTexture.dispose();
-        queenTexture.dispose();
-        bishopTexture.dispose();
+        renderer.dispose();
     }
 }

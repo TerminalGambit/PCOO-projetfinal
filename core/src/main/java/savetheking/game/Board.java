@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * La classe Board représente une grille de type échiquier contenant des objets Tile.
- * Elle est adaptée au mode Solo Chess.
+ * The Board class represents the chessboard and manages the tiles and pieces.
  */
 public class Board implements Observable {
     private final Tile[][] tiles;
@@ -14,21 +13,21 @@ public class Board implements Observable {
     private final List<Observer> observers = new ArrayList<Observer>();
 
     /**
-     * Constructeur pour un plateau carré.
-     * @param size La taille du plateau (nombre de rangées et colonnes).
+     * Constructor for a square board.
+     * @param size The size of the board (rows and columns).
      */
     public Board(int size) {
         this(size, size);
     }
 
     /**
-     * Constructeur pour un plateau rectangulaire.
-     * @param rowCount Nombre de rangées.
-     * @param columnCount Nombre de colonnes.
+     * Constructor for a rectangular board.
+     * @param rowCount The number of rows.
+     * @param columnCount The number of columns.
      */
     public Board(int rowCount, int columnCount) {
         if (rowCount <= 0 || columnCount <= 0) {
-            throw new IllegalArgumentException("Les dimensions du plateau doivent être positives.");
+            throw new IllegalArgumentException("Board dimensions must be positive.");
         }
         this.rowCount = rowCount;
         this.columnCount = columnCount;
@@ -37,7 +36,7 @@ public class Board implements Observable {
     }
 
     /**
-     * Initialise le plateau en remplissant chaque position avec des objets EmptyTile.
+     * Initializes the board with empty tiles.
      */
     public void initializeBoard() {
         for (int i = 0; i < rowCount; i++) {
@@ -45,38 +44,41 @@ public class Board implements Observable {
                 tiles[i][j] = new EmptyTile(new Point(i, j));
             }
         }
+        notifyObservers(); // Notify observers after board initialization
     }
 
     /**
-     * Place une pièce à une position donnée sur le plateau.
-     * @param piece La pièce à placer.
-     * @param position La position où placer la pièce.
+     * Places a piece at the given position on the board.
+     * @param piece The piece to place.
+     * @param position The position to place the piece at.
      */
     public void placePiece(Piece piece, Point position) {
         if (piece == null || position == null) {
-            throw new IllegalArgumentException("La pièce et la position ne peuvent pas être null.");
+            throw new IllegalArgumentException("Piece and position cannot be null.");
         }
         if (!isWithinBounds(position)) {
-            throw new IllegalArgumentException("Position hors des limites du plateau : " + position);
+            throw new IllegalArgumentException("Position out of bounds: " + position);
         }
         tiles[position.x][position.y] = new OccupiedTile(position, piece);
+        notifyObservers();
     }
 
     /**
-     * Retire une pièce d'une position donnée sur le plateau.
-     * @param position La position de la pièce à retirer.
+     * Removes a piece from the given position on the board.
+     * @param position The position to remove the piece from.
      */
     public void removePiece(Point position) {
         if (!isWithinBounds(position)) {
-            throw new IllegalArgumentException("Position hors des limites du plateau : " + position);
+            throw new IllegalArgumentException("Position out of bounds: " + position);
         }
         tiles[position.x][position.y] = new EmptyTile(position);
+        notifyObservers();
     }
 
     /**
-     * Retourne la tuile à une position donnée.
-     * @param position La position à récupérer.
-     * @return La tuile à la position donnée ou null si hors limites.
+     * Returns the tile at the given position on the board.
+     * @param position The position of the tile.
+     * @return The tile at the given position.
      */
     public Tile getTileAt(Point position) {
         if (!isWithinBounds(position)) {
@@ -86,17 +88,25 @@ public class Board implements Observable {
     }
 
     /**
-     * Retourne le nombre de rangées du plateau.
-     * @return Le nombre de rangées.
+     * Returns the number of rows on the board.
+     * @return The number of rows.
      */
     public int getRowCount() {
         return rowCount;
     }
 
     /**
-     * Vérifie si une position est dans les limites du plateau.
-     * @param position La position à vérifier.
-     * @return True si la position est dans les limites, sinon false.
+     * Returns the number of columns on the board.
+     * @return The number of columns.
+     */
+    public int getColumnCount() {
+        return columnCount;
+    }
+
+    /**
+     * Checks if a given position is within the bounds of the board.
+     * @param position The position to check.
+     * @return True if the position is within bounds, false otherwise.
      */
     public boolean isWithinBounds(Point position) {
         return position != null &&
@@ -105,13 +115,13 @@ public class Board implements Observable {
     }
 
     /**
-     * Déplace une pièce d'une position de départ à une position d'arrivée.
-     * @param start La position de départ de la pièce.
-     * @param end La position d'arrivée de la pièce.
+     * Moves a piece from the start position to the end position.
+     * @param start The starting position of the piece.
+     * @param end The ending position of the piece.
      */
     public void movePiece(Point start, Point end) {
         if (!isWithinBounds(start) || !isWithinBounds(end)) {
-            throw new IllegalArgumentException("Les positions doivent être dans les limites du plateau.");
+            throw new IllegalArgumentException("Positions must be within the bounds of the board.");
         }
         Tile startTile = getTileAt(start);
         if (startTile instanceof OccupiedTile) {
@@ -119,12 +129,51 @@ public class Board implements Observable {
             Piece piece = occupiedTile.getPiece();
             removePiece(start);
             placePiece(piece, end);
-            piece.move(end, this.rowCount);
+            piece.move(end, rowCount);
+        }
+        notifyObservers();
+    }
+
+    /**
+     * Returns a list of all remaining pieces on the board.
+     * @return A list of remaining pieces.
+     */
+    public List<Piece> getRemainingPieces() {
+        List<Piece> remainingPieces = new ArrayList<Piece>();
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < columnCount; j++) {
+                Tile tile = tiles[i][j];
+                if (tile instanceof OccupiedTile) {
+                    remainingPieces.add(((OccupiedTile) tile).getPiece());
+                }
+            }
+        }
+        return remainingPieces;
+    }
+
+    /**
+     * Adds an observer to the board.
+     * @param observer The observer to add.
+     */
+    @Override
+    public void addObserver(Observer observer) {
+        if (observer != null) {
+            observers.add(observer);
         }
     }
 
     /**
-     * Affiche une représentation visuelle du plateau dans la console.
+     * Notifies all observers of changes.
+     */
+    @Override
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update();
+        }
+    }
+
+    /**
+     * Prints a representation of the board to the console for debugging.
      */
     public void printBoard() {
         for (int i = 0; i < rowCount; i++) {
@@ -134,41 +183,5 @@ public class Board implements Observable {
             }
             System.out.println();
         }
-    }
-
-    public int getColumnCount() {
-        return columnCount;
-    }
-
-    @Override
-    public void addObserver(Observer observer) {
-        observers.add(observer);
-    }
-
-    @Override
-    public void notifyObservers() {
-        for (Observer observer : observers) {
-            observer.update();
-        }
-    }
-
-    /**
-     * Retourne une liste de toutes les pièces restantes sur le plateau.
-     * @return Une liste contenant les pièces restantes.
-     */
-    public List<Piece> getRemainingPieces() {
-        List<Piece> remainingPieces = new ArrayList<Piece>();
-        for (int i = 0; i < rowCount; i++) {
-            for (int j = 0; j < columnCount; j++) {
-                Tile tile = tiles[i][j];
-                if (tile instanceof OccupiedTile) {
-                    Piece piece = ((OccupiedTile) tile).getPiece();
-                    if (piece != null) {
-                        remainingPieces.add(piece);
-                    }
-                }
-            }
-        }
-        return remainingPieces;
     }
 }

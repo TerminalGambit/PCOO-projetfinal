@@ -3,59 +3,63 @@ package savetheking.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 
+/**
+ * Represents the active state of the game where players interact and move pieces.
+ */
 public class PlayingState implements GameStateInterface {
-    private final Board board;
-    private final Renderer renderer;
     private final Controller controller;
+    private final Renderer renderer;
+    private final Board board;
 
-    public PlayingState(Board board, Renderer renderer, Controller controller) {
+    public PlayingState(Board board, Controller controller, Renderer renderer) {
         this.board = board;
-        this.renderer = renderer;
         this.controller = controller;
+        this.renderer = renderer;
     }
 
     @Override
     public void update(float deltaTime) {
-        handleInput();
+        // Handle input processing
+        if (Gdx.input.justTouched()) {
+            int screenX = Gdx.input.getX(); // Screen x-coordinate
+            int screenY = Gdx.input.getY(); // Screen y-coordinate
+
+            // Translate screen coordinates to board coordinates
+            Point clickedPoint = translateScreenToBoard(screenX, screenY);
+            if (clickedPoint != null) {
+                controller.handleInput(clickedPoint);
+            }
+        }
+
+        // Update game state, e.g., timer
         controller.update(deltaTime);
-        board.notifyObservers();
     }
 
     @Override
     public void render(SpriteBatch batch) {
-        renderer.render(batch);
+        // Delegate rendering to the renderer
+        renderer.render(batch, board);
     }
 
-    private void handleInput() {
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            int mouseX = Gdx.input.getX();
-            int mouseY = Gdx.input.getY();
-            Vector2 boardCoordinates = screenToBoardCoordinates(mouseX, mouseY);
+    /**
+     * Translates screen coordinates to board coordinates based on the board's rendering.
+     * @param screenX The x-coordinate of the screen.
+     * @param screenY The y-coordinate of the screen.
+     * @return The corresponding board position as a Point, or null if outside the board.
+     */
+    private Point translateScreenToBoard(int screenX, int screenY) {
+        int tileSize = 64; // Assuming tiles are 64x64 pixels
+        int boardSize = board.getRowCount();
 
-            if (boardCoordinates != null) {
-                int row = (int) boardCoordinates.x;
-                int col = (int) boardCoordinates.y;
-                controller.handleInput(new Point(row, col));
-            }
+        // Convert from screen coordinates to board coordinates
+        int boardX = screenX / tileSize;
+        int boardY = (Gdx.graphics.getHeight() - screenY) / tileSize; // Invert y-axis
+
+        Point clickedPoint = new Point(boardY, boardX); // Note: Row = y, Column = x
+        if (board.isWithinBounds(clickedPoint)) {
+            return clickedPoint;
         }
-    }
-
-    private Vector2 screenToBoardCoordinates(int screenX, int screenY) {
-        int tileSize = 64;
-        int boardWidth = board.getRowCount() * tileSize;
-        int boardHeight = board.getColumnCount() * tileSize;
-
-        screenY = Gdx.graphics.getHeight() - screenY;
-
-        if (screenX < 0 || screenX >= boardWidth || screenY < 0 || screenY >= boardHeight) {
-            return null;
-        }
-
-        int row = screenY / tileSize;
-        int col = screenX / tileSize;
-
-        return new Vector2(row, col);
+        return null;
     }
 }

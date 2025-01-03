@@ -3,31 +3,39 @@ package savetheking.game;
 import com.badlogic.gdx.graphics.Texture;
 
 /**
- * A factory class to create chess pieces.
+ * Factory class responsible for creating chess pieces dynamically.
  */
 public class PieceFactory {
 
     /**
-     * Creates a new chess piece based on the given type and attributes.
+     * Creates a chess piece based on the given parameters.
      *
-     * @param type     The type of the piece (e.g., "Queen", "King").
-     * @param color    The color of the piece ("White" or "Black").
-     * @param position The initial position of the piece.
+     * @param type     The type of the piece (e.g., "Queen", "Rook").
+     * @param color    The color of the piece (e.g., "White", "Black").
+     * @param position The initial position of the piece on the board.
+     * @param texture  The texture representing the piece's image.
      * @return The created chess piece.
      */
-    public Piece createPiece(String type, String color, Point position) {
-        // Use correct path for textures based on your directory structure
-        String texturePath = "pieces/" + color.toLowerCase().charAt(0) + type.toLowerCase().charAt(0) + ".png";
-        Texture texture = new Texture(texturePath);
+    public Piece createPiece(String type, String color, Point position, Texture texture) {
+        if (type == null || color == null || position == null) {
+            throw new IllegalArgumentException("Piece parameters cannot be null.");
+        }
 
-        return switch (type) {
-            case "Queen" -> new Queen(color, position, texture);
-            case "Bishop" -> new Bishop(color, position, texture);
-            case "Knight" -> new Knight(color, position, texture);
-            case "Rook" -> new Rook(color, position, texture);
-            case "Pawn" -> new Pawn(color, position, texture);
-            case "King" -> new King(color, position, texture);
-            default -> throw new IllegalArgumentException("Unknown piece type: " + type);
-        };
+        switch (type.toLowerCase()) {
+            case "queen":
+                return new Queen(color, position, texture);
+            case "rook":
+                return new Rook(color, position, texture);
+            case "bishop":
+                return new Bishop(color, position, texture);
+            case "knight":
+                return new Knight(color, position, texture);
+            case "king":
+                return new King(color, position, texture);
+            case "pawn":
+                return new Pawn(color, position, texture);
+            default:
+                throw new IllegalArgumentException("Unknown piece type: " + type);
+        }
     }
 }

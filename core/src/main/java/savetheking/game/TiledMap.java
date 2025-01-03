@@ -1,95 +1,66 @@
 package savetheking.game;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Represents the entire TiledMap structure, consisting of multiple layers.
+ * Represents the entire TiledMap structure, consisting of multiple layers and pieces.
  */
 public class TiledMap {
-    private final List<TiledLayer> layers; // List of layers in the map
-    private final Map<String, String> mapProperties; // Global map-level properties
+    private final List<TiledLayer> layers;
+    private final List<Piece> pieces; // List of pieces on the map
+    private final java.util.Map<String, String> mapProperties;
 
     /**
-     * Constructs a TiledMap with an initial list of layers.
-     *
-     * @param layers The layers in the map.
-     */
-    public TiledMap(List<TiledLayer> layers) {
-        this.layers = new ArrayList<TiledLayer>(layers);
-        this.mapProperties = new HashMap<String, String>();
-    }
-
-    /**
-     * Constructs an empty TiledMap with no layers.
+     * Constructs an empty TiledMap.
      */
     public TiledMap() {
         this.layers = new ArrayList<TiledLayer>();
-        this.mapProperties = new HashMap<String, String>();
+        this.pieces = new ArrayList<Piece>();
+        this.mapProperties = new java.util.HashMap<String, String>();
     }
 
     /**
-     * Returns all layers in the map.
+     * Adds a layer to the map.
      *
-     * @return List of layers.
-     */
-    public List<TiledLayer> getLayers() {
-        return new ArrayList<TiledLayer>(layers);
-    }
-
-    /**
-     * Retrieves a specific layer by name.
-     *
-     * @param name The name of the layer.
-     * @return The TiledLayer with the specified name, or an empty Optional if not found.
-     */
-    public Optional<TiledLayer> getLayerByName(String name) {
-        for (TiledLayer layer : layers) {
-            if (name.equals(layer.getCustomProperty("name"))) {
-                return Optional.of(layer);
-            }
-        }
-        return Optional.empty();
-    }
-
-    /**
-     * Adds a new layer to the map.
-     *
-     * @param layer The TiledLayer to add.
+     * @param layer The layer to add.
      */
     public void addLayer(TiledLayer layer) {
         layers.add(layer);
     }
 
     /**
-     * Removes a layer from the map by name.
+     * Returns the list of layers in the map.
      *
-     * @param name The name of the layer to remove.
-     * @return True if the layer was removed, false otherwise.
+     * @return List of TiledLayers.
      */
-    public boolean removeLayer(String name) {
-        for (Iterator<TiledLayer> iterator = layers.iterator(); iterator.hasNext(); ) {
-            TiledLayer layer = iterator.next();
-            if (name.equals(layer.getCustomProperty("name"))) {
-                iterator.remove();
-                return true;
-            }
-        }
-        return false;
+    public List<TiledLayer> getLayers() {
+        return layers;
     }
 
     /**
-     * Returns the number of layers in the map.
+     * Sets the pieces on the map.
      *
-     * @return The number of layers.
+     * @param pieces The list of pieces to set.
      */
-    public int getLayerCount() {
-        return layers.size();
+    public void setPieces(List<Piece> pieces) {
+        this.pieces.clear();
+        this.pieces.addAll(pieces);
     }
 
     /**
-     * Sets a global map-level property.
+     * Gets the list of pieces on the map.
      *
-     * @param key   The property key.
+     * @return List of pieces.
+     */
+    public List<Piece> getPieces() {
+        return pieces;
+    }
+
+    /**
+     * Sets a map property.
+     *
+     * @param key The property key.
      * @param value The property value.
      */
     public void setMapProperty(String key, String value) {
@@ -97,21 +68,12 @@ public class TiledMap {
     }
 
     /**
-     * Gets a global map-level property by key.
+     * Retrieves a map property by key.
      *
-     * @param key The property key.
-     * @return The property value, or null if it doesn't exist.
+     * @param key The key of the property.
+     * @return The value of the property, or null if not found.
      */
     public String getMapProperty(String key) {
         return mapProperties.get(key);
-    }
-
-    /**
-     * Returns all global map-level properties.
-     *
-     * @return A map of all properties.
-     */
-    public Map<String, String> getMapProperties() {
-        return new HashMap<String, String>(mapProperties);
     }
 }

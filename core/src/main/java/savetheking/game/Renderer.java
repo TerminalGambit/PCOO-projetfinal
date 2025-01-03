@@ -1,68 +1,75 @@
+
 package savetheking.game;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
-public class Renderer implements Observer {
-    private final Board board;
-    private final OrthographicCamera camera;
-    private final ShapeRenderer shapeRenderer;
-    private final SpriteBatch spriteBatch;
+/**
+ * Renderer class is responsible for drawing the game board and pieces on the screen.
+ */
+public class Renderer {
+    private final TiledMap tiledMap;
     private final int tileSize;
+    private final SpriteBatch batch;
+    private final BitmapFont debugFont;
 
-    public Renderer(Board board, int tileSize) {
-        this.board = board;
+    /**
+     * Constructs a Renderer with the specified tiled map and tile size.
+     *
+     * @param tiledMap The game map to render.
+     * @param tileSize The size of each tile in pixels.
+     */
+    public Renderer(TiledMap tiledMap, int tileSize) {
+        this.tiledMap = tiledMap;
         this.tileSize = tileSize;
-        this.camera = new OrthographicCamera();
-        this.camera.setToOrtho(false, tileSize * board.getColumnCount(), tileSize * board.getRowCount());
-        this.shapeRenderer = new ShapeRenderer();
-        this.spriteBatch = new SpriteBatch();
-        this.board.addObserver(this);
+        this.batch = new SpriteBatch();
+        this.debugFont = new BitmapFont(); // For debug purposes
     }
 
-    @Override
-    public void update() {
-        System.out.println("Renderer: Board updated, triggering re-render.");
-    }
+    /**
+     * Renders the board layer.
+     */
+    public void renderBoardLayer() {
+        batch.begin();
 
-    public void render(SpriteBatch batch, Board board) {
-        renderBoard();
-        renderPieces(batch);
-    }
+        TiledLayer boardLayer = null;
 
-    private void renderBoard() {
-        shapeRenderer.setProjectionMatrix(camera.combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        for (int row = 0; row < board.getRowCount(); row++) {
-            for (int col = 0; col < board.getColumnCount(); col++) {
-                shapeRenderer.setColor((row + col) % 2 == 0 ? Color.LIGHT_GRAY : Color.DARK_GRAY);
-                shapeRenderer.rect(col * tileSize, row * tileSize, tileSize, tileSize);
+        // Retrieve the board layer
+        for (TiledLayer layer : tiledMap.getLayers()) {
+            if ("Board Layer".equalsIgnoreCase(layer.getLayerProperty("name"))) {
+                boardLayer = layer;
+                break;
             }
         }
-        shapeRenderer.end();
-    }
 
-    private void renderPieces(SpriteBatch batch) {
-        batch.setProjectionMatrix(camera.combined);
-        batch.begin();
-        for (int row = 0; row < board.getRowCount(); row++) {
-            for (int col = 0; col < board.getColumnCount(); col++) {
-                Tile tile = board.getTileAt(new Point(row, col));
-                if (tile instanceof OccupiedTile) {
-                    Piece piece = ((OccupiedTile) tile).getPiece();
-                    if (piece != null) {
-                        batch.draw(piece.getTexture(), col * tileSize, row * tileSize, tileSize, tileSize);
-                    }
+        if (boardLayer == null) {
+            System.out.println("Board Layer not found!");
+            batch.end();
+            return;
+        }
+
+        // Debug: Confirm board layer is being rendered
+        System.out.println("Rendering Board Layer...");
+
+        // Iterate through tiles and render them
+        for (int x = 0; x < boardLayer.getWidth(); x++) {
+            for (int y = 0; y < boardLayer.getHeight(); y++) {
+                Tile tile = boardLayer.getTile(x, y);
+                if (tile != null) {
+                    Texture texture = new Texture("default-tile.png"); // Replace with actual tile texture path
+                    int screenX = x * tileSize;
+                    int screenY = y * tileSize;
+
+                    // Debug: Output tile rendering info
+                    System.out.println("Rendering tile at (" + x + ", " + y + ") to screen (" + screenX + ", " + screenY + ").");
+
+                    // Render the tile using its method
+                    tile.render(texture, batch);
                 }
             }
         }
-        batch.end();
-    }
 
-    public void dispose() {
-        shapeRenderer.dispose();
-        spriteBatch.dispose();
+        batch.end();
     }
 }

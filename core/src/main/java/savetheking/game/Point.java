@@ -79,4 +79,12 @@ public class Point {
         int rank = boardSize - x;    // Convertit x (ligne) en rangée (1-8)
         return "" + file + rank;
     }
+
+    public float getX() {
+        return this.x;
+    }
+
+    public float getY() {
+        return this.y;
+    }
 }

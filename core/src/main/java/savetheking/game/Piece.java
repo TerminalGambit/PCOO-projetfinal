@@ -118,6 +118,8 @@ public abstract class Piece {
         }
     }
 
+
+
     public int getMoveCount() {
         return this.moveCount;
     }

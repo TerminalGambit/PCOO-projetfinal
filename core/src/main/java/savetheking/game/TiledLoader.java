@@ -1,15 +1,12 @@
+
 package savetheking.game;
 
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader.Parameters;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Responsible for loading and parsing Tiled (.tmx) files into TiledMap objects.
@@ -45,8 +42,15 @@ public class TiledLoader {
         // Parse layers
         for (MapLayer gdxLayer : gdxTiledMap.getLayers()) {
             if (gdxLayer instanceof TiledMapTileLayer) {
-                TiledLayer layer = parseTileLayer((TiledMapTileLayer) gdxLayer);
-                customTiledMap.addLayer(layer);
+                System.out.println("Found a TiledMapTileLayer: " + gdxLayer.getName());
+                if (gdxLayer.getName().equalsIgnoreCase("Board Layer")) {
+                    System.out.println("Loading Board Layer...");
+                    TiledLayer layer = parseTileLayer((TiledMapTileLayer) gdxLayer);
+                    customTiledMap.addLayer(layer);
+                    System.out.println("Board Layer loaded successfully.");
+                }
+            } else {
+                System.out.println("Non-TiledMapTileLayer found: " + gdxLayer.getName());
             }
         }
 
@@ -60,28 +64,30 @@ public class TiledLoader {
      * @return A custom TiledLayer representing the tile layer.
      */
     private TiledLayer parseTileLayer(TiledMapTileLayer tileLayer) {
-        List<Tile> tiles = new ArrayList<Tile>();
-        Map<String, String> customProperties = new java.util.HashMap<String, String>();
+        TiledLayer customLayer = new TiledLayer(tileLayer.getWidth(), tileLayer.getHeight());
+        MapProperties layerProperties = tileLayer.getProperties();
 
         // Parse layer properties
-        MapProperties layerProperties = tileLayer.getProperties();
         for (Iterator<String> it = layerProperties.getKeys(); it.hasNext(); ) {
             String key = it.next();
-            customProperties.put(key, layerProperties.get(key).toString());
+            customLayer.setLayerProperty(key, layerProperties.get(key).toString());
         }
 
-        // Parse tiles in the layer
+        // Debug tile parsing
+        System.out.println("Parsing tiles for layer: " + tileLayer.getName());
+
+        // Parse tiles
         for (int x = 0; x < tileLayer.getWidth(); x++) {
             for (int y = 0; y < tileLayer.getHeight(); y++) {
                 TiledMapTileLayer.Cell cell = tileLayer.getCell(x, y);
                 if (cell != null) {
-                    // Custom handling for different tile types can be added here
-                    Tile tile = new EmptyTile(new Point(x, y)); // Defaulting to EmptyTile
-                    tiles.add(tile);
+                    System.out.println("Tile at (" + x + ", " + y + ") loaded.");
+                } else {
+                    System.out.println("No tile at (" + x + ", " + y + ").");
                 }
             }
         }
 
-        return new TiledLayer(tiles, customProperties);
+        return customLayer;
     }
 }

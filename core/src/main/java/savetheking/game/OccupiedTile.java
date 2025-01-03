@@ -1,48 +1,33 @@
+
 package savetheking.game;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Texture;
+
 /**
- * La classe OccupiedTile représente une case sur l'échiquier qui contient actuellement une pièce.
- * Elle permet de récupérer, définir ou retirer la pièce occupant cette case.
+ * Represents a tile occupied by a chess piece.
  */
 public class OccupiedTile extends Tile {
-    private Piece piece; // La pièce occupant actuellement cette case
+    private Piece piece;
 
-    /**
-     * Constructeur pour initialiser une case occupée avec une position et une pièce.
-     *
-     * @param position La position de cette case sur l'échiquier.
-     * @param piece La pièce occupant cette case.
-     */
     public OccupiedTile(Point position, Piece piece) {
         super(position);
         this.piece = piece;
     }
 
-    /**
-     * Définit une pièce sur cette case occupée.
-     *
-     * @param piece La pièce à placer sur cette case.
-     */
     @Override
-    public void setPiece(Piece piece) {
-        this.piece = piece;
+    public boolean isOccupied() {
+        return true;
     }
 
-    /**
-     * Récupère la pièce occupant actuellement cette case.
-     *
-     * @return La pièce occupant cette case.
-     */
     @Override
     public Piece getPiece() {
         return piece;
     }
 
-    /**
-     * Retire la pièce de cette case, la rendant effectivement vide.
-     */
     @Override
-    public void removePiece() {
-        this.piece = null;
+    public void render(SpriteBatch batch, Texture texture) {
+        // Render the tile and delegate piece rendering to external logic
+        batch.draw(texture, position.getX() * 64, position.getY() * 64, 64, 64);
     }
 }

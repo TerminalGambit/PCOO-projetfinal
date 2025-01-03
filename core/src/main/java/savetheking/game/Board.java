@@ -66,14 +66,15 @@ public class Board implements Observable {
     }
 
     /**
-     * Initializes the board with EmptyTiles.
+     * Initializes the board with empty tiles.
      */
-    private void initializeBoard() {
+    public void initializeBoard() {
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < columnCount; j++) {
                 tiles[i][j] = new EmptyTile(new Point(i, j));
             }
         }
+        notifyObservers(); // Notify observers after board initialization
     }
 
     /**
@@ -92,14 +93,48 @@ public class Board implements Observable {
                 }
             }
         }
+        notifyObservers();
     }
 
     /**
-     * Returns the tile at the specified position.
+     * Moves a piece from the start position to the end position.
      *
-     * @param position The position of the tile.
-     * @return The tile at the specified position or null if out of bounds.
+     * @param start The starting position of the piece.
+     * @param end The ending position of the piece.
      */
+    public void movePiece(Point start, Point end) {
+        if (!isWithinBounds(start) || !isWithinBounds(end)) {
+            throw new IllegalArgumentException("Positions must be within the bounds of the board.");
+        }
+        Tile startTile = getTileAt(start);
+        if (startTile instanceof OccupiedTile) {
+            OccupiedTile occupiedTile = (OccupiedTile) startTile;
+            Piece piece = occupiedTile.getPiece();
+            removePiece(start);
+            placePiece(piece, end);
+            piece.move(end, rowCount);
+        }
+        notifyObservers();
+    }
+
+    /**
+     * Returns a list of all remaining pieces on the board.
+     *
+     * @return A list of remaining pieces.
+     */
+    public List<Piece> getRemainingPieces() {
+        List<Piece> remainingPieces = new ArrayList<Piece>();
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < columnCount; j++) {
+                Tile tile = tiles[i][j];
+                if (tile instanceof OccupiedTile) {
+                    remainingPieces.add(((OccupiedTile) tile).getPiece());
+                }
+            }
+        }
+        return remainingPieces;
+    }
+
     public Tile getTileAt(Point position) {
         if (!isWithinBounds(position)) {
             return null;
@@ -107,12 +142,10 @@ public class Board implements Observable {
         return tiles[position.x][position.y];
     }
 
-    /**
-     * Places a piece on the board.
-     *
-     * @param piece The piece to place.
-     * @param position The position to place the piece at.
-     */
+    public boolean isWithinBounds(Point position) {
+        return position.x >= 0 && position.x < rowCount && position.y >= 0 && position.y < columnCount;
+    }
+
     public void placePiece(Piece piece, Point position) {
         if (!isWithinBounds(position)) {
             throw new IllegalArgumentException("Position out of bounds: " + position);
@@ -121,11 +154,6 @@ public class Board implements Observable {
         notifyObservers();
     }
 
-    /**
-     * Removes a piece from the board.
-     *
-     * @param position The position to remove the piece from.
-     */
     public void removePiece(Point position) {
         if (!isWithinBounds(position)) {
             throw new IllegalArgumentException("Position out of bounds: " + position);
@@ -134,40 +162,21 @@ public class Board implements Observable {
         notifyObservers();
     }
 
-    /**
-     * Checks if a position is within the bounds of the board.
-     *
-     * @param position The position to check.
-     * @return True if the position is within bounds, false otherwise.
-     */
-    public boolean isWithinBounds(Point position) {
-        return position.x >= 0 && position.x < rowCount && position.y >= 0 && position.y < columnCount;
-    }
-
-    /**
-     * Adds an observer to the board.
-     *
-     * @param observer The observer to add.
-     */
-    public void addObserver(Observer observer) {
-        observers.add(observer);
-    }
-
-    /**
-     * Notifies all observers of changes to the board.
-     */
-    public void notifyObservers() {
-        for (Iterator<Observer> it = observers.iterator(); it.hasNext(); ) {
-            Observer observer = it.next();
-            observer.update();
-        }
-    }
-
     public int getRowCount() {
         return rowCount;
     }
 
     public int getColumnCount() {
         return columnCount;
+    }
+
+    public void addObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update();
+        }
     }
 }

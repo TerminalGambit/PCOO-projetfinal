@@ -1,5 +1,7 @@
+
 @startuml
 
+' Interfaces for Observer Pattern
 interface Observable {
     +addObserver(observer: Observer): void
     +notifyObservers(): void
@@ -9,6 +11,7 @@ interface Observer {
     +update(): void
 }
 
+' Core domain classes
 class Point {
     +x: int
     +y: int
@@ -20,142 +23,145 @@ class Point {
 }
 
 abstract class Tile {
-    #position: Point
-    #isDefended: boolean
+    -position: Point
     +Tile(position: Point)
-    +isOccupied(): boolean
     +getPosition(): Point
-    +isDefended(): boolean
-    +setDefended(defended: boolean): void
-    +setPiece(piece: Piece): void
+    +isOccupied(): boolean
     +getPiece(): Piece
-    +removePiece(): void
+    +render(SpriteBatch batch, Texture texture): void
 }
 
 class EmptyTile extends Tile {
     +EmptyTile(position: Point)
     +isOccupied(): boolean
-    +setPiece(piece: Piece): void
-    +getPiece(): Piece
-    +removePiece(): void
+    +getPiece(): null
 }
 
 class OccupiedTile extends Tile {
     -piece: Piece
     +OccupiedTile(position: Point, piece: Piece)
-    +getPiece(): Piece
-    +setPiece(piece: Piece): void
-    +removePiece(): void
     +isOccupied(): boolean
+    +getPiece(): Piece
 }
 
 abstract class Piece {
-    #color: String
-    #position: Point
-    +Piece(color: String, position: Point)
-    +getPossibleMoves(board: Board): List<Point>
-    +getColor(): String
-    +getPosition(): Point
-    +move(newPosition: Point, boardSize: int): void
-    +toString(): String
-}
-
-class King extends Piece {
-    +getPossibleMoves(board: Board): List<Point>
-}
-
-class Queen extends Piece {
-    +getPossibleMoves(board: Board): List<Point>
-}
-
-class Bishop extends Piece {
-    +getPossibleMoves(board: Board): List<Point>
+    -color: String
+    -position: Point
+    -texturePath: String
+    +getPossibleMoves(Board board): List<Point>
 }
 
 class Rook extends Piece {
-    +getPossibleMoves(board: Board): List<Point>
+    +getPossibleMoves(Board board): List<Point>
 }
 
-class Board implements Observable {
+class Bishop extends Piece {
+    +getPossibleMoves(Board board): List<Point>
+}
+
+class Queen extends Piece {
+    +getPossibleMoves(Board board): List<Point>
+}
+
+class Knight extends Piece {
+    +getPossibleMoves(Board board): List<Point>
+}
+
+class King extends Piece {
+    +getPossibleMoves(Board board): List<Point>
+}
+
+class Pawn extends Piece {
+    +getPossibleMoves(Board board): List<Point>
+}
+
+class Board {
     -tiles: Tile[][]
-    -rows: int
-    -columns: int
-    +initializeBoard(): void
-    +placePiece(piece: Piece, position: Point): void
-    +removePiece(position: Point): void
-    +getTileAt(position: Point): Tile
-    +isWithinBounds(position: Point): boolean
-    +addObserver(observer: Observer): void
-    +notifyObservers(): void
+    -rowCount: int
+    -columnCount: int
+    +Board(rowCount: int, columnCount: int)
+    +getTile(position: Point): Tile
+    +movePiece(start: Point, end: Point): void
 }
 
-class PieceFactory {
-    +createPiece(type: String, color: String, position: Point): Piece
-}
-
-class Renderer implements Observer {
-    +update(): void
-    +render(batch: SpriteBatch, board: Board): void
+class Renderer {
+    -board: Board
+    -tiledMap: TiledMap
+    +Renderer(Board board, TiledMap tiledMap)
+    +render(SpriteBatch batch): void
 }
 
 class Controller {
     -board: Board
-    -gameState: GameStateInterface
-    +handleInput(input: Input): void
-    +update(deltaTime: float): void
-}
-
-interface GameStateInterface {
-    +update(deltaTime: float): void
-    +render(batch: SpriteBatch): void
-}
-
-class PlayingState implements GameStateInterface {
-    +update(deltaTime: float): void
-    +render(batch: SpriteBatch): void
-}
-
-class PausedState implements GameStateInterface {
-    +update(deltaTime: float): void
-    +render(batch: SpriteBatch): void
-}
-
-class GameOverState implements GameStateInterface {
-    +update(deltaTime: float): void
-    +render(batch: SpriteBatch): void
+    -selectedPiece: Piece
+    +Controller(Board board)
+    +handleInput(Point start, Point end): void
 }
 
 class TiledLoader {
-    +loadTiledMap(mapPath: String): TiledMap
-    +parseLayer(layerName: String): List<Tile>
-    +extractPieces(layerName: String): List<Piece>
+    +load(file: String): TiledMap
 }
 
 class TiledMap {
-    +getLayer(layerName: String): TiledLayer
+    -layers: List<TiledLayer>
+    -pieces: List<Piece>
+    +getLayers(): List<TiledLayer>
+    +getPieces(): List<Piece>
 }
 
 class TiledLayer {
-    +getTiles(): List<Tile>
-    +getCustomProperties(): Map<String, String>
+    -tiles: Tile[][]
+    -width: int
+    -height: int
+    +TiledLayer(width: int, height: int)
 }
 
-GameManager *-- Board
-GameManager *-- GameStateInterface
-GameManager *-- Controller
+class GameManager {
+    -board: Board
+    -gameState: GameStateInterface
+    +startGame(): void
+    +endGame(): void
+    +handleMove(Point start, Point end): void
+}
 
-PieceFactory ..> Piece
-Renderer ..> Board
-Controller ..> Board
-Controller ..> GameStateInterface
-Board ..|> Observable
-Renderer ..|> Observer
-GameStateInterface <|.. PlayingState
-GameStateInterface <|.. PausedState
-GameStateInterface <|.. GameOverState
-TiledLoader ..> TiledMap
-TiledMap ..> TiledLayer
-TiledLoader ..> Board
-TiledLoader ..> PieceFactory
+interface GameStateInterface {
+    +update(float deltaTime): void
+    +render(SpriteBatch batch): void
+}
+
+class PlayingState implements GameStateInterface {
+    -controller: Controller
+    -renderer: Renderer
+    +update(float deltaTime): void
+    +render(SpriteBatch batch): void
+}
+
+class PausedState implements GameStateInterface {
+    +update(float deltaTime): void
+    +render(SpriteBatch batch): void
+}
+
+class GameOverState implements GameStateInterface {
+    +update(float deltaTime): void
+    +render(SpriteBatch batch): void
+}
+
+GameManager --> GameStateInterface
+PlayingState --> Renderer
+PlayingState --> Controller
+Renderer --> Board
+Renderer --> TiledMap
+Controller --> Board
+Piece --> Point
+Tile --> Point
+TiledMap --> TiledLayer
+TiledLayer --> Tile
+TiledLoader --> TiledMap
+TiledLoader --> Renderer
+TiledLoader --> Board
+Board --> Piece
+Tile --> Piece
+Board --> Observable
+Observer <|-- Board
 
 @enduml

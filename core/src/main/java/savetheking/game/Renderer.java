@@ -2,7 +2,6 @@ package savetheking.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 /**
  * Renderer class is responsible for drawing the game board and pieces on the screen.
@@ -11,10 +10,8 @@ public class Renderer {
     private final Board board;
     private final int tileSize;
     private final SpriteBatch batch;
-    private final BitmapFont debugFont;
-
-    // Temporary test texture
-    private final Texture testTexture;
+    private final Texture darkSquareTexture;
+    private final Texture lightSquareTexture;
 
     /**
      * Constructs a Renderer with the specified board and tile size.
@@ -26,70 +23,84 @@ public class Renderer {
         this.board = board;
         this.tileSize = tileSize;
         this.batch = new SpriteBatch();
-        this.debugFont = new BitmapFont(); // For debug purposes
-
-        // Load test texture for debugging
-        this.testTexture = new Texture("dark-green.png");
-        if (testTexture != null) {
-            System.out.println("Test texture (dark-green.png) loaded successfully.");
-        } else {
-            System.out.println("Failed to load test texture.");
-        }
+        this.darkSquareTexture = new Texture("dark-green.png");
+        this.lightSquareTexture = new Texture("light-white.png");
     }
 
     /**
-     * Returns a test texture for temporary rendering.
+     * Renders the entire game: board and pieces.
      *
-     * @return The test texture.
+     * @param batch The SpriteBatch used for rendering.
      */
-    public Texture getTestTexture() {
-        return testTexture;
-    }
-
     public void render(SpriteBatch batch) {
-        renderBoardLayer(); // Render the board
-        renderPieces(batch); // Add logic to render pieces
+        renderBoardLayer(batch);
+        //renderPieces(batch);
     }
 
+    /**
+     * Renders the board layer (checkered tiles).
+     *
+     * @param batch The SpriteBatch used for rendering.
+     */
+    private void renderBoardLayer(SpriteBatch batch) {
+        batch.begin();
+
+        for (int x = 0; x < board.getRowCount(); x++) {
+            for (int y = 0; y < board.getColumnCount(); y++) {
+                Tile tile = board.getTileAt(new Point(x, y));
+
+                if (tile != null) {
+                    // Get tile ID and determine texture
+                    int tileId = tile.getId();
+                    boolean isDarkSquare = tileId == 1; // Assuming dark green = 1
+                    Texture texture = isDarkSquare ? darkSquareTexture : lightSquareTexture;
+
+                    // Calculate screen position
+                    int screenX = y * tileSize;
+                    int screenY = (board.getRowCount() - x - 1) * tileSize;
+
+                    // Debug: Log tile rendering details
+                    System.out.println("Rendering Tile ID: " + tileId + " at grid (" + x + ", " + y +
+                        "), screen (" + screenX + ", " + screenY + ")");
+
+                    // Render the square
+                    batch.draw(texture, screenX, screenY, tileSize, tileSize);
+                } else {
+                    System.out.println("No tile found at (" + x + ", " + y + ")");
+                }
+            }
+        }
+
+        batch.end();
+    }
+
+    /**
+     * Renders the pieces on the board.
+     *
+     * @param batch The SpriteBatch used for rendering.
+     */
     private void renderPieces(SpriteBatch batch) {
-        // Example logic for rendering pieces
+        batch.begin();
+
         for (int x = 0; x < board.getRowCount(); x++) {
             for (int y = 0; y < board.getColumnCount(); y++) {
                 Tile tile = board.getTileAt(new Point(x, y));
                 if (tile instanceof OccupiedTile) {
                     Piece piece = ((OccupiedTile) tile).getPiece();
-                    // piece.render(batch); // Assuming Piece has a render method
+                    //piece.render(batch); // Ensure each Piece has a render method
                 }
-            }
-        }
-    }
-
-    public void renderBoardLayer() {
-        batch.begin();
-
-        Texture darkSquareTexture = new Texture("dark-green.png");
-        Texture lightSquareTexture = new Texture("light-white.png");
-
-        for (int x = 0; x < board.getRowCount(); x++) {
-            for (int y = 0; y < board.getColumnCount(); y++) {
-                boolean isDarkSquare = (x + y) % 2 == 0;
-                Texture texture = isDarkSquare ? darkSquareTexture : lightSquareTexture;
-                int screenX = y * tileSize; // Adjusted for column-major rendering
-                int screenY = (board.getRowCount() - x - 1) * tileSize;
-
-                batch.draw(texture, screenX, screenY, tileSize, tileSize);
             }
         }
 
         batch.end();
-
-        darkSquareTexture.dispose();
-        lightSquareTexture.dispose();
     }
 
+    /**
+     * Disposes of resources used by the Renderer.
+     */
     public void dispose() {
         batch.dispose();
-        debugFont.dispose();
-        testTexture.dispose(); // Dispose of the test texture
+        darkSquareTexture.dispose();
+        lightSquareTexture.dispose();
     }
 }

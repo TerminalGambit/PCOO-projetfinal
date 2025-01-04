@@ -1,15 +1,25 @@
-
 package savetheking.game;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import savetheking.game.Piece;
+import savetheking.game.Point;
+import savetheking.game.Tile;
 
 /**
- * Represents an empty tile on the board.
- */
-public class EmptyTile extends Tile {
-    public EmptyTile(Point position) {
-        super(position);
+    * Class representing an empty tile on the board.
+    */
+
+class EmptyTile extends Tile {
+
+    /**
+     * Constructs an EmptyTile at a specific position.
+     *
+     * @param position The position of the tile on the board.
+     * @param tileId   The ID representing the type of tile (e.g., dark green = 1, light white = 3).
+     */
+    public EmptyTile(Point position, int tileId) {
+        super(position, tileId);
     }
 
     @Override
@@ -21,10 +31,5 @@ public class EmptyTile extends Tile {
     public Piece getPiece() {
         return null;
     }
-
-    @Override
-    public void render(SpriteBatch batch, Texture texture) {
-        // Render the empty tile using the provided texture
-        batch.draw(texture, position.getX() * 64, position.getY() * 64, 64, 64);
-    }
 }
+

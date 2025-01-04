@@ -1,17 +1,23 @@
-
 package savetheking.game;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.Texture;
 
 /**
- * Represents a tile occupied by a chess piece.
+ * Class representing a tile occupied by a piece on the board.
  */
-public class OccupiedTile extends Tile {
-    private Piece piece;
+class OccupiedTile extends Tile {
+    private final Piece piece;
 
-    public OccupiedTile(Point position, Piece piece) {
-        super(position);
+    /**
+     * Constructs an OccupiedTile at a specific position with a piece.
+     *
+     * @param position The position of the tile on the board.
+     * @param tileId   The ID representing the type of tile (e.g., dark green = 1, light white = 3).
+     * @param piece    The piece occupying the tile.
+     */
+    public OccupiedTile(Point position, int tileId, Piece piece) {
+        super(position, tileId);
         this.piece = piece;
     }
 
@@ -27,7 +33,12 @@ public class OccupiedTile extends Tile {
 
     @Override
     public void render(SpriteBatch batch, Texture texture) {
-        // Render the tile and delegate piece rendering to external logic
-        batch.draw(texture, position.getX() * 64, position.getY() * 64, 64, 64);
+        // Render the base tile
+        super.render(batch, texture);
+
+        // Render the piece on top of the tile
+        if (piece != null) {
+            piece.render(batch, position);
+        }
     }
 }

@@ -74,7 +74,7 @@ public class TiledLayer {
      * @param key The property name.
      * @return The property value, or null if not found.
      */
-    public String getLayerProperty(String key) {
+    public String getCustomProperty(String key) {
         return customProperties.get(key);
     }
 }

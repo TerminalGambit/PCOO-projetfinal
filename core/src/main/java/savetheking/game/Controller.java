@@ -35,7 +35,7 @@ public class Controller {
             if (clickedTile instanceof OccupiedTile) {
                 selectedPiece = ((OccupiedTile) clickedTile).getPiece();
                 System.out.println("Selected piece: " + selectedPiece);
-                highlightValidMoves(selectedPiece); // Highlight valid moves for the selected piece
+                //highlightValidMoves(selectedPiece); // Highlight valid moves for the selected piece
             } else {
                 System.out.println("Clicked on an empty tile, no piece selected.");
             }
@@ -96,10 +96,9 @@ public class Controller {
         System.out.println("Board has been reset to its initial state.");
     }
 
-    /**
-     * Highlights valid moves for the selected piece.
-     * @param piece The selected piece for which to highlight moves.
-     */
+    /*
+      Highlights valid moves for the selected piece.
+      @param piece The selected piece for which to highlight moves.
     private void highlightValidMoves(Piece piece) {
         if (piece != null) {
             List<Point> validMoves = piece.getPossibleMoves(board);
@@ -112,6 +111,7 @@ public class Controller {
             System.out.println("Highlighted valid moves for the selected piece.");
         }
     }
+     */
 
     /**
      * Updates the game state (called each frame in the game loop).

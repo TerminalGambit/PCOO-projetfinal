@@ -38,8 +38,7 @@ public class PlayingState implements GameStateInterface {
 
     @Override
     public void render(SpriteBatch batch) {
-        // Delegate rendering to the renderer
-        renderer.render(batch, board);
+        renderer.render(batch);
     }
 
     /**

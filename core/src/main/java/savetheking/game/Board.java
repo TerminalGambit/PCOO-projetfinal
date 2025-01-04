@@ -13,6 +13,15 @@ public class Board implements Observable {
     private final int rowCount;
     private final int columnCount;
     private final List<Observer> observers = new ArrayList<Observer>();
+
+    public TiledMap getTiledMap() {
+        return tiledMap;
+    }
+
+    public void setTiledMap(TiledMap tiledMap) {
+        this.tiledMap = tiledMap;
+    }
+
     private TiledMap tiledMap;
 
     /**

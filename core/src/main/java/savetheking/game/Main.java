@@ -27,7 +27,7 @@ public class Main extends ApplicationAdapter {
             board = new Board(tiledMap); // Ensure Board accepts a TiledMap in its constructor
 
             // Initialize Renderer, Controller, and Game State
-            renderer = new Renderer(board, tileSize);
+            renderer = new Renderer(board, tileSize); // Pass the board and tile size
             batch = new SpriteBatch();
             controller = new Controller(board);
             playingState = new PlayingState(board, controller, renderer);

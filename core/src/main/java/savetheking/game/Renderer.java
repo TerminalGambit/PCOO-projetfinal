@@ -51,7 +51,7 @@ public class Renderer {
 
                 if (tile != null) {
                     // Get tile ID and determine texture
-                    int tileId = tile.getId();
+                    int tileId = tile.getTileId();
                     boolean isDarkSquare = tileId == 1; // Assuming dark green = 1
                     Texture texture = isDarkSquare ? darkSquareTexture : lightSquareTexture;
 

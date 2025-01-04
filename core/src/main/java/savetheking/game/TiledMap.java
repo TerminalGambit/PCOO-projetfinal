@@ -1,7 +1,9 @@
 package savetheking.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents the entire TiledMap structure, consisting of multiple layers and pieces.
@@ -9,7 +11,7 @@ import java.util.List;
 public class TiledMap {
     private final List<TiledLayer> layers;
     private final List<Piece> pieces; // List of pieces on the map
-    private final java.util.Map<String, String> mapProperties;
+    private final Map<String, String> mapProperties;
 
     /**
      * Constructs an empty TiledMap.
@@ -17,7 +19,7 @@ public class TiledMap {
     public TiledMap() {
         this.layers = new ArrayList<TiledLayer>();
         this.pieces = new ArrayList<Piece>();
-        this.mapProperties = new java.util.HashMap<String, String>();
+        this.mapProperties = new HashMap<String, String>();
     }
 
     /**
@@ -36,6 +38,21 @@ public class TiledMap {
      */
     public List<TiledLayer> getLayers() {
         return layers;
+    }
+
+    /**
+     * Retrieves a layer by name.
+     *
+     * @param name The name of the layer.
+     * @return The matching TiledLayer, or null if not found.
+     */
+    public TiledLayer getLayer(String name) {
+        for (TiledLayer layer : layers) {
+            if (name.equals(layer.getName())) {
+                return layer;
+            }
+        }
+        return null;
     }
 
     /**
@@ -75,5 +92,29 @@ public class TiledMap {
      */
     public String getMapProperty(String key) {
         return mapProperties.get(key);
+    }
+
+    /**
+     * Retrieves the width of the map based on the first layer.
+     *
+     * @return The width of the map.
+     */
+    public int getWidth() {
+        if (!layers.isEmpty()) {
+            return layers.get(0).getWidth();
+        }
+        return 0;
+    }
+
+    /**
+     * Retrieves the height of the map based on the first layer.
+     *
+     * @return The height of the map.
+     */
+    public int getHeight() {
+        if (!layers.isEmpty()) {
+            return layers.get(0).getHeight();
+        }
+        return 0;
     }
 }

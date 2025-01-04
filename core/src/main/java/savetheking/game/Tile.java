@@ -3,6 +3,9 @@ package savetheking.game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Abstract base class for tiles on the board.
  * Represents a single tile that can be occupied by a piece or empty.
@@ -10,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public abstract class Tile {
     protected final Point position; // Position of the tile on the board
     protected final int tileId;     // ID of the tile (e.g., for dark/light distinction)
+    protected final Map<String, String> properties; // Custom properties for the tile
 
     /**
      * Constructs a Tile with a specific position and tile ID.
@@ -20,6 +24,7 @@ public abstract class Tile {
     public Tile(Point position, int tileId) {
         this.position = position;
         this.tileId = tileId;
+        this.properties = new HashMap<String, String>();
     }
 
     /**
@@ -36,8 +41,28 @@ public abstract class Tile {
      *
      * @return The tile ID.
      */
-    public int getId() {
+    public int getTileId() {
         return tileId;
+    }
+
+    /**
+     * Gets the value of a custom property for this tile.
+     *
+     * @param key The property name.
+     * @return The property value, or null if not found.
+     */
+    public String getProperty(String key) {
+        return properties.get(key);
+    }
+
+    /**
+     * Sets a custom property for this tile.
+     *
+     * @param key   The property name.
+     * @param value The property value.
+     */
+    public void setProperty(String key, String value) {
+        properties.put(key, value);
     }
 
     /**

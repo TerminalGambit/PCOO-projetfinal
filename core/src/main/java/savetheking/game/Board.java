@@ -1,7 +1,8 @@
 package savetheking.game;
 
+import com.badlogic.gdx.graphics.Texture;
+
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -13,32 +14,7 @@ public class Board implements Observable {
     private final int rowCount;
     private final int columnCount;
     private final List<Observer> observers = new ArrayList<Observer>();
-
-    public TiledMap getTiledMap() {
-        return tiledMap;
-    }
-
-    public void setTiledMap(TiledMap tiledMap) {
-        this.tiledMap = tiledMap;
-    }
-
-    private TiledMap tiledMap;
-
-    /**
-     * Constructs a Board with specified dimensions.
-     *
-     * @param rowCount Number of rows on the board.
-     * @param columnCount Number of columns on the board.
-     */
-    public Board(int rowCount, int columnCount) {
-        if (rowCount <= 0 || columnCount <= 0) {
-            throw new IllegalArgumentException("Board dimensions must be positive.");
-        }
-        this.rowCount = rowCount;
-        this.columnCount = columnCount;
-        this.tiles = new Tile[rowCount][columnCount];
-        initializeBoard();
-    }
+    private final TiledMap tiledMap;
 
     /**
      * Constructs a Board using a TiledMap for initialization.
@@ -46,59 +22,36 @@ public class Board implements Observable {
      * @param tiledMap The TiledMap to load the board from.
      */
     public Board(TiledMap tiledMap) {
-        this.rowCount = extractLayerHeight(tiledMap, "Board Layer");
-        this.columnCount = extractLayerWidth(tiledMap, "Board Layer");
+        this.rowCount = tiledMap.getHeight();
+        this.columnCount = tiledMap.getWidth();
         this.tiles = new Tile[rowCount][columnCount];
         this.tiledMap = tiledMap;
         initializeFromTiledMap();
-    }
-
-    private int extractLayerHeight(TiledMap tiledMap, String layerName) {
-        TiledLayer layer = findLayerByName(tiledMap, layerName);
-        return layer != null ? layer.getHeight() : 0;
-    }
-
-    private int extractLayerWidth(TiledMap tiledMap, String layerName) {
-        TiledLayer layer = findLayerByName(tiledMap, layerName);
-        return layer != null ? layer.getWidth() : 0;
-    }
-
-    private TiledLayer findLayerByName(TiledMap tiledMap, String layerName) {
-        List<TiledLayer> layers = tiledMap.getLayers();
-        for (Iterator<TiledLayer> it = layers.iterator(); it.hasNext(); ) {
-            TiledLayer layer = it.next();
-            if (layerName.equals(layer.getCustomProperty("name"))) {
-                return layer;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Initializes the board with empty tiles.
-     */
-    public void initializeBoard() {
-        for (int i = 0; i < rowCount; i++) {
-            for (int j = 0; j < columnCount; j++) {
-                tiles[i][j] = new EmptyTile(new Point(i, j));
-            }
-        }
-        notifyObservers(); // Notify observers after board initialization
     }
 
     /**
      * Initializes the board using data from the TiledMap.
      */
     private void initializeFromTiledMap() {
-        TiledLayer pieceLayer = findLayerByName(tiledMap, "Piece Layer");
-        if (pieceLayer != null) {
-            for (int x = 0; x < rowCount; x++) {
-                for (int y = 0; y < columnCount; y++) {
-                    Tile tile = pieceLayer.getTile(x, y);
-                    if (tile == null) {
-                        tile = new EmptyTile(new Point(x, y)); // Default
-                    }
-                    tiles[x][y] = tile;
+        TiledLayer boardLayer = tiledMap.getLayer("Board Layer");
+        TiledLayer pieceLayer = tiledMap.getLayer("Piece Layer");
+
+        // In the initializeFromTiledMap() method
+        for (int x = 0; x < rowCount; x++) {
+            for (int y = 0; y < columnCount; y++) {
+                int tileId = boardLayer != null ? boardLayer.getTileId(x, y) : 0;
+
+                if (pieceLayer != null && pieceLayer.getTile(x, y) != null) {
+                    Tile pieceTile = pieceLayer.getTile(x, y);
+                    String type = pieceTile.getProperty("type");
+                    String color = pieceTile.getProperty("color");
+                    Point position = new Point(x, y);
+
+                    // Use PieceFactory to create the piece
+                    Piece piece = PieceFactory.createPiece(type, color, position);
+                    tiles[x][y] = new OccupiedTile(position, tileId, piece);
+                } else {
+                    tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
                 }
             }
         }
@@ -159,7 +112,7 @@ public class Board implements Observable {
         if (!isWithinBounds(position)) {
             throw new IllegalArgumentException("Position out of bounds: " + position);
         }
-        tiles[position.x][position.y] = new OccupiedTile(position, piece);
+        tiles[position.x][position.y] = new OccupiedTile(position, 0, piece); // Default tileId 0 for new piece
         notifyObservers();
     }
 
@@ -167,7 +120,7 @@ public class Board implements Observable {
         if (!isWithinBounds(position)) {
             throw new IllegalArgumentException("Position out of bounds: " + position);
         }
-        tiles[position.x][position.y] = new EmptyTile(position);
+        tiles[position.x][position.y] = new EmptyTile(position, 0); // Default tileId 0
         notifyObservers();
     }
 

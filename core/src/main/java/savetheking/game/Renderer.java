@@ -37,15 +37,14 @@ public class Renderer {
      * Renders the entire game: board and pieces.
      */
     public void render() {
-        System.out.println("Starting rendering...");
+        //System.out.println("Starting rendering...");
 
         renderBoardLayer();
-        System.out.println("Board rendering completed.");
+        //System.out.println("Board rendering completed.");
 
         renderPieces();
-        System.out.println("Piece rendering completed.");
-
-        System.out.println("Rendering cycle completed.");
+        //System.out.println("Piece rendering completed.");
+        //System.out.println("Rendering cycle completed.");
     }
 
     /**

@@ -18,6 +18,11 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         int tileSize = 64; // Define the size of each tile
+        int boardSize = 8 * tileSize; // Total board size (8x8 board)
+
+        // Adjust the window size to match the board dimensions
+        Gdx.graphics.setWindowedMode(boardSize, boardSize);
+
         String mapPath = "ChessBoardWithPieces.tmx";
 
         try {

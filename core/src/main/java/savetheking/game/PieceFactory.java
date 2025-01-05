@@ -12,7 +12,7 @@ public class PieceFactory {
      * @param type     The type of the piece (e.g., "Rook", "Knight").
      * @param color    The color of the piece ("White" or "Black").
      * @param position The position of the piece.
-     * @return The created Piece object, or null if type is invalid.
+     * @return The created Piece object.
      */
     public static Piece createPiece(String type, String color, Point position) {
         if (type == null || color == null || position == null) {
@@ -22,21 +22,21 @@ public class PieceFactory {
         // Load the appropriate texture based on piece type and color
         Texture texture = loadTexture(type, color);
 
-        switch (type.toLowerCase()) {
-            case "rook":
-                return new Rook(color, position, texture);
-            case "knight":
-                return new Knight(color, position, texture);
-            case "bishop":
-                return new Bishop(color, position, texture);
-            case "queen":
-                return new Queen(color, position, texture);
-            case "king":
-                return new King(color, position, texture);
-            case "pawn":
-                return new Pawn(color, position, texture);
-            default:
-                throw new IllegalArgumentException("Invalid piece type: " + type);
+        // Use if-else to determine the type of piece
+        if ("rook".equalsIgnoreCase(type)) {
+            return new Rook(color, position, texture);
+        } else if ("knight".equalsIgnoreCase(type)) {
+            return new Knight(color, position, texture);
+        } else if ("bishop".equalsIgnoreCase(type)) {
+            return new Bishop(color, position, texture);
+        } else if ("queen".equalsIgnoreCase(type)) {
+            return new Queen(color, position, texture);
+        } else if ("king".equalsIgnoreCase(type)) {
+            return new King(color, position, texture);
+        } else if ("pawn".equalsIgnoreCase(type)) {
+            return new Pawn(color, position, texture);
+        } else {
+            throw new IllegalArgumentException("Invalid piece type: " + type);
         }
     }
 
@@ -48,7 +48,34 @@ public class PieceFactory {
      * @return The loaded Texture.
      */
     private static Texture loadTexture(String type, String color) {
-        String texturePath = "pieces/" + color.toLowerCase().charAt(0) + type.toLowerCase().charAt(0) + ".png";
+        // Use abbreviations to avoid conflicts (e.g., "kn" for knight and "ki" for king)
+        String typeAbbreviation = getTypeAbbreviation(type);
+        String texturePath = "pieces/" + color.toLowerCase().charAt(0) + typeAbbreviation + ".png";
+
         return new Texture(texturePath);
+    }
+
+    /**
+     * Maps the full type name to its corresponding abbreviation.
+     *
+     * @param type The full type name.
+     * @return The abbreviation for the type.
+     */
+    private static String getTypeAbbreviation(String type) {
+        if ("knight".equalsIgnoreCase(type)) {
+            return "n"; // Use 'n' for knight
+        } else if ("king".equalsIgnoreCase(type)) {
+            return "k"; // Use 'k' for king
+        } else if ("rook".equalsIgnoreCase(type)) {
+            return "r";
+        } else if ("bishop".equalsIgnoreCase(type)) {
+            return "b";
+        } else if ("queen".equalsIgnoreCase(type)) {
+            return "q";
+        } else if ("pawn".equalsIgnoreCase(type)) {
+            return "p";
+        } else {
+            throw new IllegalArgumentException("Invalid piece type: " + type);
+        }
     }
 }

@@ -12,12 +12,13 @@ public class Renderer {
     private final SpriteBatch batch;
     private final Texture darkSquareTexture;
     private final Texture lightSquareTexture;
+    private final boolean debugMode; // Toggle for enabling/disabling debug logs
 
     /**
-     * Constructs a Renderer with the specified board and tile size.
+     * Constructs a Renderer with the specified board, tile size, and debug mode.
      *
-     * @param board    The game board to render.
-     * @param tileSize The size of each tile in pixels.
+     * @param board     The game board to render.
+     * @param tileSize  The size of each tile in pixels.
      */
     public Renderer(Board board, int tileSize) {
         this.board = board;
@@ -25,6 +26,7 @@ public class Renderer {
         this.batch = new SpriteBatch();
         this.darkSquareTexture = new Texture("dark-green.png");
         this.lightSquareTexture = new Texture("light-white.png");
+        this.debugMode = false; // Initialize the debug mode
     }
 
     /**
@@ -58,15 +60,19 @@ public class Renderer {
                     int screenX = col * tileSize;
                     int screenY = (board.getRowCount() - row - 1) * tileSize;
 
-                    // Debug: Log tile rendering details
-                    System.out.println("Rendering at grid (" + row + ", " + col +
-                        "), screen (" + screenX + ", " + screenY + "), DarkSquare: " + isDarkSquare);
+                    // Debug: Log tile rendering details if debugMode is enabled
+                    if (debugMode) {
+                        System.out.println("Rendering at grid (" + row + ", " + col +
+                            "), screen (" + screenX + ", " + screenY + "), DarkSquare: " + isDarkSquare);
+                    }
 
                     // Render the square
                     batch.draw(texture, screenX, screenY, tileSize, tileSize);
                 } else {
                     // Debug: No tile found
-                    System.out.println("No tile found at (" + row + ", " + col + ")");
+                    if (debugMode) {
+                        System.out.println("No tile found at (" + row + ", " + col + ")");
+                    }
                 }
             }
         }
@@ -90,6 +96,11 @@ public class Renderer {
                     if (piece != null) {
                         // Use Piece.render with the grid position
                         piece.render(batch, new Point(row, col));
+
+                        // Debug: Log piece rendering details if debugMode is enabled
+                        if (debugMode) {
+                            System.out.println("Rendering piece at grid (" + row + ", " + col + "): " + piece);
+                        }
                     }
                 }
             }

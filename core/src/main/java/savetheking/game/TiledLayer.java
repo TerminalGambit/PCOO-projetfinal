@@ -11,6 +11,7 @@ public class TiledLayer {
     private final int height;
     private final int[][] tileIds; // 2D array of tile IDs in this layer
     private final Map<String, String> customProperties; // Custom properties associated with the layer
+    private final Map<Point, Map<String, String>> tileProperties; // Per-tile properties
 
     /**
      * Constructs a TiledLayer with the given dimensions.
@@ -23,6 +24,7 @@ public class TiledLayer {
         this.height = height;
         this.tileIds = new int[width][height]; // Initialize with default tile IDs (0)
         this.customProperties = new HashMap<String, String>();
+        this.tileProperties = new HashMap<Point, Map<String, String>>();
     }
 
     /**
@@ -51,7 +53,7 @@ public class TiledLayer {
      * @return The tile ID at the specified position, or 0 if out of bounds.
      */
     public int getTileId(int x, int y) {
-        if (x >= 0 && x < width && y >= 0 && y < height) {
+        if (isWithinBounds(x, y)) {
             return tileIds[x][y];
         }
         return 0; // Default to 0 if out of bounds
@@ -67,24 +69,31 @@ public class TiledLayer {
     public Tile getTile(int x, int y) {
         if (isWithinBounds(x, y)) {
             int tileId = tileIds[x][y];
-            return createTileFromId(tileId, x, y);
+            Map<String, String> properties = tileProperties.get(new Point(x, y));
+            return createTileFromId(tileId, x, y, properties);
         }
         return null; // Return null if out of bounds or no valid tile exists
     }
 
     /**
-     * Creates a Tile object based on its ID.
+     * Creates a Tile object based on its ID and properties.
      *
-     * @param tileId The ID of the tile.
-     * @param x      The x-coordinate of the tile.
-     * @param y      The y-coordinate of the tile.
+     * @param tileId     The ID of the tile.
+     * @param x          The x-coordinate of the tile.
+     * @param y          The y-coordinate of the tile.
+     * @param properties Additional properties for the tile.
      * @return A Tile object corresponding to the given tile ID.
      */
-    private Tile createTileFromId(int tileId, int x, int y) {
+    private Tile createTileFromId(int tileId, int x, int y, Map<String, String> properties) {
         if (tileId == 0) {
             return new EmptyTile(new Point(x, y), tileId);
         } else {
-            return new OccupiedTile(new Point(x, y), tileId, null); // Replace null with a valid Piece if needed
+            String type = properties != null ? properties.get("type") : null;
+            String color = properties != null ? properties.get("color") : null;
+            Piece piece = (type != null && color != null)
+                ? PieceFactory.createPiece(type, color, new Point(x, y))
+                : null;
+            return new OccupiedTile(new Point(x, y), tileId, piece);
         }
     }
 
@@ -96,10 +105,23 @@ public class TiledLayer {
      * @param tileId The tile ID to set.
      */
     public void setTileId(int x, int y, int tileId) {
-        if (x >= 0 && x < width && y >= 0 && y < height) {
+        if (isWithinBounds(x, y)) {
             tileIds[x][y] = tileId;
         } else {
             throw new IllegalArgumentException("Position out of bounds: (" + x + ", " + y + ")");
+        }
+    }
+
+    /**
+     * Adds properties to a specific tile.
+     *
+     * @param x          The x-coordinate of the tile.
+     * @param y          The y-coordinate of the tile.
+     * @param properties A map of properties to add to the tile.
+     */
+    public void setTileProperties(int x, int y, Map<String, String> properties) {
+        if (isWithinBounds(x, y)) {
+            tileProperties.put(new Point(x, y), properties);
         }
     }
 

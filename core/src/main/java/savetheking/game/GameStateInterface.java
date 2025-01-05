@@ -1,8 +1,20 @@
 package savetheking.game;
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
 public interface GameStateInterface {
+    /**
+     * Called when entering this state.
+     */
+    void enterState();
+
+    /**
+     * Updates the game state.
+     *
+     * @param deltaTime Time since the last update.
+     */
     void update(float deltaTime);
-    void render(SpriteBatch batch);
+
+    /**
+     * Renders the game state.
+     */
+    void render();
 }

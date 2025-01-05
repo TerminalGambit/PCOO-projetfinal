@@ -1,11 +1,12 @@
 package savetheking.game;
 
 import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
 
 import java.util.Iterator;
 
@@ -99,38 +100,102 @@ public class TiledLoader {
      * @param customTiledMap The TiledMap to populate with pieces.
      */
     private void parseObjectGroupLayer(MapLayer gdxLayer, TiledMap customTiledMap) {
-        MapObjects objects = gdxLayer.getObjects();
-        System.out.println("Processing object group layer: " + gdxLayer.getName() + " with " + objects.getCount() + " objects.");
+        System.out.println("Processing object group layer: " + gdxLayer.getName() + " with " + gdxLayer.getObjects().getCount() + " objects.");
 
-        for (RectangleMapObject obj : objects.getByType(RectangleMapObject.class)) {
-            MapProperties properties = obj.getProperties();
+        for (MapObject obj : gdxLayer.getObjects()) {
+            // Log the type of object dynamically
+            System.out.println("Found object of type: " + obj.getClass().getCanonicalName());
 
-            System.out.println("Processing object with properties: " + properties);
-
-            // Extract piece properties
-            String type = properties.get("type", String.class);
-            String color = properties.get("color", String.class);
-            Integer gid = properties.get("gid", Integer.class);
-            Float x = properties.get("x", Float.class);
-            Float y = properties.get("y", Float.class);
-
-            System.out.println("Parsed object: Type=" + type + ", Color=" + color + ", GID=" + gid + ", X=" + x + ", Y=" + y);
-
-            if (type != null && color != null && x != null && y != null) {
-                Point position = new Point(Math.round(x / 64), Math.round(y / 64)); // Assuming 64x64 tiles
-
-                System.out.println("Attempting to create piece using PieceFactory...");
-                Piece piece = PieceFactory.createPiece(type, color, position);
-
-                if (piece != null) {
-                    System.out.println("Piece created successfully: " + piece);
-                    customTiledMap.getPieces().add(piece);
-                } else {
-                    System.err.println("Failed to create piece: " + type + ", " + color);
-                }
+            // Check known types and handle accordingly
+            if (obj instanceof RectangleMapObject) {
+                System.out.println("Object is a RectangleMapObject.");
+                RectangleMapObject rectangleObject = (RectangleMapObject) obj;
+                processRectangleMapObject(rectangleObject, customTiledMap);
+            } else if (obj instanceof TiledMapTileMapObject) {
+                System.out.println("Object is a TiledMapTileMapObject.");
+                TiledMapTileMapObject tileMapObject = (TiledMapTileMapObject) obj;
+                processTiledMapTileMapObject(tileMapObject, customTiledMap);
             } else {
-                System.err.println("Incomplete piece definition in layer: " + gdxLayer.getName());
+                System.err.println("Unknown or unsupported MapObject type: " + obj.getClass().getCanonicalName());
             }
+        }
+    }
+
+    /**
+     * Processes a RectangleMapObject to extract properties and create a Piece.
+     */
+    private void processRectangleMapObject(RectangleMapObject obj, TiledMap customTiledMap) {
+        MapProperties properties = obj.getProperties();
+        System.out.println("Rectangle Object properties: " + properties);
+
+        String type = properties.get("type", String.class);
+        String color = properties.get("color", String.class);
+        Float x = obj.getRectangle().x;
+        Float y = obj.getRectangle().y;
+
+        if (type == null || color == null || x == null || y == null) {
+            System.err.println("Incomplete or invalid RectangleMapObject definition. Skipping object.");
+            return;
+        }
+
+        int boardX = Math.round(x / 64); // Assuming 64x64 tiles
+        int boardY = Math.round((512 - y) / 64); // Adjust for LibGDX bottom-left origin
+        Point position = new Point(boardX, boardY);
+
+        System.out.println("Calculated Board Position (Rectangle Object): " + position);
+        createPieceFromFactory(type, color, position, customTiledMap);
+    }
+
+    /**
+     * Processes a TiledMapTileMapObject to extract properties and create a Piece.
+     */
+    private void processTiledMapTileMapObject(TiledMapTileMapObject obj, TiledMap customTiledMap) {
+        // Fetch properties
+        MapProperties properties = obj.getProperties();
+
+        // Debugging: Log all properties
+        System.out.println("TiledMapTileMapObject properties: " + properties);
+
+        // Extract required properties
+        String type = properties.get("type", String.class);
+        String color = properties.get("color", String.class);
+        Float x = obj.getX();
+        Float y = obj.getY();
+
+        // Validate attributes
+        if (type == null || color == null || x == null || y == null) {
+            System.err.println("Incomplete or invalid TiledMapTileMapObject definition. Skipping object.");
+            return;
+        }
+
+        // Convert to board coordinates
+        int boardX = Math.round(x / 64); // Assuming 64x64 tiles
+        int boardY = Math.round((512 - y) / 64); // Adjust for LibGDX bottom-left origin
+        Point position = new Point(boardX, boardY);
+
+        System.out.println("Calculated Board Position (TiledMapTileMapObject): " + position);
+
+        // Create piece and add to the map
+        createPieceFromFactory(type, color, position, customTiledMap);
+    }
+
+    /**
+     * Attempts to create a piece using the PieceFactory and adds it to the TiledMap.
+     *
+     * @param type            The type of the piece (e.g., "Queen", "Rook").
+     * @param color           The color of the piece (e.g., "White", "Black").
+     * @param position        The board position of the piece.
+     * @param customTiledMap  The custom TiledMap to populate.
+     */
+    private void createPieceFromFactory(String type, String color, Point position, TiledMap customTiledMap) {
+        System.out.println("Attempting to create piece using PieceFactory...");
+        Piece piece = PieceFactory.createPiece(type, color, position);
+
+        if (piece != null) {
+            System.out.println("Piece created successfully: " + piece);
+            customTiledMap.getPieces().add(piece);
+        } else {
+            System.err.println("Failed to create piece: Type=" + type + ", Color=" + color);
         }
     }
 }

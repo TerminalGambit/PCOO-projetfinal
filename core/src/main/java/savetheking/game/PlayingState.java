@@ -37,8 +37,8 @@ public class PlayingState implements GameStateInterface {
     }
 
     @Override
-    public void render(SpriteBatch batch) {
-        renderer.render(batch);
+    public void render() {
+        renderer.render();
     }
 
     /**

@@ -51,7 +51,7 @@ public class Main extends ApplicationAdapter {
         // Update and render the actual game state
         float deltaTime = Gdx.graphics.getDeltaTime();
         playingState.update(deltaTime);
-        playingState.render(batch);
+        playingState.render();
     }
 
     @Override

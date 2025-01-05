@@ -9,7 +9,7 @@ public class PausedState implements GameStateInterface {
     }
 
     @Override
-    public void render(SpriteBatch batch) {
+    public void render() {
         System.out.println("Rendering PausedState...");
     }
 }

@@ -12,13 +12,16 @@ public class Renderer {
     private final SpriteBatch batch;
     private final Texture darkSquareTexture;
     private final Texture lightSquareTexture;
-    private final boolean debugMode; // Toggle for enabling/disabling debug logs
+
+    // Separate debug modes
+    private final boolean boardDebugMode;
+    private final boolean pieceDebugMode;
 
     /**
-     * Constructs a Renderer with the specified board, tile size, and debug mode.
+     * Constructs a Renderer with the specified board, tile size, and debug modes.
      *
-     * @param board     The game board to render.
-     * @param tileSize  The size of each tile in pixels.
+     * @param board          The game board to render.
+     * @param tileSize       The size of each tile in pixels.
      */
     public Renderer(Board board, int tileSize) {
         this.board = board;
@@ -26,54 +29,49 @@ public class Renderer {
         this.batch = new SpriteBatch();
         this.darkSquareTexture = new Texture("dark-green.png");
         this.lightSquareTexture = new Texture("light-white.png");
-        this.debugMode = false; // Initialize the debug mode
+        this.boardDebugMode = false;
+        this.pieceDebugMode = true;
     }
 
     /**
      * Renders the entire game: board and pieces.
-     *
-     * @param batch The SpriteBatch used for rendering.
      */
-    public void render(SpriteBatch batch) {
-        renderBoardLayer(batch);
-        renderPieces(batch); // Render all pieces
+    public void render() {
+        System.out.println("Starting rendering...");
+
+        renderBoardLayer();
+        System.out.println("Board rendering completed.");
+
+        renderPieces();
+        System.out.println("Piece rendering completed.");
+
+        System.out.println("Rendering cycle completed.");
     }
 
     /**
      * Renders the board layer (checkered tiles).
-     *
-     * @param batch The SpriteBatch used for rendering.
      */
-    private void renderBoardLayer(SpriteBatch batch) {
+    private void renderBoardLayer() {
         batch.begin();
 
         for (int row = 0; row < board.getRowCount(); row++) {
             for (int col = 0; col < board.getColumnCount(); col++) {
-                Tile tile = board.getTileAt(new Point(row, col));
+                // Determine if it's a dark or light tile
+                boolean isDarkSquare = (row + col) % 2 == 1; // Checkerboard pattern
+                Texture texture = isDarkSquare ? darkSquareTexture : lightSquareTexture;
 
-                if (tile != null) {
-                    // Determine if it's a dark or light tile
-                    boolean isDarkSquare = (row + col) % 2 == 1; // Checkerboard pattern
-                    Texture texture = isDarkSquare ? darkSquareTexture : lightSquareTexture;
+                // Calculate screen position
+                int screenX = col * tileSize;
+                int screenY = (board.getRowCount() - row - 1) * tileSize;
 
-                    // Calculate screen position
-                    int screenX = col * tileSize;
-                    int screenY = (board.getRowCount() - row - 1) * tileSize;
-
-                    // Debug: Log tile rendering details if debugMode is enabled
-                    if (debugMode) {
-                        System.out.println("Rendering at grid (" + row + ", " + col +
-                            "), screen (" + screenX + ", " + screenY + "), DarkSquare: " + isDarkSquare);
-                    }
-
-                    // Render the square
-                    batch.draw(texture, screenX, screenY, tileSize, tileSize);
-                } else {
-                    // Debug: No tile found
-                    if (debugMode) {
-                        System.out.println("No tile found at (" + row + ", " + col + ")");
-                    }
+                // Debug: Log tile rendering details if boardDebugMode is enabled
+                if (boardDebugMode) {
+                    System.out.println("Rendering tile at grid (" + row + ", " + col +
+                        "), screen (" + screenX + ", " + screenY + "), DarkSquare: " + isDarkSquare);
                 }
+
+                // Render the square
+                batch.draw(texture, screenX, screenY, tileSize, tileSize);
             }
         }
 
@@ -82,10 +80,8 @@ public class Renderer {
 
     /**
      * Renders the pieces on the board.
-     *
-     * @param batch The SpriteBatch used for rendering.
      */
-    private void renderPieces(SpriteBatch batch) {
+    private void renderPieces() {
         batch.begin();
 
         for (int row = 0; row < board.getRowCount(); row++) {
@@ -94,13 +90,20 @@ public class Renderer {
                 if (tile instanceof OccupiedTile) {
                     Piece piece = ((OccupiedTile) tile).getPiece();
                     if (piece != null) {
-                        // Use Piece.render with the grid position
-                        piece.render(batch, new Point(row, col));
+                        // Calculate screen position
+                        int screenX = col * tileSize;
+                        int screenY = (board.getRowCount() - row - 1) * tileSize;
 
-                        // Debug: Log piece rendering details if debugMode is enabled
-                        if (debugMode) {
-                            System.out.println("Rendering piece at grid (" + row + ", " + col + "): " + piece);
+                        // Render the piece texture
+                        batch.draw(piece.getTexture(), screenX, screenY, tileSize, tileSize);
+
+                        // Debug: Log piece rendering details if pieceDebugMode is enabled
+                        if (pieceDebugMode) {
+                            System.out.println("Rendering piece: " + piece + " at grid (" + row + ", " + col +
+                                "), screen (" + screenX + ", " + screenY + ")");
                         }
+                    } else if (pieceDebugMode) {
+                        System.out.println("No piece found at grid (" + row + ", " + col + ")");
                     }
                 }
             }

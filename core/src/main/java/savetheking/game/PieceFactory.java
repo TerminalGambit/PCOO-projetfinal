@@ -18,7 +18,7 @@ public class PieceFactory {
      */
     public static Piece createPiece(String type, String color, Point position) {
         if (DEBUG_MODE) {
-            System.out.println("Attempting to create piece:");
+            System.out.println("PieceFactory.createPiece called:");
             System.out.println("Type: " + type + ", Color: " + color + ", Position: " + position);
         }
 
@@ -29,24 +29,22 @@ public class PieceFactory {
         // Load the appropriate texture based on piece type and color
         Texture texture = loadTexture(type, color);
 
-        // Use if-else to determine the type of piece
+        if (DEBUG_MODE) {
+            System.out.println("Texture loaded for " + type + " (" + color + ")");
+        }
+
+        // Create specific pieces
         if ("rook".equalsIgnoreCase(type)) {
-            if (DEBUG_MODE) System.out.println("Creating a Rook...");
             return new Rook(color, position, texture);
         } else if ("knight".equalsIgnoreCase(type)) {
-            if (DEBUG_MODE) System.out.println("Creating a Knight...");
             return new Knight(color, position, texture);
         } else if ("bishop".equalsIgnoreCase(type)) {
-            if (DEBUG_MODE) System.out.println("Creating a Bishop...");
             return new Bishop(color, position, texture);
         } else if ("queen".equalsIgnoreCase(type)) {
-            if (DEBUG_MODE) System.out.println("Creating a Queen...");
             return new Queen(color, position, texture);
         } else if ("king".equalsIgnoreCase(type)) {
-            if (DEBUG_MODE) System.out.println("Creating a King...");
             return new King(color, position, texture);
         } else if ("pawn".equalsIgnoreCase(type)) {
-            if (DEBUG_MODE) System.out.println("Creating a Pawn...");
             return new Pawn(color, position, texture);
         } else {
             throw new IllegalArgumentException("Invalid piece type: " + type);

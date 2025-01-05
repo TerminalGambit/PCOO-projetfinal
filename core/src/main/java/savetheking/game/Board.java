@@ -62,11 +62,18 @@ public class Board implements Observable {
                     String color = pieceTile.getProperty("color");
                     Point position = new Point(x, y);
 
-                    // Use PieceFactory to create the piece
-                    Piece piece = PieceFactory.createPiece(type, color, position);
-                    tiles[x][y] = new OccupiedTile(position, tileId, piece);
+                    if (type != null && color != null) {
+                        // Use PieceFactory to create the piece
+                        Piece piece = PieceFactory.createPiece(type, color, position);
+                        tiles[x][y] = new OccupiedTile(position, tileId, piece);
+                        System.out.println("Created OccupiedTile at (" + x + ", " + y + ") with piece: " + piece);
+                    } else {
+                        tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
+                        System.out.println("Missing piece data at (" + x + ", " + y + "), created EmptyTile.");
+                    }
                 } else {
                     tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
+                    System.out.println("No piece found at (" + x + ", " + y + "), created EmptyTile.");
                 }
             }
         }
@@ -128,6 +135,7 @@ public class Board implements Observable {
             throw new IllegalArgumentException("Position out of bounds: " + position);
         }
         tiles[position.x][position.y] = new OccupiedTile(position, 0, piece); // Default tileId 0 for new piece
+        System.out.println("Placed piece at (" + position.x + ", " + position.y + "): " + piece);
         notifyObservers();
     }
 
@@ -136,6 +144,7 @@ public class Board implements Observable {
             throw new IllegalArgumentException("Position out of bounds: " + position);
         }
         tiles[position.x][position.y] = new EmptyTile(position, 0); // Default tileId 0
+        System.out.println("Removed piece from (" + position.x + ", " + position.y + ")");
         notifyObservers();
     }
 

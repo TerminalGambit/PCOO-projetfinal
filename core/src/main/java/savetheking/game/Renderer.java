@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  */
 public class Renderer {
     private final Board board;
-    private final int tileSize;
+    private final int tileSize; // Size of each tile in pixels
     private final SpriteBatch batch;
     private final Texture darkSquareTexture;
     private final Texture lightSquareTexture;
@@ -34,7 +34,7 @@ public class Renderer {
      */
     public void render(SpriteBatch batch) {
         renderBoardLayer(batch);
-        //renderPieces(batch);
+        renderPieces(batch); // Render all pieces
     }
 
     /**
@@ -45,28 +45,28 @@ public class Renderer {
     private void renderBoardLayer(SpriteBatch batch) {
         batch.begin();
 
-        for (int x = 0; x < board.getRowCount(); x++) {
-            for (int y = 0; y < board.getColumnCount(); y++) {
-                Tile tile = board.getTileAt(new Point(x, y));
+        for (int row = 0; row < board.getRowCount(); row++) {
+            for (int col = 0; col < board.getColumnCount(); col++) {
+                Tile tile = board.getTileAt(new Point(row, col));
 
                 if (tile != null) {
-                    // Get tile ID and determine texture
-                    int tileId = tile.getTileId();
-                    boolean isDarkSquare = tileId == 1; // Assuming dark green = 1
+                    // Determine if it's a dark or light tile
+                    boolean isDarkSquare = (row + col) % 2 == 1; // Checkerboard pattern
                     Texture texture = isDarkSquare ? darkSquareTexture : lightSquareTexture;
 
                     // Calculate screen position
-                    int screenX = y * tileSize;
-                    int screenY = (board.getRowCount() - x - 1) * tileSize;
+                    int screenX = col * tileSize;
+                    int screenY = (board.getRowCount() - row - 1) * tileSize;
 
                     // Debug: Log tile rendering details
-                    System.out.println("Rendering Tile ID: " + tileId + " at grid (" + x + ", " + y +
-                        "), screen (" + screenX + ", " + screenY + ")");
+                    System.out.println("Rendering at grid (" + row + ", " + col +
+                        "), screen (" + screenX + ", " + screenY + "), DarkSquare: " + isDarkSquare);
 
                     // Render the square
                     batch.draw(texture, screenX, screenY, tileSize, tileSize);
                 } else {
-                    System.out.println("No tile found at (" + x + ", " + y + ")");
+                    // Debug: No tile found
+                    System.out.println("No tile found at (" + row + ", " + col + ")");
                 }
             }
         }
@@ -82,12 +82,15 @@ public class Renderer {
     private void renderPieces(SpriteBatch batch) {
         batch.begin();
 
-        for (int x = 0; x < board.getRowCount(); x++) {
-            for (int y = 0; y < board.getColumnCount(); y++) {
-                Tile tile = board.getTileAt(new Point(x, y));
+        for (int row = 0; row < board.getRowCount(); row++) {
+            for (int col = 0; col < board.getColumnCount(); col++) {
+                Tile tile = board.getTileAt(new Point(row, col));
                 if (tile instanceof OccupiedTile) {
                     Piece piece = ((OccupiedTile) tile).getPiece();
-                    //piece.render(batch); // Ensure each Piece has a render method
+                    if (piece != null) {
+                        // Use Piece.render with the grid position
+                        piece.render(batch, new Point(row, col));
+                    }
                 }
             }
         }

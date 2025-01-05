@@ -1,7 +1,6 @@
 package savetheking.game;
 
 import com.badlogic.gdx.graphics.Texture;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,24 @@ public class Board implements Observable {
         this.columnCount = tiledMap.getWidth();
         this.tiles = new Tile[rowCount][columnCount];
         this.tiledMap = tiledMap;
-        initializeFromTiledMap();
+        initializeBoard(); // Initialize the board
+    }
+
+    /**
+     * Initializes the board using data from the TiledMap or clears the board if TiledMap is null.
+     */
+    public void initializeBoard() {
+        if (tiledMap != null) {
+            initializeFromTiledMap();
+        } else {
+            // Clear the board with empty tiles
+            for (int x = 0; x < rowCount; x++) {
+                for (int y = 0; y < columnCount; y++) {
+                    tiles[x][y] = new EmptyTile(new Point(x, y), 0); // Default tileId 0
+                }
+            }
+            notifyObservers();
+        }
     }
 
     /**
@@ -36,7 +52,6 @@ public class Board implements Observable {
         TiledLayer boardLayer = tiledMap.getLayer("Board Layer");
         TiledLayer pieceLayer = tiledMap.getLayer("Piece Layer");
 
-        // In the initializeFromTiledMap() method
         for (int x = 0; x < rowCount; x++) {
             for (int y = 0; y < columnCount; y++) {
                 int tileId = boardLayer != null ? boardLayer.getTileId(x, y) : 0;

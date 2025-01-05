@@ -81,11 +81,9 @@ public class TiledLayer {
      * @return A Tile object corresponding to the given tile ID.
      */
     private Tile createTileFromId(int tileId, int x, int y) {
-        // Example logic: Create specific tile types based on IDs
         if (tileId == 0) {
             return new EmptyTile(new Point(x, y), tileId);
         } else {
-            // For simplicity, treat all non-zero IDs as generic tiles
             return new OccupiedTile(new Point(x, y), tileId, null); // Replace null with a valid Piece if needed
         }
     }
@@ -147,5 +145,14 @@ public class TiledLayer {
      */
     public boolean isWithinBounds(int x, int y) {
         return x >= 0 && x < width && y >= 0 && y < height;
+    }
+
+    /**
+     * Gets the name of the layer from its custom properties.
+     *
+     * @return The name of the layer, or null if the property is not set.
+     */
+    public String getName() {
+        return customProperties.get("name");
     }
 }

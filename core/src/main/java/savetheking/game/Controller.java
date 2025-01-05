@@ -2,6 +2,9 @@ package savetheking.game;
 
 import java.util.List;
 
+/**
+ * Handles the game logic and user interactions.
+ */
 public class Controller {
     private final Board board;
     private final GameState gameState; // Singleton instance for managing the game state
@@ -12,6 +15,7 @@ public class Controller {
         this.board = board;
         this.gameState = GameState.getInstance();
     }
+
 
     /**
      * Handles user input to select or move pieces based on the clicked point.

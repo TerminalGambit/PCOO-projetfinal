@@ -2,7 +2,6 @@ package savetheking.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /**
  * Represents the active state of the game where players interact and move pieces.
@@ -16,6 +15,12 @@ public class PlayingState implements GameStateInterface {
         this.board = board;
         this.controller = controller;
         this.renderer = renderer;
+    }
+
+    @Override
+    public void enterState() {
+        System.out.println("Entering PlayingState...");
+        // Reset or initialize any state-specific resources
     }
 
     @Override
@@ -43,6 +48,7 @@ public class PlayingState implements GameStateInterface {
 
     /**
      * Translates screen coordinates to board coordinates based on the board's rendering.
+     *
      * @param screenX The x-coordinate of the screen.
      * @param screenY The y-coordinate of the screen.
      * @return The corresponding board position as a Point, or null if outside the board.

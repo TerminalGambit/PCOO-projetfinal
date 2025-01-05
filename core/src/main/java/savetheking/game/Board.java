@@ -5,7 +5,6 @@ import java.util.List;
 
 /**
  * The Board class represents a chessboard for the Solo Chess game.
- * It integrates with TiledMap to dynamically load the board and piece layout.
  */
 public class Board implements Observable {
     private final Tile[][] tiles;
@@ -14,11 +13,6 @@ public class Board implements Observable {
     private final List<Observer> observers = new ArrayList<Observer>();
     private final TiledMap tiledMap;
 
-    /**
-     * Constructs a Board using a TiledMap for initialization.
-     *
-     * @param tiledMap The TiledMap to load the board from.
-     */
     public Board(TiledMap tiledMap) {
         this.rowCount = tiledMap.getHeight();
         this.columnCount = tiledMap.getWidth();
@@ -27,9 +21,6 @@ public class Board implements Observable {
         initializeBoard();
     }
 
-    /**
-     * Initializes the board using data from the TiledMap or clears the board if TiledMap is null.
-     */
     public void initializeBoard() {
         if (tiledMap != null) {
             initializeFromTiledMap();
@@ -78,12 +69,22 @@ public class Board implements Observable {
         }
     }
 
-    /**
-     * Moves a piece from the start position to the end position.
-     *
-     * @param start The starting position.
-     * @param end   The ending position.
-     */
+    public boolean isValidMove(Point start, Point end) {
+        if (!isWithinBounds(start) || !isWithinBounds(end)) {
+            return false;
+        }
+
+        Tile startTile = getTileAt(start);
+        if (startTile instanceof OccupiedTile) {
+            Piece piece = ((OccupiedTile) startTile).getPiece();
+            if (piece != null) {
+                List<Point> possibleMoves = piece.getPossibleMoves(this);
+                return possibleMoves.contains(end);
+            }
+        }
+        return false;
+    }
+
     public void movePiece(Point start, Point end) {
         if (!isWithinBounds(start) || !isWithinBounds(end)) {
             throw new IllegalArgumentException("Positions must be within the bounds of the board.");
@@ -99,11 +100,6 @@ public class Board implements Observable {
         notifyObservers();
     }
 
-    /**
-     * Retrieves a list of all remaining pieces on the board.
-     *
-     * @return A list of remaining pieces.
-     */
     public List<Piece> getRemainingPieces() {
         List<Piece> remainingPieces = new ArrayList<Piece>();
         for (int i = 0; i < rowCount; i++) {

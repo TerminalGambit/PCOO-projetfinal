@@ -1,11 +1,5 @@
 package savetheking.game;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import savetheking.game.Piece;
-import savetheking.game.Point;
-import savetheking.game.Tile;
-
 /**
     * Class representing an empty tile on the board.
     */

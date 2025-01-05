@@ -1,10 +1,11 @@
 package savetheking.game;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Abstract base class for tiles on the board.
@@ -12,8 +13,9 @@ import java.util.Map;
  */
 public abstract class Tile {
     protected final Point position; // Position of the tile on the board
-    protected final int tileId;     // ID of the tile (e.g., for dark/light distinction)
-    protected final Map<String, String> properties; // Custom properties for the tile
+    protected final int tileId;     // ID of the tile (e.g., dark green = 1, light white = 3)
+    protected final HashMap<String, String> properties; // Custom properties for the tile
+    private boolean isHighlighted;  // Whether the tile is currently highlighted
 
     /**
      * Constructs a Tile with a specific position and tile ID.
@@ -25,6 +27,7 @@ public abstract class Tile {
         this.position = position;
         this.tileId = tileId;
         this.properties = new HashMap<String, String>();
+        this.isHighlighted = false;
     }
 
     /**
@@ -43,6 +46,24 @@ public abstract class Tile {
      */
     public int getTileId() {
         return tileId;
+    }
+
+    /**
+     * Checks whether the tile is highlighted.
+     *
+     * @return True if the tile is highlighted; false otherwise.
+     */
+    public boolean isHighlighted() {
+        return isHighlighted;
+    }
+
+    /**
+     * Sets the highlighted state of the tile.
+     *
+     * @param highlighted True to highlight the tile, false to remove the highlight.
+     */
+    public void setHighlighted(boolean highlighted) {
+        this.isHighlighted = highlighted;
     }
 
     /**
@@ -89,7 +110,18 @@ public abstract class Tile {
         int screenX = position.y * 64; // Assuming tile size = 64
         int screenY = (8 - position.x - 1) * 64; // Flip y-axis for screen rendering
 
-        // Draw the texture on the screen
+        // Draw the tile texture
         batch.draw(texture, screenX, screenY, 64, 64);
+
+        // Apply highlight overlay if the tile is highlighted
+        if (isHighlighted) {
+            batch.end(); // End the batch to draw shapes
+            ShapeRenderer shapeRenderer = new ShapeRenderer();
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(new Color(1, 1, 0, 0.4f)); // Yellow with transparency
+            shapeRenderer.rect(screenX, screenY, 64, 64);
+            shapeRenderer.end();
+            batch.begin(); // Restart the batch for further rendering
+        }
     }
 }

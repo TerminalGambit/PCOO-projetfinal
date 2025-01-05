@@ -48,6 +48,11 @@ public class Main extends ApplicationAdapter {
         // Clear the screen
         ScreenUtils.clear(0, 0, 0, 1);
 
+        // Check if an update is required
+        if (!controller.needsUpdate()) {
+            return;
+        }
+
         // Update and render the actual game state
         float deltaTime = Gdx.graphics.getDeltaTime();
         playingState.update(deltaTime);

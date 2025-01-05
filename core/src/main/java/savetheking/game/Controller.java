@@ -16,7 +16,6 @@ public class Controller {
         this.gameState = GameState.getInstance();
     }
 
-
     /**
      * Handles user input to select or move pieces based on the clicked point.
      * @param clickedPoint The point clicked by the user.
@@ -35,40 +34,81 @@ public class Controller {
         Tile clickedTile = board.getTileAt(clickedPoint);
 
         if (selectedPiece == null) {
-            // No piece selected, attempt to select one
-            if (clickedTile instanceof OccupiedTile) {
-                selectedPiece = ((OccupiedTile) clickedTile).getPiece();
-                System.out.println("Selected piece: " + selectedPiece);
-                //highlightValidMoves(selectedPiece); // Highlight valid moves for the selected piece
-            } else {
-                System.out.println("Clicked on an empty tile, no piece selected.");
-            }
+            handleSelection(clickedTile);
         } else {
-            // A piece is already selected, attempt to move it
-            List<Point> validMoves = selectedPiece.getPossibleMoves(board);
+            handleMove(clickedPoint, clickedTile);
+        }
+    }
 
-            if (validMoves.contains(clickedPoint)) {
-                System.out.println("Moving piece to: " + clickedPoint);
-                board.movePiece(selectedPiece.getPosition(), clickedPoint);
+    /**
+     * Handles piece selection logic.
+     * @param clickedTile The tile that was clicked.
+     */
+    private void handleSelection(Tile clickedTile) {
+        if (clickedTile instanceof OccupiedTile) {
+            selectedPiece = ((OccupiedTile) clickedTile).getPiece();
+            System.out.println("Selected piece: " + selectedPiece);
+            highlightValidMoves(selectedPiece);
+        } else {
+            System.out.println("Clicked on an empty tile, no piece selected.");
+        }
+    }
 
-                // Update the piece's state and handle two-move rule
-                selectedPiece.move(clickedPoint, board.getRowCount());
-                if (selectedPiece.getMoveCount() >= 2 && "White".equals(selectedPiece.getColor())) {
-                    selectedPiece.setColor("Black");
+    /**
+     * Handles piece movement logic.
+     * @param clickedPoint The point where the piece is being moved.
+     * @param clickedTile  The tile at the clicked point.
+     */
+    private void handleMove(Point clickedPoint, Tile clickedTile) {
+        List<Point> validMoves = selectedPiece.getPossibleMoves(board);
+
+        if (validMoves.contains(clickedPoint)) {
+            performMove(clickedPoint, clickedTile);
+        } else {
+            System.out.println("Invalid move for the selected piece.");
+        }
+    }
+
+    /**
+     * Performs the actual move of a selected piece.
+     * @param clickedPoint The destination point.
+     * @param clickedTile  The tile at the destination.
+     */
+    private void performMove(Point clickedPoint, Tile clickedTile) {
+        System.out.println("Moving piece to: " + clickedPoint);
+        board.movePiece(selectedPiece.getPosition(), clickedPoint);
+
+        // Update the piece's state and handle two-move rule
+        selectedPiece.move(clickedPoint, board.getRowCount());
+        if (selectedPiece.getMoveCount() >= 2 && "White".equals(selectedPiece.getColor())) {
+            selectedPiece.setColor("Black");
+        }
+
+        // Record the move in the game state
+        boolean isCapture = clickedTile instanceof OccupiedTile;
+        gameState.recordMove(selectedPiece, selectedPiece.getPosition(), clickedPoint, isCapture);
+
+        // Check if the game is finished
+        checkGameFinished();
+
+        // Deselect the piece
+        selectedPiece = null;
+    }
+
+    /**
+     * Highlights valid moves for the selected piece.
+     * @param piece The selected piece.
+     */
+    private void highlightValidMoves(Piece piece) {
+        if (piece != null) {
+            List<Point> validMoves = piece.getPossibleMoves(board);
+            for (Point move : validMoves) {
+                Tile tile = board.getTileAt(move);
+                if (tile != null) {
+                    tile.setHighlighted(true); // Highlight valid moves
                 }
-
-                // Record the move in the game state
-                boolean isCapture = clickedTile instanceof OccupiedTile;
-                gameState.recordMove(selectedPiece, selectedPiece.getPosition(), clickedPoint, isCapture);
-
-                // Check if the game is finished
-                checkGameFinished();
-
-                // Deselect the piece
-                selectedPiece = null;
-            } else {
-                System.out.println("Invalid move for the selected piece.");
             }
+            System.out.println("Highlighted valid moves for the selected piece.");
         }
     }
 
@@ -100,23 +140,6 @@ public class Controller {
         System.out.println("Board has been reset to its initial state.");
     }
 
-    /*
-      Highlights valid moves for the selected piece.
-      @param piece The selected piece for which to highlight moves.
-    private void highlightValidMoves(Piece piece) {
-        if (piece != null) {
-            List<Point> validMoves = piece.getPossibleMoves(board);
-            for (Point move : validMoves) {
-                Tile tile = board.getTileAt(move);
-                if (tile != null) {
-                    tile.setDefended(true); // Highlight valid moves
-                }
-            }
-            System.out.println("Highlighted valid moves for the selected piece.");
-        }
-    }
-     */
-
     /**
      * Updates the game state (called each frame in the game loop).
      * @param deltaTime The time elapsed since the last update.
@@ -128,5 +151,13 @@ public class Controller {
             System.out.println("Time's up! Game over.");
             isGameFinished = true;
         }
+    }
+
+    /**
+     * Checks if the game state needs an update.
+     * @return True if the state has changed, otherwise false.
+     */
+    public boolean needsUpdate() {
+        return !isGameFinished;
     }
 }

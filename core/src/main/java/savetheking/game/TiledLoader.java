@@ -1,5 +1,6 @@
 package savetheking.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapProperties;
@@ -7,20 +8,26 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.objects.TiledMapTileMapObject;
+import com.badlogic.gdx.utils.XmlReader;
+import com.badlogic.gdx.utils.XmlReader.Element;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Responsible for loading and parsing Tiled (.tmx) files into TiledMap objects.
  */
 public class TiledLoader {
     private final TmxMapLoader loader;
+    private final Map<Integer, Map<String, String>> tileProperties;
 
     /**
      * Constructs a TiledLoader with a default TmxMapLoader.
      */
     public TiledLoader() {
         this.loader = new TmxMapLoader();
+        this.tileProperties = new HashMap<Integer, Map<String, String>>();
     }
 
     /**
@@ -197,5 +204,43 @@ public class TiledLoader {
         } else {
             System.err.println("Failed to create piece: Type=" + type + ", Color=" + color);
         }
+    }
+
+    /**
+     * Loads a TSX file and extracts the properties for each tile.
+     *
+     * @param filePath The path to the .tsx file.
+     */
+    public void loadTSX(String filePath) {
+        System.out.println("Loading TSX file: " + filePath);
+        XmlReader reader = new XmlReader();
+        try {
+            Element root = reader.parse(Gdx.files.internal(filePath));
+            for (Element tile : root.getChildrenByName("tile")) {
+                int id = tile.getIntAttribute("id");
+                Map<String, String> properties = new HashMap<String, String>();
+                Element propertiesElement = tile.getChildByName("properties");
+                if (propertiesElement != null) {
+                    for (Element property : propertiesElement.getChildrenByName("property")) {
+                        String name = property.getAttribute("name");
+                        String value = property.getAttribute("value");
+                        properties.put(name, value);
+                    }
+                }
+                tileProperties.put(id, properties);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load TSX file: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Gets the properties for a given tile ID.
+     *
+     * @param tileId The ID of the tile.
+     * @return The properties of the tile.
+     */
+    public Map<String, String> getTileProperties(int tileId) {
+        return tileProperties.getOrDefault(tileId, new HashMap<>());
     }
 }

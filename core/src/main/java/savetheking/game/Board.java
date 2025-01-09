@@ -1,5 +1,7 @@
 package savetheking.game;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Texture;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +75,21 @@ public class Board implements Observable {
         } else {
             tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
             System.out.println("No piece at position: " + position);
+        }
+    }
+
+    public void render(SpriteBatch batch) {
+        // Render all tiles first
+        for (int row = 0; row < rowCount; row++) {
+            for (int col = 0; col < columnCount; col++) {
+                Tile tile = tiles[row][col];
+                tile.render(batch, tile.getTexture());
+            }
+        }
+
+        // Render all pieces
+        for (Piece piece : pieces) {
+            piece.render(batch);
         }
     }
 

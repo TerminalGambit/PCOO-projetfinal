@@ -34,41 +34,10 @@ public class Renderer {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        renderBoardLayer();
-        renderPieces();
+        board.render(batch);
 
-        batch.end();
-    }
-
-    private void renderBoardLayer() {
-        for (int row = 0; row < board.getRowCount(); row++) {
-            for (int col = 0; col < board.getColumnCount(); col++) {
-                boolean isDarkSquare = (row + col) % 2 == 1;
-                Texture texture = isDarkSquare ? darkSquareTexture : lightSquareTexture;
-                int screenX = col * tileSize;
-                int screenY = (board.getRowCount() - row - 1) * tileSize;
-
-                if (boardDebugMode) {
-                    System.out.println("Rendering tile at grid (" + row + ", " + col +
-                        "), screen (" + screenX + ", " + screenY + "), DarkSquare: " + isDarkSquare);
-                }
-
-                batch.draw(texture, screenX, screenY, tileSize, tileSize);
-            }
-        }
-    }
-
-    private void renderPieces() {
-        for (Piece piece : board.getPieces()) {
-            int screenX = (int) (piece.getPosition().getY() * tileSize);
-            int screenY = (int) ((board.getRowCount() - piece.getPosition().getX() - 1) * tileSize);
-
-            batch.draw(piece.getTexture(), screenX, screenY, tileSize, tileSize);
-
-            if (pieceDebugMode) {
-                System.out.println("Rendering piece: " + piece + " at grid (" + piece.getPosition().getX() + ", " + piece.getPosition().getY() +
-                    "), screen (" + screenX + ", " + screenY + ")");
-            }
+        if (batch.isDrawing()) {
+            batch.end();
         }
     }
 

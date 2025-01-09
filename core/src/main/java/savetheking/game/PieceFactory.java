@@ -59,16 +59,11 @@ public class PieceFactory {
      * @return The loaded Texture.
      */
     private static Texture loadTexture(String type, String color) {
-        String typeAbbreviation = getTypeAbbreviation(type);
-        String texturePath = "pieces/" + color.toLowerCase().charAt(0) + typeAbbreviation + ".png";
-
-        if (DEBUG_MODE) {
-            System.out.println("Loading texture for piece:");
-            System.out.println("Type Abbreviation: " + typeAbbreviation + ", Texture Path: " + texturePath);
-        }
-
-        return new Texture(texturePath);
-    }
+    String typeAbbreviation = getTypeAbbreviation(type);
+    String texturePath = "pieces/" + color.toLowerCase().charAt(0) + typeAbbreviation + ".png";
+    System.out.println("Loading texture from path: " + texturePath);
+    return new Texture(texturePath);
+}
 
     /**
      * Maps the full type name to its corresponding abbreviation.

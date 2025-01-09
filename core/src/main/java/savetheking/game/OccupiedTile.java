@@ -38,7 +38,7 @@ class OccupiedTile extends Tile {
 
         // Render the piece on top of the tile
         if (piece != null) {
-            piece.render(batch, position);
+            piece.render(batch);
         }
     }
 }

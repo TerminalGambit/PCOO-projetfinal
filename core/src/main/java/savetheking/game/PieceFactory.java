@@ -67,7 +67,9 @@ public class PieceFactory {
         String texturePath = "pieces/" + color.toLowerCase().charAt(0) + typeAbbreviation + ".png";
         System.out.println("Loading texture from path: " + texturePath);
         try {
-            return new Texture(texturePath);
+            Texture texture = new Texture(texturePath);
+            System.out.println("Successfully loaded texture: " + texturePath);
+            return texture;
         } catch (Exception e) {
             System.err.println("Failed to load texture: " + e.getMessage());
             return null;

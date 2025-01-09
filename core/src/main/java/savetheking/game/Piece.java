@@ -52,10 +52,14 @@ public abstract class Piece {
     public abstract List<Point> getPossibleMoves(Board board);
 
     public void render(SpriteBatch batch) {
+    if (texture != null) {
         int screenX = position.y * 64;
         int screenY = (8 - position.x - 1) * 64;
         batch.draw(texture, screenX, screenY, 64, 64);
+    } else {
+        System.err.println("Texture is null for piece: " + this);
     }
+}
 
     public int getMoveCount() {
         return moveCount;

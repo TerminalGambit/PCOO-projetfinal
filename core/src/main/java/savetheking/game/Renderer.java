@@ -5,8 +5,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.utils.Disposable;
 
-public class Renderer {
+public class Renderer implements Disposable {
     private final Board board;
     private final int tileSize;
     private final SpriteBatch batch;
@@ -15,6 +16,7 @@ public class Renderer {
     private final OrthographicCamera camera;
     private final boolean boardDebugMode;
     private final boolean pieceDebugMode;
+    private Texture lastTexture;
 
     public Renderer(Board board, int tileSize) {
         this.board = board;
@@ -26,6 +28,7 @@ public class Renderer {
         this.camera.setToOrtho(false, board.getColumnCount() * tileSize, board.getRowCount() * tileSize);
         this.boardDebugMode = false;
         this.pieceDebugMode = true;
+        this.lastTexture = darkSquareTexture; // Initialize lastTexture to a valid texture
     }
 
     public void render() {
@@ -34,6 +37,7 @@ public class Renderer {
         batch.setProjectionMatrix(camera.combined);
 
         try {
+            System.out.println("Starting batch...");
             batch.begin();
             board.render(batch);
         } catch (Exception e) {
@@ -41,11 +45,35 @@ public class Renderer {
             e.printStackTrace();
         } finally {
             if (batch.isDrawing()) {
-                batch.end();
+                if (lastTexture != null) {
+                    System.out.println("Ending batch...");
+                    batch.end();
+                } else {
+                    System.err.println("lastTexture is null, cannot end batch.");
+                }
             }
         }
     }
 
+    public void renderPiece(Piece piece) {
+        Texture texture = piece.getTexture();
+        if (texture != null) {
+            int screenX = piece.getPosition().y * tileSize;
+            int screenY = (board.getRowCount() - piece.getPosition().x - 1) * tileSize;
+            System.out.println("Rendering piece: " + piece + " at (" + screenX + ", " + screenY + ")");
+            batch.draw(texture, screenX, screenY, tileSize, tileSize);
+            lastTexture = texture; // Update lastTexture
+
+            if (pieceDebugMode) {
+                System.out.println("Rendered piece: " + piece + " with texture: " + texture);
+                System.out.println("Last texture: " + lastTexture);
+            }
+        } else {
+            System.err.println("Texture is null for piece: " + piece);
+        }
+    }
+
+    @Override
     public void dispose() {
         batch.dispose();
         darkSquareTexture.dispose();

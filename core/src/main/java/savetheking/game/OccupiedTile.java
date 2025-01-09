@@ -34,7 +34,11 @@ class OccupiedTile extends Tile {
     @Override
     public void render(SpriteBatch batch, Texture texture) {
         // Render the base tile
-        super.render(batch, texture);
+        if (texture != null) {
+            super.render(batch, texture);
+        } else {
+            System.err.println("Texture is null for tile at position: " + position);
+        }
 
         // Render the piece on top of the tile
         if (piece != null) {

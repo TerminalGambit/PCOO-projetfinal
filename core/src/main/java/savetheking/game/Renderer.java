@@ -32,12 +32,17 @@ public class Renderer {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-        batch.begin();
 
-        board.render(batch);
-
-        if (batch.isDrawing()) {
-            batch.end();
+        try {
+            batch.begin();
+            board.render(batch);
+        } catch (Exception e) {
+            System.err.println("Error during rendering: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (batch.isDrawing()) {
+                batch.end();
+            }
         }
     }
 

@@ -29,6 +29,10 @@ public class PieceFactory {
         // Load the appropriate texture based on piece type and color
         Texture texture = loadTexture(type, color);
 
+        if (texture == null) {
+            throw new IllegalArgumentException("Failed to load texture for " + type + " (" + color + ")");
+        }
+
         if (DEBUG_MODE) {
             System.out.println("Texture loaded for " + type + " (" + color + ")");
         }
@@ -59,11 +63,16 @@ public class PieceFactory {
      * @return The loaded Texture.
      */
     private static Texture loadTexture(String type, String color) {
-    String typeAbbreviation = getTypeAbbreviation(type);
-    String texturePath = "pieces/" + color.toLowerCase().charAt(0) + typeAbbreviation + ".png";
-    System.out.println("Loading texture from path: " + texturePath);
-    return new Texture(texturePath);
-}
+        String typeAbbreviation = getTypeAbbreviation(type);
+        String texturePath = "pieces/" + color.toLowerCase().charAt(0) + typeAbbreviation + ".png";
+        System.out.println("Loading texture from path: " + texturePath);
+        try {
+            return new Texture(texturePath);
+        } catch (Exception e) {
+            System.err.println("Failed to load texture: " + e.getMessage());
+            return null;
+        }
+    }
 
     /**
      * Maps the full type name to its corresponding abbreviation.

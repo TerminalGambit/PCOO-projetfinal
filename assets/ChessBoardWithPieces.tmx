@@ -16,7 +16,17 @@
 </data>
  </layer>
  <objectgroup id="2" name="Piece Layer" offsetx="0" offsety="64.2202">
-  <object id="5" gid="14" x="0" y="0" width="64" height="64"/>
-  <object id="7" gid="13" x="0" y="448" width="64" height="64"/>
+  <object id="5" gid="14" x="0" y="0" width="64" height="64">
+    <properties>
+      <property name="type" value="pawn"/>
+      <property name="color" value="Black"/>
+    </properties>
+  </object>
+  <object id="7" gid="13" x="0" y="448" width="64" height="64">
+    <properties>
+      <property name="type" value="king"/>
+      <property name="color" value="White"/>
+    </properties>
+  </object>
  </objectgroup>
 </map>

@@ -28,7 +28,7 @@ public class Main extends ApplicationAdapter {
         try {
             // Load the Tiled map and initialize the board
             TiledLoader tiledLoader = new TiledLoader();
-            TiledMap tiledMap = tiledLoader.load(mapPath);
+            CustomTiledMap tiledMap = tiledLoader.load(mapPath);
             board = new Board(tiledMap);
 
             // Initialize Renderer, Controller, and Game State

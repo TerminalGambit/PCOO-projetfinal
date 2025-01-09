@@ -3,21 +3,20 @@ package savetheking.game;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The Board class represents a chessboard for the Solo Chess game.
- */
 public class Board implements Observable {
     private final Tile[][] tiles;
     private final int rowCount;
     private final int columnCount;
     private final List<Observer> observers = new ArrayList<Observer>();
-    private final TiledMap tiledMap;
+    private final CustomTiledMap tiledMap;
+    private List<Piece> pieces;
 
-    public Board(TiledMap tiledMap) {
+    public Board(CustomTiledMap tiledMap) {
         this.rowCount = tiledMap.getHeight();
         this.columnCount = tiledMap.getWidth();
         this.tiles = new Tile[rowCount][columnCount];
         this.tiledMap = tiledMap;
+        this.pieces = new ArrayList<Piece>();
         initializeBoard();
     }
 
@@ -63,9 +62,17 @@ public class Board implements Observable {
 
         if (type != null && color != null) {
             Piece piece = PieceFactory.createPiece(type, color, position);
-            tiles[x][y] = new OccupiedTile(position, tileId, piece);
+            if (piece != null) {
+                tiles[x][y] = new OccupiedTile(position, tileId, piece);
+                pieces.add(piece);
+                System.out.println("Placed piece: " + piece + " at position: " + position);
+            } else {
+                tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
+                System.out.println("Failed to create piece at position: " + position);
+            }
         } else {
             tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
+            System.out.println("No piece at position: " + position);
         }
     }
 
@@ -156,5 +163,9 @@ public class Board implements Observable {
         for (Observer observer : observers) {
             observer.update();
         }
+    }
+
+    public List<Piece> getPieces() {
+        return pieces;
     }
 }

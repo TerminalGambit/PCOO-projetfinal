@@ -241,6 +241,6 @@ public class TiledLoader {
      * @return The properties of the tile.
      */
     public Map<String, String> getTileProperties(int tileId) {
-        return tileProperties.getOrDefault(tileId, new HashMap<>());
+        return tileProperties.getOrDefault(tileId, new HashMap<String, String>());
     }
 }

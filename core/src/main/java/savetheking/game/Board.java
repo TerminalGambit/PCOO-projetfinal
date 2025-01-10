@@ -18,6 +18,7 @@ public class Board implements Observable {
     private final int columnCount;
     private final List<Observer> observers = new ArrayList<Observer>();
     private final TiledMap tiledMap;
+    private final boolean pieceDebug = false; // Toggle this to enable/disable debug mode
 
     public Board(TiledMap tiledMap) {
         this.tiledMap = tiledMap;
@@ -47,44 +48,50 @@ public class Board implements Observable {
     private void initializeFromTiledMap() {
         TiledMapTileLayer boardLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Board Layer");
 
+        if (pieceDebug) {
+            System.out.println("Debug: Board Layer = " + (boardLayer != null ? "Found" : "Not Found"));
+        }
+
         MapLayer pieceLayer = tiledMap.getLayers().get("Piece Layer");
         if (pieceLayer != null) {
             for (MapObject object : pieceLayer.getObjects()) {
-                // Extract properties for the piece
                 MapProperties properties = object.getProperties();
+
+                // Extract position and properties
+                float x = properties.get("x", Float.class);
+                float y = properties.get("y", Float.class);
+                int gridX = Math.round(x / 64); // Tile size is 64
+                int gridY = (rowCount - 1) - Math.round(y / 64); // Flip y-coordinate
                 String type = properties.get("type", String.class);
                 String color = properties.get("color", String.class);
 
-                // Convert Tiled coordinates to board coordinates
-                int x = properties.get("x", Float.class).intValue() / 64; // Adjust for tile size
-                int y = (int) ((properties.get("y", Float.class) - 64) / 64); // Adjust for tile size and align grid
-
-                // Flip the y-coordinate to match the board's origin at the bottom-left
-                y = (rowCount - 1) - y;
-
-                // Ensure the position is within bounds before placing
-                if (!isWithinBounds(new Point(x, y))) {
-                    throw new IllegalArgumentException("Position out of bounds: (" + x + ", " + y + ")");
+                if (pieceDebug) {
+                    System.out.printf("Debug: Found piece - Type: %s, Color: %s, Grid Position: (%d, %d)%n", type, color, gridX, gridY);
                 }
 
-                // Create and place the piece using the PieceFactory
-                Point position = new Point(x, y);
+                if (type == null || color == null) {
+                    throw new IllegalArgumentException("Type and color must be defined for each piece.");
+                }
+
+                Point position = new Point(gridX, gridY);
                 Piece piece = PieceFactory.createPiece(type, color, position);
                 placePiece(piece, position);
             }
-        }
-
-        if (pieceLayer == null) {
+        } else {
             throw new IllegalStateException("Piece Layer not found in the TiledMap.");
         }
 
+        // Initialize board tiles
         for (int x = 0; x < rowCount; x++) {
             for (int y = 0; y < columnCount; y++) {
+                if (pieceDebug) {
+                    System.out.printf("Debug: Checking tile at (%d, %d)%n", x, y);
+                }
+
                 int tileId = boardLayer != null && boardLayer.getCell(x, y) != null
                     ? boardLayer.getCell(x, y).getTile().getId()
                     : 0;
 
-                // Initialize tiles as Empty or Occupied based on layer data
                 if (boardLayer != null && boardLayer.getCell(x, y) != null) {
                     initializePieceTile(x, y, tileId);
                 } else {
@@ -96,7 +103,9 @@ public class Board implements Observable {
     }
 
     private void initializePieceTile(int x, int y, int tileId) {
-        // If no specific logic for initialization here, this can be removed or simplified
+        if (pieceDebug) {
+            System.out.printf("Debug: Initializing tile at (%d, %d) with tile ID: %d%n", x, y, tileId);
+        }
         tiles[x][y] = new OccupiedTile(new Point(x, y), tileId, null);
     }
 

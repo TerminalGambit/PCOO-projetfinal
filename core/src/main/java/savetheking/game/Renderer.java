@@ -87,16 +87,22 @@ public class Renderer {
                         int screenX = col * tileSize;
                         int screenY = (board.getRowCount() - row - 1) * tileSize;
 
-                        // Render the piece texture
-                        batch.draw(piece.getTexture(), screenX, screenY, tileSize, tileSize);
-
-                        // Debug: Log piece rendering details if pieceDebugMode is enabled
+                        // Debug: Log rendering details
                         if (pieceDebugMode) {
-                            System.out.println("Rendering piece: " + piece + " at grid (" + row + ", " + col +
-                                "), screen (" + screenX + ", " + screenY + ")");
+                            System.out.printf("Rendering piece: %s at Grid(%d, %d) -> Screen(%d, %d)%n",
+                                piece, row, col, screenX, screenY);
+                        }
+
+                        // Render the piece texture
+                        Texture texture = piece.getTexture();
+                        if (texture != null) {
+                            batch.draw(texture, screenX, screenY, tileSize, tileSize);
+                        } else if (pieceDebugMode) {
+                            System.out.printf("Warning: Texture is null for piece %s at (%d, %d)%n",
+                                piece, row, col);
                         }
                     } else if (pieceDebugMode) {
-                        System.out.println("No piece found at grid (" + row + ", " + col + ")");
+                        System.out.println("No piece found at Grid(" + row + ", " + col + ")");
                     }
                 }
             }

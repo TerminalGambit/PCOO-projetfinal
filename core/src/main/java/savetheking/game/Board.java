@@ -1,5 +1,11 @@
 package savetheking.game;
 
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,13 +17,13 @@ public class Board implements Observable {
     private final int rowCount;
     private final int columnCount;
     private final List<Observer> observers = new ArrayList<Observer>();
-    private final CustomTiledMap tiledMap;
+    private final TiledMap tiledMap;
 
-    public Board(CustomTiledMap tiledMap) {
-        this.rowCount = tiledMap.getHeight();
-        this.columnCount = tiledMap.getWidth();
-        this.tiles = new Tile[rowCount][columnCount];
+    public Board(TiledMap tiledMap) {
         this.tiledMap = tiledMap;
+        this.rowCount = tiledMap.getProperties().get("height", Integer.class);
+        this.columnCount = tiledMap.getProperties().get("width", Integer.class);
+        this.tiles = new Tile[rowCount][columnCount];
         initializeBoard();
     }
 
@@ -39,13 +45,34 @@ public class Board implements Observable {
     }
 
     private void initializeFromTiledMap() {
-        TiledLayer boardLayer = tiledMap.getLayer("Board Layer");
+        TiledMapTileLayer boardLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Board Layer");
 
-        TiledLayer pieceLayer = tiledMap.getLayer("Piece Layer");
-        if (pieceLayer == null) {
-            pieceLayer = tiledMap.getObjectLayer("Piece Layer"); // Attempt to retrieve object layer
+        MapLayer pieceLayer = tiledMap.getLayers().get("Piece Layer");
+        if (pieceLayer != null) {
+            for (MapObject object : pieceLayer.getObjects()) {
+                // Extract properties for the piece
+                MapProperties properties = object.getProperties();
+                String type = properties.get("type", String.class);
+                String color = properties.get("color", String.class);
+
+                // Convert Tiled coordinates to board coordinates
+                int x = properties.get("x", Float.class).intValue() / 64; // Adjust for tile size
+                int y = (int) ((properties.get("y", Float.class) - 64) / 64); // Adjust for tile size and align grid
+
+                // Flip the y-coordinate to match the board's origin at the bottom-left
+                y = (rowCount - 1) - y;
+
+                // Ensure the position is within bounds before placing
+                if (!isWithinBounds(new Point(x, y))) {
+                    throw new IllegalArgumentException("Position out of bounds: (" + x + ", " + y + ")");
+                }
+
+                // Create and place the piece using the PieceFactory
+                Point position = new Point(x, y);
+                Piece piece = PieceFactory.createPiece(type, color, position);
+                placePiece(piece, position);
+            }
         }
-
 
         if (pieceLayer == null) {
             throw new IllegalStateException("Piece Layer not found in the TiledMap.");
@@ -53,13 +80,13 @@ public class Board implements Observable {
 
         for (int x = 0; x < rowCount; x++) {
             for (int y = 0; y < columnCount; y++) {
-                int tileId = boardLayer != null ? boardLayer.getTileId(x, y) : 0;
-                System.out.println("Tile ID: " + tileId);
-                System.out.println("Piece Layer: " + pieceLayer);
-                System.out.println("Piece Layer Tile: " + pieceLayer.getTile(x, y));
+                int tileId = boardLayer != null && boardLayer.getCell(x, y) != null
+                    ? boardLayer.getCell(x, y).getTile().getId()
+                    : 0;
 
-                if (pieceLayer.getTile(x, y) != null) {
-                    initializePieceTile(x, y, tileId, pieceLayer.getTile(x, y));
+                // Initialize tiles as Empty or Occupied based on layer data
+                if (boardLayer != null && boardLayer.getCell(x, y) != null) {
+                    initializePieceTile(x, y, tileId);
                 } else {
                     tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
                 }
@@ -68,32 +95,20 @@ public class Board implements Observable {
         notifyObservers();
     }
 
-    private void initializePieceTile(int x, int y, int tileId, Tile pieceTile) {
-        String type = pieceTile.getProperty("type");
-        String color = pieceTile.getProperty("color");
-        Point position = new Point(x, y);
-
-        if (type != null && color != null) {
-            Piece piece = PieceFactory.createPiece(type, color, position);
-            System.out.println("CASE 1 Created piece: " + piece + "Occupied tile: " + pieceTile);
-            tiles[x][y] = new OccupiedTile(position, tileId, piece);
-        } else {
-            System.out.println("CASE 2 Error: Invalid piece type or color for tile at position: " + position + " Empty tile created.");
-            tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
-        }
+    private void initializePieceTile(int x, int y, int tileId) {
+        // If no specific logic for initialization here, this can be removed or simplified
+        tiles[x][y] = new OccupiedTile(new Point(x, y), tileId, null);
     }
 
     public boolean isValidMove(Point start, Point end) {
         if (!isWithinBounds(start) || !isWithinBounds(end)) {
             return false;
         }
-
         Tile startTile = getTileAt(start);
         if (startTile instanceof OccupiedTile) {
             Piece piece = ((OccupiedTile) startTile).getPiece();
             if (piece != null) {
-                List<Point> possibleMoves = piece.getPossibleMoves(this);
-                return possibleMoves.contains(end);
+                return piece.getPossibleMoves(this).contains(end);
             }
         }
         return false;
@@ -103,7 +118,6 @@ public class Board implements Observable {
         if (!isWithinBounds(start) || !isWithinBounds(end)) {
             throw new IllegalArgumentException("Positions must be within the bounds of the board.");
         }
-
         Tile startTile = getTileAt(start);
         if (startTile instanceof OccupiedTile) {
             Piece piece = ((OccupiedTile) startTile).getPiece();
@@ -116,9 +130,8 @@ public class Board implements Observable {
 
     public List<Piece> getRemainingPieces() {
         List<Piece> remainingPieces = new ArrayList<Piece>();
-        for (int i = 0; i < rowCount; i++) {
-            for (int j = 0; j < columnCount; j++) {
-                Tile tile = tiles[i][j];
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
                 if (tile instanceof OccupiedTile) {
                     remainingPieces.add(((OccupiedTile) tile).getPiece());
                 }
@@ -128,10 +141,7 @@ public class Board implements Observable {
     }
 
     public Tile getTileAt(Point position) {
-        if (!isWithinBounds(position)) {
-            return null;
-        }
-        return tiles[position.x][position.y];
+        return isWithinBounds(position) ? tiles[position.x][position.y] : null;
     }
 
     public boolean isWithinBounds(Point position) {
@@ -154,6 +164,16 @@ public class Board implements Observable {
         notifyObservers();
     }
 
+    public void addObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update();
+        }
+    }
+
     public int getRowCount() {
         return rowCount;
     }
@@ -162,13 +182,9 @@ public class Board implements Observable {
         return columnCount;
     }
 
-    public void addObserver(Observer observer) {
-        observers.add(observer);
-    }
-
-    public void notifyObservers() {
-        for (Observer observer : observers) {
-            observer.update();
+    public void dispose() {
+        if (tiledMap != null) {
+            tiledMap.dispose();
         }
     }
 }

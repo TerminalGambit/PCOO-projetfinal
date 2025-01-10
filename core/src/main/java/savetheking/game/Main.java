@@ -3,6 +3,8 @@ package savetheking.game;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 /**
@@ -26,9 +28,9 @@ public class Main extends ApplicationAdapter {
         String mapPath = "ChessBoardWithPieces.tmx";
 
         try {
-            // Load the Tiled map and initialize the board
-            TiledLoader tiledLoader = new TiledLoader();
-            CustomTiledMap tiledMap = tiledLoader.load(mapPath);
+            // Load the Tiled map using TmxMapLoader and initialize the board
+            TmxMapLoader mapLoader = new TmxMapLoader();
+            TiledMap tiledMap = mapLoader.load(mapPath);
             board = new Board(tiledMap);
 
             // Initialize Renderer, Controller, and Game State
@@ -63,5 +65,8 @@ public class Main extends ApplicationAdapter {
     public void dispose() {
         batch.dispose();
         renderer.dispose();
+        if (board != null) {
+            board.dispose(); // Ensure resources in Board are also disposed of if applicable
+        }
     }
 }

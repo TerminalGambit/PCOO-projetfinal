@@ -8,7 +8,19 @@ import java.util.Map;
 /**
  * Represents the entire TiledMap structure, consisting of multiple layers and pieces.
  */
+
 public class CustomTiledMap {
+
+    private final Map<String, TiledLayer> objectLayers = new HashMap<String, TiledLayer>(); // Store object layers
+
+    public TiledLayer getObjectLayer(String name) {
+        return objectLayers.get(name);
+    }
+
+    public void addObjectLayer(String name, TiledLayer layer) {
+        objectLayers.put(name, layer);
+    }
+
     private final List<TiledLayer> layers;
     private final List<Piece> pieces; // List of pieces on the map
     private final Map<String, String> mapProperties;

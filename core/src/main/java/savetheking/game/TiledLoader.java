@@ -60,6 +60,7 @@ public class TiledLoader {
             } else {
                 System.out.println("Processing non-TiledMapTileLayer: " + gdxLayer.getName());
                 parseObjectGroupLayer(gdxLayer, customTiledMap);
+                customTiledMap.addObjectLayer(gdxLayer.getName(), null); // Add null for object layers as placeholder
             }
         }
 

@@ -40,13 +40,25 @@ public class Board implements Observable {
 
     private void initializeFromTiledMap() {
         TiledLayer boardLayer = tiledMap.getLayer("Board Layer");
+
         TiledLayer pieceLayer = tiledMap.getLayer("Piece Layer");
+        if (pieceLayer == null) {
+            pieceLayer = tiledMap.getObjectLayer("Piece Layer"); // Attempt to retrieve object layer
+        }
+
+
+        if (pieceLayer == null) {
+            throw new IllegalStateException("Piece Layer not found in the TiledMap.");
+        }
 
         for (int x = 0; x < rowCount; x++) {
             for (int y = 0; y < columnCount; y++) {
                 int tileId = boardLayer != null ? boardLayer.getTileId(x, y) : 0;
+                System.out.println("Tile ID: " + tileId);
+                System.out.println("Piece Layer: " + pieceLayer);
+                System.out.println("Piece Layer Tile: " + pieceLayer.getTile(x, y));
 
-                if (pieceLayer != null && pieceLayer.getTile(x, y) != null) {
+                if (pieceLayer.getTile(x, y) != null) {
                     initializePieceTile(x, y, tileId, pieceLayer.getTile(x, y));
                 } else {
                     tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
@@ -63,8 +75,10 @@ public class Board implements Observable {
 
         if (type != null && color != null) {
             Piece piece = PieceFactory.createPiece(type, color, position);
+            System.out.println("CASE 1 Created piece: " + piece + "Occupied tile: " + pieceTile);
             tiles[x][y] = new OccupiedTile(position, tileId, piece);
         } else {
+            System.out.println("CASE 2 Error: Invalid piece type or color for tile at position: " + position + " Empty tile created.");
             tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
         }
     }

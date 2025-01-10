@@ -1,0 +1,24 @@
+@startuml
+folder TMX {
+  class BoardLayer {
+    - Contains tiles
+    - Tile IDs reference TileProperties
+  }
+  class PieceLayer {
+    - Contains pieces
+    - Object properties (e.g., color, type)
+  }
+}
+
+folder TSX {
+  class TileProperties {
+    - Defines tile attributes
+    - Includes custom properties
+  }
+}
+
+BoardLayer --> TileProperties : "References"
+PieceLayer --> TileProperties : "References"
+PieceLayer --> "CustomProperties" : "Defines"
+
+@enduml

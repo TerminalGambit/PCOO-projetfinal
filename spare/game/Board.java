@@ -1,44 +1,52 @@
 package savetheking.game;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Texture;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The Board class represents a chessboard for the Solo Chess game.
- */
 public class Board implements Observable {
     private final Tile[][] tiles;
     private final int rowCount;
     private final int columnCount;
     private final List<Observer> observers = new ArrayList<Observer>();
     private final CustomTiledMap tiledMap;
+    private List<Piece> pieces;
 
     public Board(CustomTiledMap tiledMap) {
         this.rowCount = tiledMap.getHeight();
         this.columnCount = tiledMap.getWidth();
         this.tiles = new Tile[rowCount][columnCount];
         this.tiledMap = tiledMap;
+        this.pieces = new ArrayList<Piece>();
         initializeBoard();
     }
 
     public void initializeBoard() {
+        System.out.println("[DEBUG] Initializing board...");
         if (tiledMap != null) {
+            System.out.println("[DEBUG] Using tiled map for initialization.");
             initializeFromTiledMap();
         } else {
+            System.out.println("[DEBUG] No tiled map provided. Clearing board.");
             clearBoard();
         }
     }
 
     private void clearBoard() {
+        System.out.println("[DEBUG] Clearing the board...");
         for (int x = 0; x < rowCount; x++) {
             for (int y = 0; y < columnCount; y++) {
                 tiles[x][y] = new EmptyTile(new Point(x, y), 0);
+                System.out.println("[DEBUG] Cleared tile at (" + x + ", " + y + ").");
+                System.out.println("[DEBUG] Initialized tile at (" + x + ", " + y + ") with texture: " + (tiles[x][y].getTexture() != null ? "Loaded" : "Null"));
             }
         }
         notifyObservers();
     }
 
     private void initializeFromTiledMap() {
+        System.out.println("[DEBUG] Initializing board from tiled map...");
         TiledLayer boardLayer = tiledMap.getLayer("Board Layer");
         TiledLayer pieceLayer = tiledMap.getLayer("Piece Layer");
 
@@ -49,7 +57,10 @@ public class Board implements Observable {
                 if (pieceLayer != null && pieceLayer.getTile(x, y) != null) {
                     initializePieceTile(x, y, tileId, pieceLayer.getTile(x, y));
                 } else {
+                    System.out.println("[DEBUG] No tiled map provided. Clearing board.");
                     tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
+                    System.out.println("[DEBUG] Cleared tile at (" + x + ", " + y + ").");
+                    System.out.println("[DEBUG] Initialized tile at (" + x + ", " + y + ") with texture: " + (tiles[x][y].getTexture() != null ? "Loaded" : "Null"));
                 }
             }
         }
@@ -63,9 +74,57 @@ public class Board implements Observable {
 
         if (type != null && color != null) {
             Piece piece = PieceFactory.createPiece(type, color, position);
-            tiles[x][y] = new OccupiedTile(position, tileId, piece);
+            if (piece != null) {
+                tiles[x][y] = new OccupiedTile(position, tileId, piece);
+                System.out.println("[DEBUG] Cleared tile at (" + x + ", " + y + ").");
+                System.out.println("[DEBUG] Initialized tile at (" + x + ", " + y + ") with texture: " + (tiles[x][y].getTexture() != null ? "Loaded" : "Null"));
+                pieces.add(piece);
+                System.out.println("Placed piece: " + piece + " at position: " + position);
+            } else {
+                System.out.println("[DEBUG] No tiled map provided. Clearing board.");
+                tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
+                System.out.println("[DEBUG] Cleared tile at (" + x + ", " + y + ").");
+                System.out.println("[DEBUG] Initialized tile at (" + x + ", " + y + ") with texture: " + (tiles[x][y].getTexture() != null ? "Loaded" : "Null"));
+                System.out.println("Failed to create piece at position: " + position);
+            }
         } else {
+            System.out.println("[DEBUG] No tiled map provided. Clearing board.");
             tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
+            System.out.println("[DEBUG] Cleared tile at (" + x + ", " + y + ").");
+            System.out.println("[DEBUG] Initialized tile at (" + x + ", " + y + ") with texture: " + (tiles[x][y].getTexture() != null ? "Loaded" : "Null"));
+            System.out.println("No piece at position: " + position);
+        }
+    }
+
+    public void render(SpriteBatch batch) {
+        // Render all tiles first
+        for (int row = 0; row < rowCount; row++) {
+            for (int col = 0; col < columnCount; col++) {
+                Tile tile = tiles[row][col];
+                Texture texture = tile.getTexture();
+
+                if (texture == null) {
+                    System.err.println("[ERROR] Texture is null for tile at position: (" + row + ", " + col + "). Tile Type: " + tile.getClass().getSimpleName());
+                    continue; // Skip rendering this tile
+                }
+
+                try {
+                    tile.render(batch, texture);
+                } catch (Exception e) {
+                    System.err.println("[ERROR] Failed to render tile at (" + row + ", " + col + "): " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // Render all pieces
+        for (Piece piece : pieces) {
+            try {
+                piece.render(batch);
+            } catch (Exception e) {
+                System.err.println("[ERROR] Failed to render piece at position: " + piece.getPosition() + ": " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -156,5 +215,9 @@ public class Board implements Observable {
         for (Observer observer : observers) {
             observer.update();
         }
+    }
+
+    public List<Piece> getPieces() {
+        return pieces;
     }
 }

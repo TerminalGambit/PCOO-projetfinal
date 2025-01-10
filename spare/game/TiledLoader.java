@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Responsible for loading and parsing Tiled (.tmx) files into TiledMap objects.
+ * Responsible for loading and parsing Tiled (.tmx) files into CustomTiledMap objects.
  */
 public class TiledLoader {
     private final TmxMapLoader loader;
@@ -31,13 +31,17 @@ public class TiledLoader {
     }
 
     /**
-     * Loads a Tiled (.tmx) file and converts it into a custom TiledMap object.
+     * Loads a Tiled (.tmx) file and converts it into a custom CustomTiledMap object.
      *
      * @param filePath The path to the .tmx file.
-     * @return A custom TiledMap object representing the loaded map.
+     * @return A custom CustomTiledMap object representing the loaded map.
      */
     public CustomTiledMap load(String filePath) {
         System.out.println("Loading TMX file: " + filePath);
+
+        // Load the TSX file first to ensure tile properties are available
+        loadTSX("pieces/ChessPieceObjects.tsx");
+
         com.badlogic.gdx.maps.tiled.TiledMap gdxTiledMap = loader.load(filePath);
         CustomTiledMap customTiledMap = new CustomTiledMap();
 
@@ -104,7 +108,7 @@ public class TiledLoader {
      * Parses object group layers, typically used for piece placement.
      *
      * @param gdxLayer       The MapLayer to parse.
-     * @param customTiledMap The TiledMap to populate with pieces.
+     * @param customTiledMap The CustomTiledMap to populate with pieces.
      */
     private void parseObjectGroupLayer(MapLayer gdxLayer, CustomTiledMap customTiledMap) {
         System.out.println("Processing object group layer: " + gdxLayer.getName() + " with " + gdxLayer.getObjects().getCount() + " objects.");
@@ -187,12 +191,12 @@ public class TiledLoader {
     }
 
     /**
-     * Attempts to create a piece using the PieceFactory and adds it to the TiledMap.
+     * Attempts to create a piece using the PieceFactory and adds it to the CustomTiledMap.
      *
      * @param type            The type of the piece (e.g., "Queen", "Rook").
      * @param color           The color of the piece (e.g., "White", "Black").
      * @param position        The board position of the piece.
-     * @param customTiledMap  The custom TiledMap to populate.
+     * @param customTiledMap  The custom CustomTiledMap to populate.
      */
     private void createPieceFromFactory(String type, String color, Point position, CustomTiledMap customTiledMap) {
         System.out.println("Attempting to create piece using PieceFactory...");
@@ -231,6 +235,7 @@ public class TiledLoader {
             }
         } catch (Exception e) {
             System.err.println("Failed to load TSX file: " + e.getMessage());
+            e.printStackTrace(); // Print stack trace for detailed error information
         }
     }
 

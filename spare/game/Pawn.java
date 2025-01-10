@@ -1,6 +1,7 @@
 package savetheking.game;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,5 +43,10 @@ public class Pawn extends Piece {
         }
 
         return possibleMoves;
+    }
+
+    @Override
+    public void render(SpriteBatch batch) {
+        super.render(batch);
     }
 }

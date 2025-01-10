@@ -16,6 +16,7 @@ public class Main extends ApplicationAdapter {
     private Renderer renderer;
     private Controller controller;
     private PlayingState playingState;
+    private PieceFactory pieceFactory;
 
     @Override
     public void create() {
@@ -28,13 +29,23 @@ public class Main extends ApplicationAdapter {
         String mapPath = "ChessBoardWithPieces.tmx";
 
         try {
-            // Load the Tiled map using TmxMapLoader and initialize the board
+            // Load the Tiled map
             TmxMapLoader mapLoader = new TmxMapLoader();
             TiledMap tiledMap = mapLoader.load(mapPath);
-            board = new Board(tiledMap);
 
-            // Initialize Renderer, Controller, and Game State
+            // Initialize PieceFactory
+            pieceFactory = new PieceFactory();
+
+            // Initialize Board and link to PieceFactory
+            board = new Board(tiledMap, tileSize, pieceFactory);
+
+            // Initialize Renderer (after Board is initialized)
             renderer = new Renderer(board, tileSize);
+
+            // Set the Renderer in the PieceFactory
+            pieceFactory.setRenderer(renderer);
+
+            // Initialize other game components
             batch = new SpriteBatch();
             controller = new Controller(board);
             playingState = new PlayingState(board, controller, renderer);

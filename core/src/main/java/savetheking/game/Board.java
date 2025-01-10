@@ -19,12 +19,16 @@ public class Board implements Observable {
     private final List<Observer> observers = new ArrayList<Observer>();
     private final TiledMap tiledMap;
     private final boolean pieceDebug = false; // Toggle this to enable/disable debug mode
+    private final int tileSize; // Size of each tile in pixels
+    private final PieceFactory pieceFactory; // Reference to the shared PieceFactory
 
-    public Board(TiledMap tiledMap) {
+    public Board(TiledMap tiledMap, int tileSize, PieceFactory pieceFactory) {
         this.tiledMap = tiledMap;
+        this.tileSize = tileSize;
         this.rowCount = tiledMap.getProperties().get("height", Integer.class);
         this.columnCount = tiledMap.getProperties().get("width", Integer.class);
         this.tiles = new Tile[rowCount][columnCount];
+        this.pieceFactory = pieceFactory; // Set the shared PieceFactory
         initializeBoard();
     }
 
@@ -60,21 +64,22 @@ public class Board implements Observable {
                 // Extract position and properties
                 float x = properties.get("x", Float.class);
                 float y = properties.get("y", Float.class);
-                int gridX = Math.round(x / 64); // Tile size is 64
-                int gridY = (rowCount - 1) - Math.round(y / 64); // Flip y-coordinate
+                int gridX = Math.round(x / tileSize); // Tile size is 64
+                int gridY = (rowCount - 1) - Math.round(y / tileSize); // Flip y-coordinate
                 String type = properties.get("type", String.class);
                 String color = properties.get("color", String.class);
 
                 if (pieceDebug) {
-                    System.out.printf("Debug: Found piece - Type: %s, Color: %s, Grid Position: (%d, %d)%n", type, color, gridX, gridY);
+                    System.out.printf("Found piece - Type: %s, Color: %s, Grid Position: (%d, %d)%n", type, color, gridX, gridY);
                 }
 
                 if (type == null || color == null) {
-                    throw new IllegalArgumentException("Type and color must be defined for each piece.");
+                    System.err.println("Error: Missing type or color property for a piece.");
+                    continue;
                 }
 
                 Point position = new Point(gridX, gridY);
-                Piece piece = PieceFactory.createPiece(type, color, position);
+                Piece piece = pieceFactory.createPiece(type, color, position); // Use instance method
                 placePiece(piece, position);
             }
         } else {

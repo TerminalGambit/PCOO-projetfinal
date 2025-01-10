@@ -6,15 +6,18 @@ import com.badlogic.gdx.graphics.Texture;
  * Factory class for creating chess pieces.
  */
 public class PieceFactory {
-    private final boolean DEBUG_MODE = true; // Set to true for debugging
-    private Renderer renderer; // Reference to the Renderer
+    private static final boolean DEBUG_MODE = true; // Set to true for debugging
+    private final Renderer renderer; // Reference to the Renderer
 
     /**
-     * Sets the Renderer instance for notifying about new pieces.
+     * Constructor for PieceFactory.
      *
-     * @param renderer The Renderer instance to be used.
+     * @param renderer The Renderer instance to be used for rendering pieces.
      */
-    public void setRenderer(Renderer renderer) {
+    public PieceFactory(Renderer renderer) {
+        if (renderer == null) {
+            throw new IllegalArgumentException("Renderer cannot be null.");
+        }
         this.renderer = renderer;
     }
 
@@ -27,12 +30,6 @@ public class PieceFactory {
      * @return The created Piece object.
      */
     public Piece createPiece(String type, String color, Point position) {
-        if (renderer == null) {
-            System.err.println("Renderer is not set. Piece will not be rendered.");
-        } else {
-            System.out.println("Renderer set successfully.");
-        }
-
         if (DEBUG_MODE) {
             System.out.println("PieceFactory.createPiece called:");
             System.out.println("Type: " + type + ", Color: " + color + ", Position: " + position);
@@ -72,11 +69,7 @@ public class PieceFactory {
         }
 
         // Notify the renderer about the new piece
-        if (this.renderer != null) {
-            this.renderer.notifyNewPiece(piece);
-        } else {
-            System.err.println("Renderer is not set. Piece will not be rendered.");
-        }
+        renderer.notifyNewPiece(piece);
 
         return piece;
     }
@@ -93,9 +86,7 @@ public class PieceFactory {
         String texturePath = "pieces/" + color.toLowerCase().charAt(0) + typeAbbreviation + ".png";
         System.out.println("Loading texture from path: " + texturePath);
         try {
-            Texture texture = new Texture(texturePath);
-            System.out.println("Successfully loaded texture: " + texturePath);
-            return texture;
+            return new Texture(texturePath);
         } catch (Exception e) {
             System.err.println("Failed to load texture: " + e.getMessage());
             return null;

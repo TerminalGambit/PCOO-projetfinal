@@ -16,7 +16,6 @@ public class Main extends ApplicationAdapter {
     private Renderer renderer;
     private Controller controller;
     private PlayingState playingState;
-    private PieceFactory pieceFactory;
 
     @Override
     public void create() {
@@ -33,21 +32,20 @@ public class Main extends ApplicationAdapter {
             TmxMapLoader mapLoader = new TmxMapLoader();
             TiledMap tiledMap = mapLoader.load(mapPath);
 
-            // Initialize PieceFactory
-            pieceFactory = new PieceFactory();
+            // Initialize Renderer (before PieceFactory)
+            System.out.println("Initializing Renderer...");
+            renderer = new Renderer(null, tileSize);
 
+            // Initialize PieceFactory with Renderer
+            System.out.println("Creating PieceFactory...");
+            PieceFactory pieceFactory = new PieceFactory(renderer);
 
             // Initialize Board and link to PieceFactory
             System.out.println("Creating Board and linking PieceFactory...");
             board = new Board(tiledMap, tileSize, pieceFactory);
 
-            // Initialize Renderer (after Board is initialized)
-            System.out.println("Initializing Renderer...");
-            renderer = new Renderer(board, tileSize);
-
-            // Set the Renderer in the PieceFactory
-            System.out.println("Setting Renderer in PieceFactory...");
-            pieceFactory.setRenderer(renderer);
+            // Set the Board in the Renderer
+            renderer.setBoard(board);
 
             // Initialize other game components
             batch = new SpriteBatch();

@@ -36,13 +36,17 @@ public class Main extends ApplicationAdapter {
             // Initialize PieceFactory
             pieceFactory = new PieceFactory();
 
+
             // Initialize Board and link to PieceFactory
+            System.out.println("Creating Board and linking PieceFactory...");
             board = new Board(tiledMap, tileSize, pieceFactory);
 
             // Initialize Renderer (after Board is initialized)
+            System.out.println("Initializing Renderer...");
             renderer = new Renderer(board, tileSize);
 
             // Set the Renderer in the PieceFactory
+            System.out.println("Setting Renderer in PieceFactory...");
             pieceFactory.setRenderer(renderer);
 
             // Initialize other game components

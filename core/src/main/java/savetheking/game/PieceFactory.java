@@ -27,6 +27,12 @@ public class PieceFactory {
      * @return The created Piece object.
      */
     public Piece createPiece(String type, String color, Point position) {
+        if (renderer == null) {
+            System.err.println("Renderer is not set. Piece will not be rendered.");
+        } else {
+            System.out.println("Renderer set successfully.");
+        }
+
         if (DEBUG_MODE) {
             System.out.println("PieceFactory.createPiece called:");
             System.out.println("Type: " + type + ", Color: " + color + ", Position: " + position);

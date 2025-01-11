@@ -40,17 +40,14 @@ public class Controller {
         }
     }
 
-    /**
-     * Handles piece selection logic.
-     * @param clickedTile The tile that was clicked.
-     */
-    private void handleSelection(Tile clickedTile) {
+
+    public void handleSelection(Tile clickedTile) {
         if (clickedTile instanceof OccupiedTile) {
             selectedPiece = ((OccupiedTile) clickedTile).getPiece();
-            System.out.println("Selected piece: " + selectedPiece);
-            highlightValidMoves(selectedPiece);
+            System.out.printf("Selected piece: %s%n", selectedPiece);
         } else {
-            System.out.println("Clicked on an empty tile, no piece selected.");
+            selectedPiece = null;
+            System.out.println("No piece found on the clicked tile.");
         }
     }
 
@@ -133,7 +130,7 @@ public class Controller {
     public void resetBoard() {
         board.initializeBoard(); // Reset the board
         gameState.setScore(0);   // Reset score
-        gameState.setTimer(300); // Reset timer
+        gameState.setTimer(3000); // Reset timer
         gameState.advanceRound(); // Move to the next round
         isGameFinished = false;  // Reset game status
         selectedPiece = null;    // Clear selected piece

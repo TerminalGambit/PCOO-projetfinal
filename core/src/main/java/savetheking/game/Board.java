@@ -18,7 +18,7 @@ public class Board implements Observable {
     private final int columnCount;
     private final List<Observer> observers = new ArrayList<Observer>();
     private final TiledMap tiledMap;
-    private final boolean pieceDebug = false; // Toggle this to enable/disable debug mode
+    private final boolean pieceDebug = true; // Toggle this to enable/disable debug mode
     private final int tileSize; // Size of each tile in pixels
     private final PieceFactory pieceFactory; // Reference to the shared PieceFactory
 
@@ -50,108 +50,113 @@ public class Board implements Observable {
     }
 
     private void initializeFromTiledMap() {
+        // Fetch the Board Layer
         TiledMapTileLayer boardLayer = (TiledMapTileLayer) tiledMap.getLayers().get("Board Layer");
-
         if (pieceDebug) {
             System.out.println("Debug: Board Layer = " + (boardLayer != null ? "Found" : "Not Found"));
         }
 
+        // Fetch the Piece Layer
         MapLayer pieceLayer = tiledMap.getLayers().get("Piece Layer");
         if (pieceLayer != null) {
             for (MapObject object : pieceLayer.getObjects()) {
                 MapProperties properties = object.getProperties();
 
-                // Extract position and properties
+                // Extract position and properties from Piece Layer
                 float x = properties.get("x", Float.class);
                 float y = properties.get("y", Float.class);
-                int gridX = Math.round(x / tileSize); // Tile size is 64
-                int gridY = (rowCount - 1) - Math.round(y / tileSize); // Flip y-coordinate
-                String type = properties.get("type", String.class);
-                String color = properties.get("color", String.class);
+                int gridX = Math.round(x / tileSize);
+                int gridY = (rowCount - 1) - Math.round(y / tileSize);
+
+                // Extract tile ID directly from the object (GID is the key)
+                int tileId = properties.get("gid", Integer.class);
 
                 if (pieceDebug) {
-                    System.out.printf("Found piece - Type: %s, Color: %s, Grid Position: (%d, %d)%n", type, color, gridX, gridY);
+                    System.out.printf("Debug: Found object at (%d, %d) with Tile ID: %d%n", gridX, gridY, tileId);
                 }
 
-                if (type == null || color == null) {
-                    System.err.println("Error: Missing type or color property for a piece.");
-                    continue;
+                if (tileId > 0) { // Ensure tileId is valid
+                    initializePieceTile(gridX, gridY, tileId); // Pass to initializePieceTile
                 }
-
-                Point position = new Point(gridX, gridY);
-                Piece piece = pieceFactory.createPiece(type, color, position); // Use instance method
-                placePiece(piece, position);
             }
         } else {
             throw new IllegalStateException("Piece Layer not found in the TiledMap.");
         }
 
-        // Initialize board tiles
+        // Initialize remaining board tiles
         for (int x = 0; x < rowCount; x++) {
             for (int y = 0; y < columnCount; y++) {
-                if (pieceDebug) {
-                    System.out.printf("Debug: Checking tile at (%d, %d)%n", x, y);
-                }
+                if (tiles[x][y] == null) {
+                    int tileId = boardLayer != null && boardLayer.getCell(x, y) != null
+                        ? boardLayer.getCell(x, y).getTile().getId()
+                        : 0;
 
-                int tileId = boardLayer != null && boardLayer.getCell(x, y) != null
-                    ? boardLayer.getCell(x, y).getTile().getId()
-                    : 0;
-
-                if (boardLayer != null && boardLayer.getCell(x, y) != null) {
-                    initializePieceTile(x, y, tileId);
-                } else {
                     tiles[x][y] = new EmptyTile(new Point(x, y), tileId);
+                    if (pieceDebug) {
+                        System.out.printf("Debug: Initialized empty tile at (%d, %d) with Tile ID: %d%n", x, y, tileId);
+                    }
                 }
             }
         }
+
         notifyObservers();
     }
 
     private void initializePieceTile(int x, int y, int tileId) {
         if (pieceDebug) {
-            System.out.printf("Debug: Initializing tile at (%d, %d) with tile ID: %d%n", x, y, tileId);
+            System.out.printf("Debug: Initializing piece tile at (%d, %d) with Tile ID: %d%n", x, y, tileId);
         }
-        tiles[x][y] = new OccupiedTile(new Point(x, y), tileId, null);
-    }
 
-    public boolean isValidMove(Point start, Point end) {
-        if (!isWithinBounds(start) || !isWithinBounds(end)) {
-            return false;
-        }
-        Tile startTile = getTileAt(start);
-        if (startTile instanceof OccupiedTile) {
-            Piece piece = ((OccupiedTile) startTile).getPiece();
-            if (piece != null) {
-                return piece.getPossibleMoves(this).contains(end);
+        // Retrieve the piece type and color
+        String type = getTypeFromTileId(tileId);
+        String color = getColorFromTileId(tileId);
+
+        // Check if there's a piece associated with the tile ID
+        if (type != null && color != null) {
+            Piece piece = pieceFactory.createPiece(type, color, new Point(x, y));
+            tiles[x][y] = new OccupiedTile(new Point(x, y), tileId, piece);
+            if (pieceDebug) {
+                System.out.printf("Debug: Created %s %s at (%d, %d)%n", color, type, x, y);
+            }
+        } else {
+            if (pieceDebug) {
+                System.out.printf("Debug: No piece associated with Tile ID: %d at (%d, %d)%n", tileId, x, y);
             }
         }
-        return false;
     }
 
-    public void movePiece(Point start, Point end) {
-        if (!isWithinBounds(start) || !isWithinBounds(end)) {
-            throw new IllegalArgumentException("Positions must be within the bounds of the board.");
+    private String getTypeFromTileId(int tileId) {
+        switch (tileId) {
+            case 0:
+            case 6:
+                return "bishop";
+            case 1:
+            case 7:
+                return "king";
+            case 2:
+            case 8:
+                return "knight";
+            case 3:
+            case 9:
+                return "pawn";
+            case 4:
+            case 10:
+                return "queen";
+            case 5:
+            case 11:
+                return "rook";
+            default:
+                return null;
         }
-        Tile startTile = getTileAt(start);
-        if (startTile instanceof OccupiedTile) {
-            Piece piece = ((OccupiedTile) startTile).getPiece();
-            removePiece(start);
-            placePiece(piece, end);
-            piece.move(end, rowCount);
-        }
-        notifyObservers();
     }
 
-    public List<Piece> getRemainingPieces() {
-        List<Piece> remainingPieces = new ArrayList<Piece>();
-        for (Tile[] row : tiles) {
-            for (Tile tile : row) {
-                if (tile instanceof OccupiedTile) {
-                    remainingPieces.add(((OccupiedTile) tile).getPiece());
-                }
-            }
+    private String getColorFromTileId(int tileId) {
+        if (tileId >= 0 && tileId <= 5) {
+            return "black";
+        } else if (tileId >= 6 && tileId <= 11) {
+            return "white";
         }
-        return remainingPieces;
+        return null;
     }
 
     public Tile getTileAt(Point position) {
@@ -178,6 +183,7 @@ public class Board implements Observable {
         notifyObservers();
     }
 
+    @Override
     public void addObserver(Observer observer) {
         observers.add(observer);
     }
@@ -185,20 +191,6 @@ public class Board implements Observable {
     public void notifyObservers() {
         for (Observer observer : observers) {
             observer.update();
-        }
-    }
-
-    public int getRowCount() {
-        return rowCount;
-    }
-
-    public int getColumnCount() {
-        return columnCount;
-    }
-
-    public void dispose() {
-        if (tiledMap != null) {
-            tiledMap.dispose();
         }
     }
 }

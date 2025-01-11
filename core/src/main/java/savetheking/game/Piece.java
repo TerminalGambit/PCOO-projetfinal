@@ -121,6 +121,7 @@ public abstract class Piece {
         return this.moveCount;
     }
 
+
     /**
      * Returns a textual representation of the piece.
      *

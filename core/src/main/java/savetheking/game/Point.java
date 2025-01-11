@@ -61,7 +61,7 @@ public class Point {
      * @return true si le point est dans les limites, sinon false.
      */
     public boolean isWithinBounds(int boardSize) {
-        return x < 0 || x >= boardSize || y < 0 || y >= boardSize;
+        return x >= 0 && x < boardSize && y >= 0 && y < boardSize;
     }
 
     /**

@@ -29,6 +29,7 @@ public class PlayingState implements GameStateInterface {
         if (Gdx.input.justTouched()) {
             int screenX = Gdx.input.getX(); // Screen x-coordinate
             int screenY = Gdx.input.getY(); // Screen y-coordinate
+            screenY = Gdx.graphics.getHeight() - screenY; // Invert y-axis
 
             // Translate screen coordinates to board coordinates
             Point clickedPoint = translateScreenToBoard(screenX, screenY);

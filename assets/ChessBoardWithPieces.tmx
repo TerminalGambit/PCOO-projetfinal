@@ -22,5 +22,11 @@
     <property name="color" value="white"/>
    </properties>
   </object>
+    <object id="2" gid="10" x="0" y="64" width="64" height="64">
+     <properties>
+      <property name="type" value="queen"/>
+      <property name="color" value="white"/>
+     </properties>
+    </object>
  </objectgroup>
 </map>

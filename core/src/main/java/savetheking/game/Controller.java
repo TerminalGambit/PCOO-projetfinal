@@ -58,6 +58,7 @@ public class Controller {
      */
     private void handleMove(Point clickedPoint, Tile clickedTile) {
         List<Point> validMoves = selectedPiece.getPossibleMoves(board);
+        //System.out.println("Valid moves for the selected piece: " + validMoves + "the selected piece: " + selectedPiece + "that is an instance of " + selectedPiece.getClass().getSimpleName());
 
         if (validMoves.contains(clickedPoint)) {
             performMove(clickedPoint, clickedTile);
@@ -68,28 +69,43 @@ public class Controller {
 
     /**
      * Performs the actual move of a selected piece.
-     * @param clickedPoint The destination point.
-     * @param clickedTile  The tile at the destination.
+     * Updates the board state, piece state, game state, and handles rendering updates.
+     *
+     * @param clickedPoint The destination point for the piece.
+     * @param clickedTile  The tile at the destination point.
      */
     private void performMove(Point clickedPoint, Tile clickedTile) {
-        System.out.println("Moving piece to: " + clickedPoint);
-        board.movePiece(selectedPiece.getPosition(), clickedPoint);
+        System.out.printf("Performing move for piece: %s from %s to %s%n", selectedPiece, selectedPiece.getPosition(), clickedPoint);
 
-        // Update the piece's state and handle two-move rule
+        // Step 1: Update the board's state
+        board.movePiece(selectedPiece.getPosition(), clickedPoint);
+        System.out.println("Board updated: Piece moved to new position.");
+
+        // Step 2: Update the piece's internal state
         selectedPiece.move(clickedPoint, board.getRowCount());
-        if (selectedPiece.getMoveCount() >= 2 && "White".equals(selectedPiece.getColor())) {
+        System.out.printf("Piece state updated: New position = %s, Move count = %d%n", selectedPiece.getPosition(), selectedPiece.getMoveCount());
+
+        // Step 3: Handle color change for two-move rule
+        if (selectedPiece.getMoveCount() >= 2 && "White".equalsIgnoreCase(selectedPiece.getColor())) {
             selectedPiece.setColor("Black");
+            System.out.println("Piece color changed to Black after two moves.");
         }
 
-        // Record the move in the game state
+        // Step 4: Record the move in the game state
         boolean isCapture = clickedTile instanceof OccupiedTile;
         gameState.recordMove(selectedPiece, selectedPiece.getPosition(), clickedPoint, isCapture);
+        System.out.println("Game state updated: Move recorded.");
 
-        // Check if the game is finished
+        // Step 5: Check if the game is finished
         checkGameFinished();
 
-        // Deselect the piece
+        // Step 6: Deselect the piece
         selectedPiece = null;
+        System.out.println("Piece deselected. Ready for next action.");
+
+        // Rendering step (if needed):
+        // Ensure rendering updates after the move if the rendering relies on board state changes.
+        board.notifyObservers();
     }
 
     /**

@@ -106,14 +106,6 @@ public class GameState {
         return new ArrayList<Move>(moves); // Return a copy of the move history
     }
 
-    /**
-     * Renders the game state visually, such as drawing elements on the screen.
-     * @param batch A SpriteBatch instance to handle rendering.
-     */
-    public void render(SpriteBatch batch) {
-        // Placeholder: Render game state visuals, such as score and timer
-    }
-
     // Getters and Setters for the GameState attributes
     public int getTimer() {
         return timer;

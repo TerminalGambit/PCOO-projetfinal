@@ -65,15 +65,30 @@ public abstract class Piece {
     }
 
     /**
-     * Moves the piece to a new position.
+     * Updates the position of the piece, increments the move count,
+     * and checks for color change after two moves.
      *
-     * @param newPosition The target position.
+     * @param newPosition The target position to move the piece to.
      * @param boardSize   The size of the board.
+     * @throws IllegalArgumentException if the new position is out of bounds.
      */
     public void move(Point newPosition, int boardSize) {
+        // Validate if the new position is within bounds
         if (isWithinBounds(newPosition, boardSize)) {
+            System.out.printf("Moving piece: %s from %s to %s%n", this, this.position, newPosition);
+
+            // Update the piece's position
             this.position = newPosition;
+
+            // Increment the move count
             this.moveCount++;
+            System.out.printf("Piece %s move count updated to %d%n", this, this.moveCount);
+
+            // Check for color change after two moves
+            if (this.moveCount >= 2 && "White".equalsIgnoreCase(this.color)) {
+                this.color = "Black";
+                System.out.printf("Piece %s color changed to Black after %d moves%n", this, this.moveCount);
+            }
         } else {
             throw new IllegalArgumentException("Position out of bounds: " + newPosition);
         }

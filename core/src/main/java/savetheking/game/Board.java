@@ -18,7 +18,7 @@ public class Board implements Observable {
     private final int columnCount;
     private final List<Observer> observers = new ArrayList<Observer>();
     private final TiledMap tiledMap;
-    private final boolean pieceDebug = true; // Toggle this to enable/disable debug mode
+    private final boolean pieceDebug = false; // Toggle this to enable/disable debug mode
     private final int tileSize; // Size of each tile in pixels
     private final PieceFactory pieceFactory; // Reference to the shared PieceFactory
 
@@ -160,7 +160,11 @@ public class Board implements Observable {
     }
 
     public Tile getTileAt(Point position) {
-        return isWithinBounds(position) ? tiles[position.x][position.y] : null;
+        if (isWithinBounds(position)) {
+            //System.out.println("Position: " + position + " is within bounds." + "Returning tile at position: " + tiles[position.x][position.y] + " with instance of : " + tiles[position.x][position.y].getClass().getSimpleName());
+            return tiles[position.x][position.y];
+        }
+        return null;
     }
 
     public boolean isWithinBounds(Point position) {
@@ -207,17 +211,43 @@ public class Board implements Observable {
         }
     }
 
+    /**
+     * Moves a piece from the start position to the end position on the board.
+     * Updates the board tiles to reflect the move and notifies observers.
+     *
+     * @param start The starting position of the piece.
+     * @param end   The destination position of the piece.
+     * @throws IllegalArgumentException if the start or end positions are out of bounds.
+     */
     public void movePiece(Point start, Point end) {
         if (!isWithinBounds(start) || !isWithinBounds(end)) {
             throw new IllegalArgumentException("Positions must be within the bounds of the board.");
         }
+
         Tile startTile = getTileAt(start);
+        Tile endTile = getTileAt(end);
+
         if (startTile instanceof OccupiedTile) {
             Piece piece = ((OccupiedTile) startTile).getPiece();
-            removePiece(start);
-            placePiece(piece, end);
+
+            // Debug: Log details of the move
+            System.out.printf("Moving piece: %s from %s to %s%n", piece, start, end);
+
+            // Remove the piece from the start tile
+            tiles[start.x][start.y] = new EmptyTile(start, 0);
+            System.out.println("Start tile set to empty.");
+
+            // Place the piece on the end tile
+            tiles[end.x][end.y] = new OccupiedTile(end, 0, piece);
+            System.out.printf("End tile updated with piece: %s at position %s%n", piece, end);
+
+            // Update the piece's position
             piece.move(end, rowCount);
+        } else {
+            System.err.printf("Error: No piece found at start tile (%s)%n", start);
         }
+
+        // Notify observers about the state change
         notifyObservers();
     }
 

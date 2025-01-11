@@ -183,7 +183,6 @@ public class Board implements Observable {
         notifyObservers();
     }
 
-    @Override
     public void addObserver(Observer observer) {
         observers.add(observer);
     }
@@ -192,5 +191,59 @@ public class Board implements Observable {
         for (Observer observer : observers) {
             observer.update();
         }
+    }
+
+    public int getRowCount() {
+        return rowCount;
+    }
+
+    public int getColumnCount() {
+        return columnCount;
+    }
+
+    public void dispose() {
+        if (tiledMap != null) {
+            tiledMap.dispose();
+        }
+    }
+
+    public void movePiece(Point start, Point end) {
+        if (!isWithinBounds(start) || !isWithinBounds(end)) {
+            throw new IllegalArgumentException("Positions must be within the bounds of the board.");
+        }
+        Tile startTile = getTileAt(start);
+        if (startTile instanceof OccupiedTile) {
+            Piece piece = ((OccupiedTile) startTile).getPiece();
+            removePiece(start);
+            placePiece(piece, end);
+            piece.move(end, rowCount);
+        }
+        notifyObservers();
+    }
+
+    public List<Piece> getRemainingPieces() {
+        List<Piece> remainingPieces = new ArrayList<Piece>();
+        for (Tile[] row : tiles) {
+            for (Tile tile : row) {
+                if (tile instanceof OccupiedTile) {
+                    remainingPieces.add(((OccupiedTile) tile).getPiece());
+                }
+            }
+        }
+        return remainingPieces;
+    }
+
+    public boolean isValidMove(Point start, Point end) {
+        if (!isWithinBounds(start) || !isWithinBounds(end)) {
+            return false;
+        }
+        Tile startTile = getTileAt(start);
+        if (startTile instanceof OccupiedTile) {
+            Piece piece = ((OccupiedTile) startTile).getPiece();
+            if (piece != null) {
+                return piece.getPossibleMoves(this).contains(end);
+            }
+        }
+        return false;
     }
 }

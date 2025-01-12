@@ -66,24 +66,74 @@ Pour structurer ce projet, plusieurs *design patterns* de la programmation orien
 
 ## Section 2. Présentation du Projet
 
-Cette section présente les aspects techniques du projet, notamment l’utilisation de LibGDX, la gestion de l’affichage, des tuiles et l’organisation globale. *(Vous pourrez enrichir cette partie selon vos besoins : expliquer la configuration Tiled, la gestion des cartes, etc.)*
+Cette section détaille l’approche technique adoptée pour **Solo Chess**, notamment l’utilisation de LibGDX, la gestion de l’affichage via Tiled et la structure générale du jeu.
+
+---
 
 ### 2.1 Technologies et Outils Utilisés
 
-- **LibGDX** : Moteur de jeu pour la 2D, permettant une gestion aisée des sprites, du rendu et des entrées.
-- **Tiled** : (si applicable) outil de conception de cartes 2D.
-- *Autres* : (Gestion de version GIT, IDE IntelliJ, etc.)
+- **LibGDX**  
+  Principal moteur de jeu 2D, utilisé pour gérer l’affichage (rendu graphique), la détection des entrées utilisateurs (clavier/souris), et le cycle de vie du jeu.
+
+- **Tiled**  
+  Outil de conception de cartes 2D. Dans ce projet, Tiled a servi à élaborer la représentation visuelle de l’échiquier (en alternant tuiles de deux couleurs) et à placer (via un calque spécifique) les différentes pièces d’échecs.
+
+- **Git**  
+  Utilisé pour le versionnement du code. Plusieurs branches expérimentales ont été créées, dont une pour tester l’intégration de Tiled (via un *Tile Layer* et un *Map Loader*), avant de revenir à une solution plus adaptée.
+
+- **IntelliJ**  
+  Environnement de développement (IDE) pour écrire et organiser le code, compiler et exécuter facilement le projet.
+
+- **LLM / IA Assistants**
+    - **GitHub Copilot** : assisté à la génération de portions de code et à la suggestion de snippets.
+    - **ChatGPT** : support dans la conception et la documentation, pour discuter et résoudre certains problèmes de conception.
+
+---
 
 ### 2.2 Fonctionnalités Implémentées
 
-- **Déplacements de pièces** : chaque pièce suit ses règles de mouvement propres (roi, dame, tour, fou, cavalier, pion…).
-- **Captures** : possibilité de prendre une pièce adverse (ou alliée, selon le puzzle) pour la retirer de l’échiquier.
-- **Limitation à deux mouvements** : après deux déplacements, la pièce devient “noire” et ne peut plus bouger.
-- **Condition de fin de partie** : vérification en continu si le puzzle est résolu (une seule pièce restante) ou si le joueur est bloqué (toutes les pièces restantes sont noires).
+- **Déplacements de pièces**  
+  Chaque pièce (roi, dame, tour, fou, cavalier, pion) suit ses règles de mouvement spécifiques, conformément aux règles traditionnelles des échecs.  
+  *Remarque :* dans la version actuelle, l’animation graphique des déplacements n’est pas encore finalisée.
+
+- **Captures**  
+  Les captures sont possibles si une pièce peut se rendre sur la case occupée par une autre pièce (alliée ou ennemie, selon la configuration du puzzle). La pièce capturée est alors retirée de l’échiquier.  
+  *Remarque :* la visualisation des pièces capturées reste basique (pas d’effet visuel avancé pour le moment).
+
+- **Limitation à deux mouvements**  
+  Après deux déplacements, la pièce devient “noire” et ne peut plus bouger ni capturer. Cette mécanique est centrale dans Solo Chess et confère au jeu son aspect puzzle.
+
+- **Condition de fin de partie**  
+  Le jeu se termine lorsque :
+    1. Il ne reste plus qu’une seule pièce sur l’échiquier (roi obligatoire s’il était présent au départ).
+    2. Ou lorsque toutes les pièces encore présentes sont devenues “noires” (immobiles), rendant la situation sans issue.
+
+---
 
 ### 2.3 Configuration et Ajout de Contenu (Tiled)
 
-*(Section à développer si vous utilisez Tiled)*
+Pour faciliter la création et la modification du plateau de jeu, **Tiled** a été utilisé :
+
+1. **Board Layer**
+    - Le plateau d’échecs est composé d’un calque (layer) contenant des tuiles de taille 64×64.
+    - Les tuiles alternent entre deux couleurs (ex. **dark green** et **light white**) afin de reproduire un échiquier classique.
+    - Dans le fichier `.tmx`, chaque tuile est identifiée par un ID (ou “GID”) représentant la couleur.
+
+2. **Piece Layer**
+    - Un deuxième calque, dit “piece layer”, définit la position initiale des pièces.
+    - Les différentes pièces sont référencées par des GID qui pointent vers un **tileset** associé (ex. un ensemble d’images représentant roi, dame, fou, etc.).
+    - Chaque tuile du `piece layer` possède des **propriétés** (ex. nom de la pièce, couleur, etc.) qui sont lues au chargement pour instancier la bonne classe de pièce via la `PieceFactory`.
+
+3. **Chargement de la carte**
+    - Une fois la carte `.tmx` créée, LibGDX et son `MapLoader` chargent les informations (calques, tuiles, propriétés).
+    - Le code identifie la couche “Board Layer” (pour le visuel de l’échiquier) et la couche “Piece Layer” (pour instancier les pièces).
+    - Les propriétés du tileset (couleur de la pièce, type de la pièce) sont analysées afin de créer les instances via le **`PieceFactory`** et de positionner les pièces correctement dans la matrice interne (`Board`).
+
+4. **Retour d’expérience / Branches expérimentales**
+    - Une première tentative de gérer l’affichage et la logique entièrement via les *Tile Layers* (avec un `TileLoader`, `TileMap`, etc.) n’a pas abouti. Cette approche s’est avérée trop complexe pour gérer à la fois l’état visuel et l’état logique du jeu.
+    - Finalement, la gestion logique est confiée à une **matrice de `Tile`** (modèle interne) indépendante, tandis que Tiled sert surtout de source initiale pour positionner les pièces et styliser l’échiquier.
+
+Grâce à cette organisation, il est possible de **modifier aisément** la configuration du plateau (dimensions, placements, etc.) sans toucher au code Java, en ajustant simplement la carte `.tmx` ou le tileset associé.
 
 ---
 

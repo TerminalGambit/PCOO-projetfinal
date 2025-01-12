@@ -16,6 +16,7 @@ public class Renderer {
     private final Texture darkSquareTexture;
     private final Texture lightSquareTexture;
     private final Map<Point, Texture> pieceTextures; // Maps grid positions to textures
+    private Observer[] observers;
 
     // Separate debug modes
     private final boolean boardDebugMode;
@@ -143,6 +144,13 @@ public class Renderer {
         } else if (pieceDebugMode) {
             System.err.printf("Error: No piece found at %s to move%n", oldPosition);
         }
+    }
+
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update();
+        }
+        System.out.println("Observers notified. Board state should now be updated.");
     }
 
     /**

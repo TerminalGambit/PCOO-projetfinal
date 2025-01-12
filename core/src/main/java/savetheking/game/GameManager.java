@@ -9,6 +9,10 @@ public class GameManager {
         this.gameState = initialState;
     }
 
+    public static GameManager getInstance() {
+        return null;
+    }
+
     public void startGame() {
         System.out.println("Game started!");
         board.initializeBoard();
@@ -16,6 +20,7 @@ public class GameManager {
     }
 
     public void endGame() {
+
         System.out.println("Game ended!");
     }
 

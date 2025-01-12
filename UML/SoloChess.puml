@@ -126,6 +126,10 @@ class GameOverState implements GameStateInterface {
     +render(SpriteBatch batch): void
 }
 
+class PieceFactory {
+    +createPiece(type: String, color: String, position: Point): Piece
+}
+
 GameManager --> GameStateInterface
 PlayingState --> Renderer
 PlayingState --> Controller
@@ -136,6 +140,7 @@ Tile --> Point
 Board --> Piece
 Tile --> Piece
 Board --> Observable
-Observer <|-- Board
+PieceFactory --> Piece
+Board --> PieceFactory
 
 @enduml

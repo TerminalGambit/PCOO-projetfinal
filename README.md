@@ -1,5 +1,3 @@
-Voici une version révisée et enrichie du rapport avec une explication plus détaillée de l’UML et des design patterns utilisés :
-
 # Rapport de Projet - Développement du Jeu **Solo Chess** avec LibGDX
 
 ## Introduction

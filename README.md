@@ -210,8 +210,4 @@ En somme, **Solo Chess** a été un terrain d’expérimentation vaste : il a pe
 
 ## Section Annexe
 
-- Lien vers le dépôt Git : *(À insérer)*
-- Références documentaires LibGDX : <https://libgdx.com/>
-- Tutoriels Tiled : <https://doc.mapeditor.org/en/stable/manual/introduction/>
-
-*(Fin du rapport)*
+- Lien vers le dépôt Git : <https://github.com/TerminalGambit/PCOO-projetfinal>

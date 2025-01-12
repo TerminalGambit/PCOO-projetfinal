@@ -73,21 +73,25 @@ Cette section détaille l’approche technique adoptée pour **Solo Chess**, not
 ### 2.1 Technologies et Outils Utilisés
 
 - **LibGDX**  
-  Principal moteur de jeu 2D, utilisé pour gérer l’affichage (rendu graphique), la détection des entrées utilisateurs (clavier/souris), et le cycle de vie du jeu.
+  Principal moteur de jeu 2D, utilisé pour gérer l’affichage (rendu graphique), la détection des entrées utilisateurs (clavier/souris) et le cycle de vie du jeu.
 
 - **Tiled**  
-  Outil de conception de cartes 2D. Dans ce projet, Tiled a servi à élaborer la représentation visuelle de l’échiquier (en alternant tuiles de deux couleurs) et à placer (via un calque spécifique) les différentes pièces d’échecs.
+  Outil de conception de cartes 2D. Dans ce projet, Tiled a servi à élaborer la représentation visuelle de l’échiquier (en alternant des tuiles de deux couleurs) et à placer (via un calque spécifique) les différentes pièces d’échecs.
 
 - **Git**  
-  Utilisé pour le versionnement du code. Plusieurs branches expérimentales ont été créées, dont une pour tester l’intégration de Tiled (via un *Tile Layer* et un *Map Loader*), avant de revenir à une solution plus adaptée.
+  Utilisé pour le versionnement du code et la gestion de différentes branches expérimentales.
+    - Par exemple, la branche **SaveTheKing** illustre une tentative d’implémenter un **algorithme Minimax** pour gérer les déplacements et décisions de l’IA. Contrainte par le temps, cette approche n’a pas été finalisée, et une solution plus adaptée a ensuite été privilégiée.
+    - Une autre branche a expérimenté l’intégration de Tiled via un *Tile Layer*, un *Map Loader*, etc.
 
 - **IntelliJ**  
   Environnement de développement (IDE) pour écrire et organiser le code, compiler et exécuter facilement le projet.
 
+- **Gradle**  
+  Outil d’automatisation et de gestion de dépendances. Il permet de configurer et de lancer rapidement le projet via des tâches dédiées (par exemple, `gradlew desktop:run` dans le cas d’un projet LibGDX classique).
+
 - **LLM / IA Assistants**
     - **GitHub Copilot** : assisté à la génération de portions de code et à la suggestion de snippets.
-    - **ChatGPT** : support dans la conception et la documentation, pour discuter et résoudre certains problèmes de conception.
-
+    - **ChatGPT** : support dans la conception et la documentation, pour clarifier des choix d’architecture ou résoudre certains problèmes de conception.
 ---
 
 ### 2.2 Fonctionnalités Implémentées

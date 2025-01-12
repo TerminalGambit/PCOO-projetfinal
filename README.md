@@ -169,15 +169,42 @@ Cette structuration, combinée aux patrons de conception (Observer, Factory, Sta
 
 ## Section 4. Conclusion et Perspectives
 
-- **Bilan** :  
-  Le projet **Solo Chess** démontre l’application de concepts clés de la POO et de patterns avancés en Java (LibGDX). Réalisé individuellement, il montre comment créer un jeu extensible et maintenable, même si certaines fonctionnalités (rendu avancé, IA) restent à peaufiner.
+### 4.1 Bilan et Retour d’Expérience
 
-- **Perspectives d’Amélioration** :
-    1. **Surbrillance des coups valides** pour faciliter l’ergonomie.
-    2. **Implémentation d’une IA** permettant de générer des puzzles ou de jouer contre l’ordinateur.
-    3. **Mode multijoueur** ou **défis en ligne**.
-    4. **Intégration plus poussée avec Tiled**, pour personnaliser encore plus la configuration du plateau.
+La réalisation du projet **Solo Chess** s’est avérée être une **expérience enrichissante** à plusieurs niveaux :
 
+- **Découverte et apprentissage de LibGDX**  
+  Partir de zéro sur une librairie méconnue (LibGDX) a constitué un vrai défi. Il a fallu assimiler le fonctionnement du **cycle de vie** d’un jeu (render, update, input), la configuration des projets avec Gradle, et les principes de gestion des assets (images, tuiles, etc.).
+
+- **Architecture et patrons de conception**  
+  L’implémentation de *design patterns* (Observer, Factory, State, MVC) s’est parfois faite **par tâtonnements**. Certaines idées (par exemple un *Strategy Pattern* pour l’IA) ont été explorées puis écartées ou reportées, illustrant l’évolution naturelle d’un projet où l’on teste, on se trompe, et on apprend.
+
+- **Autonomie et gestion du projet en solo**  
+  Mener ce projet seul a nécessité de **couvrir tous les rôles** (concepteur, développeur, testeur…) et de prendre des décisions rapides, tout en restant flexible. Ce processus a renforcé la capacité à **identifier les priorités** et à **faire face aux imprévus** (bugs, limitations techniques, etc.).
+
+- **Essais, erreurs et abandons**  
+  Plusieurs pistes ont dû être abandonnées en cours de route :
+    - Une **implémentation en JSON** pour la configuration des pièces, finalement jugée superflue grâce à l’utilisation de Tiled.
+    - Un **algorithme Minimax** pour gérer une IA “SaveTheKing”, qui n’a pas pu être finalisé dans le cadre temporel imparti.
+
+Au final, la version actuelle du projet **n’est pas totalement achevée** : l’affichage graphique est encore minimal, il manque une interface plus conviviale (boutons, menus…) et des animations plus abouties. Toutefois, la base de la logique de Solo Chess (déplacements, captures, limites de mouvement) est solide et démontre la **faisabilité** du concept.
+
+### 4.2 Perspectives d’Amélioration
+
+- **Interface Utilisateur et Rendu**
+    - **Améliorer l’affichage** des pièces et ajouter des effets visuels (surbrillance des coups valides, animation de capture, etc.).
+    - **Intégrer des boutons et menus** pour la navigation (revenir en arrière, réinitialiser la partie, etc.).
+
+- **Évolutions Techniques**
+    - **Sauvegardes et chargements** : utiliser éventuellement JSON (ou un autre format) pour stocker/reprendre l’état de la partie.
+    - **Gestion avancée de Tiled** : approfondir l’intégration de Tiled pour définir différentes configurations plus facilement.
+    - **IA plus élaborée** : adapter ou réintroduire le *Strategy Pattern* (voire Minimax) pour proposer des défis dynamiques, ou générer automatiquement des puzzles plus complexes.
+
+- **Exploration de nouvelles voies**
+    - Étendre la mécanique de **Solo Chess** par des variantes : par exemple, un mode de jeu “SaveTheKing” réorienté autour d’une IA qui chercherait à optimiser le nombre de coups pour capturer le roi.
+    - Poursuivre la logique de **théorie des graphes** appliquée aux positions d’échecs, afin d’automatiser la création de puzzles.
+
+En somme, **Solo Chess** a été un terrain d’expérimentation vaste : il a permis de tester des **concepts variés** (POO, design patterns, intégration d’assets via Tiled, versionnement Git, IA naissante), tout en soulignant l’importance d’**apprendre par l’erreur** et d’**itérer** pour faire évoluer la conception. Malgré les fonctionnalités manquantes et les limites actuelles, ce projet constitue un **socle** solide pour de futures améliorations et enrichissements.
 ---
 
 ## Section Annexe

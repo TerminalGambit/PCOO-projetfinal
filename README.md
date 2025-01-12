@@ -1,101 +1,113 @@
-# Rapport de Projet - Développement du Jeu **Solo Chess** avec LibGDX
+# Rapport de Projet – Développement du Jeu Solo Chess avec LibGDX
 
-## Introduction
-
-### Contexte du projet
-
-Ce projet, intitulé **Solo Chess**, a pour objectif de développer un jeu de réflexion stratégique basé sur des règles spécifiques simplifiées des échecs. L'objectif principal est de réduire l'échiquier à une seule pièce à la fin du jeu. Si un roi est présent, il doit impérativement être la dernière pièce restante. Si aucun roi n'est présent, toute pièce restante valide peut conclure la partie.
-
-Le développement de ce projet s'inscrit dans un cadre d'apprentissage individuel, avec toutes les étapes réalisées par **Massey Jack**.
-
-### Règles du jeu
-
-Les règles principales de **Solo Chess** sont les suivantes :
-
-1. L'échiquier est initialisé avec plusieurs pièces placées aléatoirement ou selon une configuration prédéfinie.
-2. Chaque pièce peut se déplacer en respectant ses mouvements traditionnels aux échecs.
-3. Une pièce ne peut effectuer que **deux mouvements maximum**. Après son deuxième mouvement, elle devient une **pièce noire**, immobile et inutilisable.
-4. Les pièces peuvent capturer d'autres pièces.
-5. Le jeu se termine lorsque **une seule pièce reste** :
-    - Si un roi est présent, il doit être la dernière pièce restante.
-    - Sinon, toute pièce restante conclut la partie.
-6. Si toutes les pièces restantes deviennent noires avant la fin, le joueur perd immédiatement.
+*Auteur : **Jack Massey**, projet individuel*
 
 ---
 
-## Présentation Technique du Projet
+## Section 1. Introduction
 
-### Design Patterns Utilisés
+### 1.1 Contexte du Projet
 
-Le projet repose sur plusieurs design patterns bien établis afin de garantir une architecture extensible, modulaire et maintenable.
+Ce projet, intitulé **Solo Chess**, a pour objectif de proposer un jeu de réflexion stratégique inspiré des échecs, mais avec des règles simplifiées et une mécanique centrée sur la capture de pièces jusqu’à ce qu’il n’en reste plus qu’une seule.  
+Le développement a été réalisé **en solo** par Jack Massey, ce qui implique que tous les rôles (conception, programmation, design, etc.) ont été assurés par une seule personne.
 
-#### 1. **Observer/Observable**
+### 1.2 Objectifs
 
-- Le pattern **Observer/Observable** est utilisé pour permettre à différentes parties du système (comme le `Renderer`) de réagir aux changements d'état du jeu.
-- Le `Board` implémente l'interface `Observable` et notifie ses observateurs lorsque l'état de l'échiquier change, par exemple après un déplacement ou une capture.
+- **Objectif principal** : Développer un jeu en 2D, basé sur LibGDX, qui permette de jouer à une variante des échecs appelée “Solo Chess”.
+- **Mise en pratique** : Appliquer plusieurs **design patterns** (Observer, Factory, State, MVC) afin de produire un code propre, extensible et maintenable.
+- **Extensibilité** : Préparer le moteur du jeu pour de futures évolutions (ajout de nouvelles fonctionnalités, améliorations graphiques, IA, multijoueur, etc.).
 
-```java
-interface Observable {
-    void addObserver(Observer observer);
-    void notifyObservers();
-}
+### 1.3 Règles du Jeu
 
-interface Observer {
-    void update();
-}
+Les règles principales de **Solo Chess** sont les suivantes :
 
-2. Factory Pattern
-	•	La classe PieceFactory est utilisée pour créer dynamiquement des instances de pièces (King, Queen, etc.) en fonction de leur type et couleur.
-	•	Ce pattern facilite l’extension du projet en permettant l’ajout de nouvelles pièces sans modifier directement la logique de création.
+1. L’échiquier est initialisé avec plusieurs pièces, placées aléatoirement ou selon une configuration prédéfinie.
+2. Chaque pièce peut se déplacer en respectant ses mouvements traditionnels aux échecs.
+3. Une pièce ne peut effectuer que **deux mouvements** maximum. Après son deuxième mouvement, elle devient “noire”, immobile et inutilisable.
+4. Les pièces peuvent **capturer** d’autres pièces.
+5. Le jeu se termine lorsqu’il ne reste plus qu’une pièce :
+    - Si un **roi** est présent au départ, il doit être la dernière pièce restante.
+    - Sinon, toute pièce restante peut conclure la partie.
+6. Si toutes les pièces restantes sont “noires” avant d’en avoir une seule pièce libre à la fin, le joueur perd immédiatement.
 
-class PieceFactory {
-    Piece createPiece(String type, String color, Point position) {
-        switch (type.toLowerCase()) {
-            case "king": return new King(color, position);
-            case "queen": return new Queen(color, position);
-            // Autres types...
-        }
-    }
-}
+### 1.4 Design Patterns Utilisés
 
-3. State Pattern
-	•	Le pattern State est utilisé pour gérer les transitions entre différents états du jeu (en cours, en pause, terminé).
-	•	Les états implémentent une interface commune GameStateInterface, ce qui garantit une gestion uniforme des différentes phases du jeu.
+Pour structurer ce projet, plusieurs *design patterns* de la programmation orientée objet ont été utilisés.
 
-interface GameStateInterface {
-    void update(float deltaTime);
-    void render(SpriteBatch batch);
-}
+1. **Observer / Observable**
+    - Permet la communication entre le modèle (Board) et les différentes vues (par ex. Renderer).
+    - La classe `Board` implémente l’interface `Observable` et notifie les `Observer` (ex. le renderer) lorsqu’il y a un changement d’état (déplacement de pièce, capture, etc.).
 
-class PlayingState implements GameStateInterface { /* ... */ }
-class PausedState implements GameStateInterface { /* ... */ }
-class GameOverState implements GameStateInterface { /* ... */ }
+2. **Factory Pattern**
+    - La classe `PieceFactory` est utilisée pour créer dynamiquement les différentes pièces (Roi, Dame, etc.).
+    - Cela facilite l’ajout de nouveaux types de pièces sans modifier la logique principale de création.
 
-4. Model-View-Controller (MVC)
-	•	L’architecture globale suit le pattern MVC :
-	•	Model : La classe Board gère l’état du jeu (pièces, positions, captures).
-	•	View : La classe Renderer affiche l’état du jeu à l’écran.
-	•	Controller : La classe Controller gère les entrées utilisateur et orchestre les interactions entre le modèle et la vue.
+3. **State Pattern**
+    - Gère les différents états du jeu : en cours (`PlayingState`), en pause (`PausedState`), terminé (`GameOverState`).
+    - Chaque état implémente une interface commune (ex. `GameStateInterface`) pour uniformiser leur gestion (mise à jour, rendu).
 
-Explications des Classes UML
+4. **Model-View-Controller (MVC)**
+    - **Modèle (`Board`)** : gère les données et la logique métier (position des pièces, captures…).
+    - **Vue (`Renderer`)** : affiche l’état du jeu (pieces, échiquier).
+    - **Contrôleur (`Controller`)** : gère les interactions utilisateur, orchestre la communication entre modèle et vue.
 
-Classes Clés
-	1.	Point
-	•	Représente les coordonnées d’une case sur l’échiquier.
-	•	Contient des méthodes utilitaires comme isWithinBounds() pour valider les déplacements.
-	2.	Tile (Abstraite)
-	•	Base pour EmptyTile (case vide) et OccupiedTile (case contenant une pièce).
-	•	Facilite la gestion des interactions avec les cases de l’échiquier.
-	3.	Piece (Abstraite)
-	•	Définit les propriétés communes à toutes les pièces, comme la couleur et la position.
-	•	Les classes concrètes (King, Queen, etc.) implémentent des méthodes spécifiques comme getPossibleMoves().
-	4.	Board
-	•	Gère la logique principale du jeu, y compris les déplacements et captures de pièces.
-	•	Utilise des instances de Tile pour modéliser l’échiquier.
-	5.	Renderer
-	•	Responsable de l’affichage des éléments du jeu (pièces, échiquier).
-	6.	Controller
-	•	Gère les entrées utilisateur et coordonne les actions entre les composants (ex. déplacer une pièce, vérifier l’état du jeu).
-	7.	GameStateInterface
-	•	Fournit une abstraction pour les différents états du jeu.
-	•	Les implémentations (PlayingState, GameOverState, etc.) définissent un comportement spécifique pour chaque phase.
+---
+
+## Section 2. Présentation du Projet
+
+Cette section présente les aspects techniques du projet, notamment l’utilisation de LibGDX, la gestion de l’affichage, des tuiles et l’organisation globale. *(Vous pourrez enrichir cette partie selon vos besoins : expliquer la configuration Tiled, la gestion des cartes, etc.)*
+
+### 2.1 Technologies et Outils Utilisés
+
+- **LibGDX** : Moteur de jeu pour la 2D, permettant une gestion aisée des sprites, du rendu et des entrées.
+- **Tiled** : (si applicable) outil de conception de cartes 2D.
+- *Autres* : (Gestion de version GIT, IDE IntelliJ, etc.)
+
+### 2.2 Fonctionnalités Implémentées
+
+- **Déplacements de pièces** : chaque pièce suit ses règles de mouvement propres (roi, dame, tour, fou, cavalier, pion…).
+- **Captures** : possibilité de prendre une pièce adverse (ou alliée, selon le puzzle) pour la retirer de l’échiquier.
+- **Limitation à deux mouvements** : après deux déplacements, la pièce devient “noire” et ne peut plus bouger.
+- **Condition de fin de partie** : vérification en continu si le puzzle est résolu (une seule pièce restante) ou si le joueur est bloqué (toutes les pièces restantes sont noires).
+
+### 2.3 Configuration et Ajout de Contenu (Tiled)
+
+*(Section à développer si vous utilisez Tiled)*
+
+---
+
+## Section 3. Architecture Générale du Moteur de Jeu (Aperçu)
+
+Le jeu est organisé selon une architecture modulaire, exploitant les patterns décrits ci-dessus. Les classes clés incluent :
+- **`Point`** : représente les coordonnées sur l’échiquier.
+- **`Tile`** (abstraite), dérivée en `EmptyTile` et `OccupiedTile`.
+- **`Piece`** (abstraite), dont héritent `King`, `Queen`, `Bishop`, etc.
+- **`Board`** : gère les `Tile`, les déplacements, captures, et notifie les observateurs via l’interface `Observable`.
+- **`Renderer`** : se charge d’afficher l’échiquier et les pièces.
+- **`Controller`** : gère l’entrée utilisateur et valide les actions.
+- **`GameStateInterface`** : interface pour les différents états du jeu (`PlayingState`, `PausedState`, `GameOverState`).
+
+*(Vous pouvez inclure un diagramme UML ici si nécessaire.)*
+
+---
+
+## Section 4. Conclusion et Perspectives
+
+- **Bilan** :  
+  Le projet **Solo Chess** démontre l’application de concepts clés de la POO et de patterns avancés en Java (LibGDX). Réalisé individuellement, il montre comment créer un jeu extensible et maintenable, même si certaines fonctionnalités (rendu avancé, IA) restent à peaufiner.
+
+- **Perspectives d’Amélioration** :
+    1. **Surbrillance des coups valides** pour faciliter l’ergonomie.
+    2. **Implémentation d’une IA** permettant de générer des puzzles ou de jouer contre l’ordinateur.
+    3. **Mode multijoueur** ou **défis en ligne**.
+    4. **Intégration plus poussée avec Tiled**, pour personnaliser encore plus la configuration du plateau.
+
+---
+
+## Section Annexe
+
+- Lien vers le dépôt Git : *(À insérer)*
+- Références documentaires LibGDX : <https://libgdx.com/>
+- Tutoriels Tiled : <https://doc.mapeditor.org/en/stable/manual/introduction/>
+
+*(Fin du rapport)*

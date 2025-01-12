@@ -23,9 +23,7 @@ public class King extends Piece {
                 Point newPosition = new Point(position.x + x, position.y + y);
                 if (board.isWithinBounds(newPosition)) {
                     Tile tile = board.getTileAt(newPosition);
-                    if (tile instanceof EmptyTile || (tile instanceof OccupiedTile && !((OccupiedTile) tile).getPiece().getColor().equals(this.color))) {
-                        possibleMoves.add(newPosition);
-                    }
+                    possibleMoves.add(newPosition);
                 }
             }
         }

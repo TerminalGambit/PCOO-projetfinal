@@ -23,9 +23,7 @@ public class Bishop extends Piece {
                     if (tile instanceof EmptyTile) {
                         possibleMoves.add(current);
                     } else if (tile instanceof OccupiedTile) {
-                        if (!((OccupiedTile) tile).getPiece().getColor().equals(this.color)) {
-                            possibleMoves.add(current);
-                        }
+                        possibleMoves.add(current);
                         break;
                     }
                     current = new Point(current.x + dx, current.y + dy);

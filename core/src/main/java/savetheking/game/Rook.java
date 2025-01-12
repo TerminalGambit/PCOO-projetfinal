@@ -60,7 +60,7 @@ public class Rook extends Piece {
                     possibleMoves.add(newPoint);
                 } else if (tile instanceof OccupiedTile) {
                     Piece pieceOnTile = ((OccupiedTile) tile).getPiece();
-                    if (pieceOnTile.getColor().equals(this.color)) {
+                    if (pieceOnTile != null) {
                         break; // Arrête si la case est occupée par une pièce alliée
                     }
                     possibleMoves.add(newPoint); // Peut capturer une pièce ennemie

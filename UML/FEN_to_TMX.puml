@@ -1,0 +1,41 @@
+@startuml FENtoTMXFlow
+title "FEN to TMX Conversion Flow"
+
+' If "actor" or "box" cause syntax issues in older PlantUML versions,
+' you can replace them with "participant" or "frame" as needed.
+
+actor "User" as U
+
+box "FENtoTMX" #DDDDDD
+  participant "main(String[] args)" as main
+  participant "parseFENAndCreatePieceLayer(String fen)" as parseFEN
+  participant "generateTmxFile(String pieceLayerXml)" as genTMX
+end box
+
+box "External File" #FFFFFF
+  participant "output.tmx" as OutTMX
+end box
+
+U -> main : Runs FENtoTMX.main(args)
+activate main
+
+main -> parseFEN : parseFENAndCreatePieceLayer(fen)
+activate parseFEN
+
+parseFEN -> parseFEN : Splits FEN into ranks
+parseFEN -> parseFEN : For each rank & file\n- Determine piece type\n- Compute GID/coords\n- Build <object> XML
+
+parseFEN --> main : Returns <objectgroup> XML\n(pieceLayerXml)
+deactivate parseFEN
+
+main -> genTMX : generateTmxFile(pieceLayerXml)
+activate genTMX
+
+genTMX -> genTMX : Embed <objectgroup>\ninto a base .tmx structure
+genTMX --> main : Returns final .tmx content
+deactivate genTMX
+
+main -> OutTMX : Writes final TMX content
+deactivate main
+
+@enduml

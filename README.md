@@ -13,10 +13,21 @@ Le développement a été réalisé **en solo** par Jack Massey, ce qui implique
 
 ### 1.2 Objectifs
 
-- **Objectif principal** : Développer un jeu en 2D, basé sur LibGDX, qui permette de jouer à une variante des échecs appelée “Solo Chess”.
-- **Mise en pratique** : Appliquer plusieurs **design patterns** (Observer, Factory, State, MVC) afin de produire un code propre, extensible et maintenable.
-- **Extensibilité** : Préparer le moteur du jeu pour de futures évolutions (ajout de nouvelles fonctionnalités, améliorations graphiques, IA, multijoueur, etc.).
+- **Objectif principal** :  
+  Développer un jeu en 2D, basé sur LibGDX, permettant de jouer à une variante des échecs appelée “Solo Chess”.  
+  [Solo Chess - Lien du jeu sur chess.com](https://www.chess.com/solo-chess)
 
+- **Concevoir un code de qualité** :  
+  Appliquer plusieurs **design patterns** (Observer, Factory, State, MVC) afin de produire un code propre, modulable et maintenable. Cela implique une réflexion constante sur l’architecture et la capacité à **s’adapter aux difficultés** rencontrées (ex. création ou suppression de classes inutiles, ajustements suite à l’évolution des besoins).
+
+- **Extensibilité et amélioration continue** :
+    - Mettre en place un **moteur de génération ou de configuration de positions** permettant d’ajouter aisément de nouvelles configurations/puzzles.
+    - Prévoir des fonctionnalités d’**amélioration de l’interface** (ex. possibilité de revenir en arrière, ajout de boutons, améliorations graphiques…).
+    - Faciliter la maintenance à long terme en veillant à ce que chaque module (moteur de jeu, affichage, contrôleur) reste **indépendant** et **extensible**.
+
+- **Gestion de projet et développement en solo** :
+    - Acquérir et démontrer la **capacité à piloter un projet** de bout en bout (depuis la phase de conception jusqu’à l’implémentation).
+    - Développer un **savoir-faire** en gestion de code (choix de technologies, organisation du référentiel, documentation) et en conduite de projet (gestion du temps, prise de décisions, résolution de problèmes).
 ### 1.3 Règles du Jeu
 
 Les règles principales de **Solo Chess** sont les suivantes :

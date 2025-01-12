@@ -143,16 +143,27 @@ Grâce à cette organisation, il est possible de **modifier aisément** la confi
 
 ## Section 3. Architecture Générale du Moteur de Jeu (Aperçu)
 
-Le jeu est organisé selon une architecture modulaire, exploitant les patterns décrits ci-dessus. Les classes clés incluent :
-- **`Point`** : représente les coordonnées sur l’échiquier.
-- **`Tile`** (abstraite), dérivée en `EmptyTile` et `OccupiedTile`.
-- **`Piece`** (abstraite), dont héritent `King`, `Queen`, `Bishop`, etc.
-- **`Board`** : gère les `Tile`, les déplacements, captures, et notifie les observateurs via l’interface `Observable`.
-- **`Renderer`** : se charge d’afficher l’échiquier et les pièces.
-- **`Controller`** : gère l’entrée utilisateur et valide les actions.
-- **`GameStateInterface`** : interface pour les différents états du jeu (`PlayingState`, `PausedState`, `GameOverState`).
+Le jeu suit une **architecture modulaire**, basée sur les *design patterns* décrits précédemment. Les classes clés incluent :
 
-*(Vous pouvez inclure un diagramme UML ici si nécessaire.)*
+- **`Point`** : représente les coordonnées sur l’échiquier.
+- **`Tile`** (classe abstraite) : spécialisations
+    - `EmptyTile`
+    - `OccupiedTile`
+- **`Piece`** (classe abstraite) :
+    - `King`, `Queen`, `Bishop`, `Knight`, `Rook`, `Pawn`, etc.
+- **`Board`** : gère la logique métier (placements, déplacements, captures) et notifie les observateurs via l’interface `Observable`.
+- **`Renderer`** : se charge d’afficher l’échiquier et les pièces à l’écran (vue).
+- **`Controller`** : gère les interactions utilisateur, valide les actions et communique avec le modèle (`Board`) et la vue (`Renderer`).
+- **`GameStateInterface`** : définit l’interface commune pour les différents états du jeu (`PlayingState`, `PausedState`, `GameOverState`).
+
+Pour consulter l’**UML complet** associé à ce projet :
+- Un répertoire **`UML`** se trouve à la racine du projet.
+- Vous y trouverez notamment :
+    - **`SoloChess.puml`** (UML principal, version actuelle).
+    - **`SaveTheKing.puml`** (ancienne version, centrée sur une IA Minimax).
+    - **`tsxtmxrelationships.puml`** (décrit les relations liées à Tiled).
+
+Cette structuration, combinée aux patrons de conception (Observer, Factory, State, MVC), rend le moteur de jeu **extensible** et **maintenable**, tout en séparant clairement la logique de la présentation.
 
 ---
 

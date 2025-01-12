@@ -203,7 +203,6 @@ Au final, la version actuelle du projet **n’est pas totalement achevée** : l�
 - **Exploration de nouvelles voies**
     - Étendre la mécanique de **Solo Chess** par des variantes : par exemple, un mode de jeu “SaveTheKing” réorienté autour d’une IA qui chercherait à optimiser le nombre de coups pour capturer le roi.
     - Poursuivre la logique de **théorie des graphes** appliquée aux positions d’échecs, afin d’automatiser la création de puzzles.
-
 En somme, **Solo Chess** a été un terrain d’expérimentation vaste : il a permis de tester des **concepts variés** (POO, design patterns, intégration d’assets via Tiled, versionnement Git, IA naissante), tout en soulignant l’importance d’**apprendre par l’erreur** et d’**itérer** pour faire évoluer la conception. Malgré les fonctionnalités manquantes et les limites actuelles, ce projet constitue un **socle** solide pour de futures améliorations et enrichissements.
 ---
 

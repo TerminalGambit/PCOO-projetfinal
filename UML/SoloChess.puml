@@ -1,4 +1,3 @@
-
 @startuml
 
 ' Interfaces for Observer Pattern
@@ -86,8 +85,7 @@ class Board {
 
 class Renderer {
     -board: Board
-    -tiledMap: TiledMap
-    +Renderer(Board board, TiledMap tiledMap)
+    +Renderer(Board board)
     +render(SpriteBatch batch): void
 }
 
@@ -96,24 +94,6 @@ class Controller {
     -selectedPiece: Piece
     +Controller(Board board)
     +handleInput(Point start, Point end): void
-}
-
-class TiledLoader {
-    +load(file: String): TiledMap
-}
-
-class TiledMap {
-    -layers: List<TiledLayer>
-    -pieces: List<Piece>
-    +getLayers(): List<TiledLayer>
-    +getPieces(): List<Piece>
-}
-
-class TiledLayer {
-    -tiles: Tile[][]
-    -width: int
-    -height: int
-    +TiledLayer(width: int, height: int)
 }
 
 class GameManager {
@@ -150,15 +130,9 @@ GameManager --> GameStateInterface
 PlayingState --> Renderer
 PlayingState --> Controller
 Renderer --> Board
-Renderer --> TiledMap
 Controller --> Board
 Piece --> Point
 Tile --> Point
-TiledMap --> TiledLayer
-TiledLayer --> Tile
-TiledLoader --> TiledMap
-TiledLoader --> Renderer
-TiledLoader --> Board
 Board --> Piece
 Tile --> Piece
 Board --> Observable

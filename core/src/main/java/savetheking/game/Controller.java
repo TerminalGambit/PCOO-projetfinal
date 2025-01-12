@@ -131,12 +131,41 @@ public class Controller {
     private void checkGameFinished() {
         List<Piece> remainingPieces = board.getRemainingPieces();
 
-        if (remainingPieces.size() == 1 && remainingPieces.get(0) instanceof King) {
+        int blackPieceCount = 0;
+        boolean kingExists = false;
+
+        // Count black pieces and check for the presence of a king
+        for (Piece piece : remainingPieces) {
+            if (piece instanceof King) {
+                kingExists = true;
+            }
+            if ("Black".equalsIgnoreCase(piece.getColor())) {
+                blackPieceCount++;
+            }
+        }
+
+        // Case 1: Only the king remains (win condition)
+        if (remainingPieces.size() == 1 && kingExists) {
             System.out.println("Game finished! The king is the last piece remaining. Congratulations!");
             isGameFinished = true;
-        } else if (remainingPieces.isEmpty()) {
-            System.out.println("Game over! No pieces remaining.");
+        }
+        // Case 2: All remaining pieces are black (lose condition)
+        else if (blackPieceCount == remainingPieces.size()) {
+            System.out.println("Game over! All remaining pieces are black. You lost.");
             isGameFinished = true;
+        }
+        // Case 3: More than one black piece remains (lose condition)
+        else if (blackPieceCount > 1) {
+            System.out.println("Game over! More than one black piece remains. You lost.");
+            isGameFinished = true;
+        }
+        // Case 4: Continue the game
+        else {
+            System.out.println("Game continues. Remaining pieces: " + remainingPieces.size());
+        }
+
+        if (isGameFinished) {
+            System.out.println("Game is finished. Reset the board to play again.");
         }
     }
 

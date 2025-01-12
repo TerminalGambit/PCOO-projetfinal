@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.11.18)  12 JAN 2025 21:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023) (preloaded format=pdflatex 2023.11.18)  12 JAN 2025 22:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -351,42 +351,42 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <8> on input line 22.
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <6> on input line 22.
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 3
-0.
-
-(/usr/local/texlive/2023/texmf-dist/tex/latex/lm/ts1lmr.fd
-File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 3
-2.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 2
+6.
 
 (/usr/local/texlive/2023/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 3
+7.
+
+(/usr/local/texlive/2023/texmf-dist/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [1
 
 {/usr/local/texlive/2023/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/loc
 al/texlive/2023/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/202
 3/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}]
-Underfull \hbox (badness 10000) in paragraph at lines 79--81
+Underfull \hbox (badness 10000) in paragraph at lines 86--88
 
  []
 
 LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 81.
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 88.
 [2]
-Overfull \hbox (20.90671pt too wide) in paragraph at lines 116--117
+Overfull \hbox (20.90671pt too wide) in paragraph at lines 123--124
 []\T1/lmr/bx/n/10.95 ChatGPT \T1/lmr/m/n/10.95 : sup-port dans la con-cep-tion 
 et la doc-u-men-ta-tion, pour clar-i-fier des choix d'architecture
  []
 
 [3] [4] [5]
-Overfull \hbox (46.3127pt too wide) in paragraph at lines 248--249
+Overfull \hbox (46.3127pt too wide) in paragraph at lines 255--256
 []\T1/lmr/m/n/10.95 Sauvegardes et charge-ments : utiliser éventuelle-ment JSON
  (ou un autre for-mat) pour stocker/reprendre
  []
 
 
-Overfull \hbox (5.82901pt too wide) in paragraph at lines 255--256
+Overfull \hbox (5.82901pt too wide) in paragraph at lines 262--263
 []\T1/lmr/m/n/10.95 Poursuivre la logique de théorie des graphes ap-pliquée aux
  po-si-tions d'échecs, afin d'automatiser
  []
@@ -402,7 +402,7 @@ Here is how much of TeX's memory you used:
  29199 multiletter control sequences out of 15000+600000
  547641 words of font info for 54 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,6n,76p,536b,653s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,6n,76p,536b,632s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></usr/lo
 cal/texlive/2023/texmf-dist/fonts/type1/public/lm/lmbx12.pfb></usr/local/texliv
 e/2023/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2023/texm
@@ -410,7 +410,7 @@ f-dist/fonts/type1/public/lm/lmr12.pfb></usr/local/texlive/2023/texmf-dist/font
 s/type1/public/lm/lmr17.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/pub
 lic/lm/lmri10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmt
 k10.pfb></usr/local/texlive/2023/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on rendupdf.pdf (6 pages, 242782 bytes).
+Output written on rendupdf.pdf (6 pages, 243352 bytes).
 PDF statistics:
  100 PDF objects out of 1000 (max. 8388607)
  74 compressed objects within 1 object stream

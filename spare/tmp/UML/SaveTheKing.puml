@@ -1,0 +1,216 @@
+@startuml
+
+class Point {
+    +x: int
+    +y: int
+    +equals(obj: Object): boolean
+    +hashCode(): int
+    +toString(): String
+    +isWithinBounds(boardSize: int): boolean
+}
+
+abstract class Tile {
+    #position: Point
+    #isDefended: boolean
+    +isOccupied(): boolean
+    +getPosition(): Point
+    +isDefended(): boolean
+    +setDefended(defended: boolean): void
+    +setPiece(piece: Piece): void
+    +getPiece(): Piece
+    +removePiece(): void
+}
+
+class EmptyTile extends Tile {
+    +isOccupied(): boolean
+    +setPiece(piece: Piece): void
+    +getPiece(): Piece
+    +removePiece(): void
+}
+
+class OccupiedTile extends Tile {
+    -piece: Piece
+    +getPiece(): Piece
+    +setPiece(piece: Piece): void
+    +removePiece(): void
+    +isOccupied(): boolean
+}
+
+abstract class Piece {
+    #color: String
+    #position: Point
+    +getPossibleMoves(board: Board): List<Point>
+    +move(newPosition: Point): void
+    +getDefendedTiles(board: Board): List<Point>
+}
+
+class King extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+    +getDefendedTiles(board: Board): List<Point>
+}
+
+class Knight extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+    +getDefendedTiles(board: Board): List<Point>
+}
+
+class Bishop extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+    +getDefendedTiles(board: Board): List<Point>
+}
+
+class Rook extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+    +getDefendedTiles(board: Board): List<Point>
+}
+
+class Queen extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+    +getDefendedTiles(board: Board): List<Point>
+}
+
+class Pawn extends Piece {
+    +getPossibleMoves(board: Board): List<Point>
+    +getDefendedTiles(board: Board): List<Point>
+    +canPromote(): boolean
+    +addEnPassantMove(board: Board): void
+}
+
+class Board {
+    -tiles: Tile[][]
+    -rows: int
+    -columns: int
+    +initializeBoard(): void
+    +getDefendedTiles(): List<Point>
+    +updateBoard(): void
+    +resizeBoard(rows: int, columns: int): void
+    +getTileAt(position: Point): Tile
+    +isWithinBounds(position: Point): boolean
+    +getRowCount(): int
+    +getColumnCount(): int
+    +placePiece(piece: Piece, position: Point): void
+    +removePiece(position: Point): void
+}
+
+class GameState {
+    -timer: int
+    -score: int
+    -difficulty: String
+    -round: int
+    -moves: List<Move>
+    -pgn: PGN
+    +updateTimer(deltaTime: float): void
+    +checkGameOver(): boolean
+    +incrementScore(): void
+    +render(batch: SpriteBatch): void
+    +advanceRound(): void
+    +setDifficulty(level: String): void
+    +recordMove(Piece piece, Point start, Point end, boolean capture, boolean enPassant): void
+    +saveGame(filePath: String): void
+    +loadGame(filePath: String): void
+    +getMoveHistory(): List<String>
+    +getLastMove(): Move
+    +addMoveToHistory(move: Move): void
+}
+
+
+class KnightTest {
+    +main(args: String[]): void
+    +testKnightCenterMoves(): void
+    +testKnightEdgeMoves(): void
+    +testKnightCornerMoves(): void
+    +printMoves(moves: List<Point>): void
+}
+
+class RookTest {
+    +main(args: String[]): void
+    +testRookCenterMoves(): void
+    +testRookEdgeMoves(): void
+    +testRookBlockedMoves(): void
+    +printMoves(moves: List<Point>): void
+}
+
+class BishopTest {
+    +main(args: String[]): void
+    +testBishopCenterMoves(): void
+    +testBishopEdgeMoves(): void
+    +testBishopBlockedMoves(): void
+    +printMoves(moves: List<Point>): void
+}
+
+class QueenTest {
+    +main(args: String[]): void
+    +testQueenCenterMoves(): void
+    +testQueenEdgeMoves(): void
+    +testQueenBlockedMoves(): void
+    +printMoves(moves: List<Point>): void
+}
+
+class KingTest {
+    +main(args: String[]): void
+    +testKingCenterMoves(): void
+    +testKingEdgeMoves(): void
+    +testKingBlockedMoves(): void
+    +printMoves(moves: List<Point>): void
+}
+
+class PGN {
+    -moves: List<String>
+    -moveNumber: int
+    +addMove(Piece piece, Point start, Point end, boolean capture, boolean enPassant): void
+    +saveToFile(filePath: String): void
+    +loadFromFile(filePath: String): void
+    +getMoveHistory(): List<String>
+}
+
+class PGNTest {
+    +main(args: String[]): void
+    +addMove(): void
+    +saveToFile(): void
+    +loadFromFile(): void
+}
+
+class Minimax {
+    +evaluatePosition(board: Board, color: String): int
+    +getBestMove(board: Board, color: String): Move
+    +minimax(board: Board, depth: int, alpha: int, beta: int, maximizingPlayer: boolean): int
+}
+
+class Move {
+    -piece: Piece
+    -start: Point
+    -end: Point
+    -capture: boolean
+    -enPassant: boolean
+    +Move(piece: Piece, start: Point, end: Point, capture: boolean, enPassant: boolean)
+    +getPiece(): Piece
+    +getStart(): Point
+    +getEnd(): Point
+    +isCapture(): boolean
+    +isEnPassant(): boolean
+}
+
+OccupiedTile *-- Piece
+Board *-- Tile
+GameState *-- Board
+GameState *-- PGN
+GameState *-- Move
+KnightTest ..> Knight : tests
+KnightTest ..> Board : uses
+RookTest ..> Rook : tests
+RookTest ..> Board : uses
+BishopTest ..> Bishop : tests
+BishopTest ..> Board : uses
+QueenTest ..> Queen : tests
+QueenTest ..> Board : uses
+KingTest ..> King : tests
+KingTest ..> Board : uses
+PGNTest ..> PGN : tests
+Minimax ..> Board : uses
+Minimax ..> Move : returns
+
+Tile ..> Point : uses
+Piece ..> Point : uses
+Board ..> Point : uses
+
+@enduml

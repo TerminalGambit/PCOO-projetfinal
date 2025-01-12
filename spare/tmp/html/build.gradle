@@ -1,0 +1,67 @@
+plugins {
+  id "java"
+  id "war"
+  id "org.gretty" version "3.1.0"
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
+  implementation "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
+  implementation project(":core")
+}
+
+gretty {
+  httpPort = 8080
+  contextPath = "/"
+  resourceBase = "${buildDir}/gwt/draftOut"
+  portPropertiesFileName = "TEMP_PORTS.properties"
+}
+
+task startHttpServer(type: Copy, dependsOn: build) {
+  doFirst {
+    copy {
+      from "webapp"
+      into gretty.resourceBase
+    }
+    copy {
+      from "war"
+      into gretty.resourceBase
+    }
+  }
+}
+
+task dist(type: Copy) {
+  dependsOn build
+  def outputPath = "build/dist/"
+  doLast {
+    delete(file(outputPath))
+    file(outputPath).mkdirs()
+    copy {
+      from("build/classes/java/main")
+      into(outputPath)
+    }
+    copy {
+      from("webapp")
+      into(outputPath)
+    }
+  }
+}
+
+task distZip(type: Zip, dependsOn: dist) {
+  archiveBaseName.set("${appName}-html-dist")
+  destinationDirectory.set(file("build"))
+  from("build/dist")
+}
+
+tasks.clean {
+  delete file("build/dist")
+}

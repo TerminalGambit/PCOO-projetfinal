@@ -1,0 +1,78 @@
+plugins {
+  id "java"
+  id "application"
+}
+
+ext {
+  gdxVersion = '1.12.1' // Define your LibGDX version
+  appName = 'SaveTheKing'
+  projectVersion = '1.0.0'
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  // LibGDX dependencies for LWJGL3 backend and native desktop
+  implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+  implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+
+  // Reference the core project
+  implementation project(':core')
+}
+
+application {
+  // Main class for LWJGL3 application
+  mainClass = 'savetheking.game.lwjgl3.Lwjgl3Launcher'
+}
+
+tasks.withType(JavaCompile) {
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+}
+
+// Ensure assets are included in the runtime environment
+sourceSets.main.resources.srcDirs += [rootProject.file('assets').path]
+
+// Define distribution tasks for tar and zip packages
+tasks.named('distTar', Tar) {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    configurations.default
+    jar.outputs.files
+  }
+  archiveBaseName.set("${appName}-${projectVersion}")
+  destinationDirectory.set(layout.buildDirectory.dir("distributions"))
+}
+
+tasks.named('distZip', Zip) {
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    configurations.default
+    jar.outputs.files
+  }
+  archiveBaseName.set("${appName}-${projectVersion}")
+  destinationDirectory.set(layout.buildDirectory.dir("distributions"))
+}
+
+// Optional: Task to create a fat JAR for easier distribution
+tasks.register('fatJar', Jar) {
+  group = 'Build'
+  description = 'Creates a standalone JAR with all dependencies included'
+  archiveBaseName.set("${appName}-fat")
+  archiveVersion.set(projectVersion)
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+  with jar
+}
+
+// Ensure proper build order
+tasks.named('jar').configure {
+  dependsOn(':core:jar')
+}

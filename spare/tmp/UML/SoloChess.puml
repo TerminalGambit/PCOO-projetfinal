@@ -1,0 +1,141 @@
+@startuml
+
+' Interfaces for Observer Pattern
+interface Observable {
+    +addObserver(observer: Observer): void
+    +notifyObservers(): void
+}
+
+interface Observer {
+    +update(): void
+}
+
+' Core domain classes
+class Point {
+    +x: int
+    +y: int
+    +equals(obj: Object): boolean
+    +hashCode(): int
+    +toString(): String
+    +isWithinBounds(boardSize: int): boolean
+    +toChessNotation(boardSize: int): String
+}
+
+abstract class Tile {
+    -position: Point
+    +Tile(position: Point)
+    +getPosition(): Point
+    +isOccupied(): boolean
+    +getPiece(): Piece
+    +render(SpriteBatch batch, Texture texture): void
+}
+
+class EmptyTile extends Tile {
+    +EmptyTile(position: Point)
+    +isOccupied(): boolean
+    +getPiece(): null
+}
+
+class OccupiedTile extends Tile {
+    -piece: Piece
+    +OccupiedTile(position: Point, piece: Piece)
+    +isOccupied(): boolean
+    +getPiece(): Piece
+}
+
+abstract class Piece {
+    -color: String
+    -position: Point
+    -texturePath: String
+    +getPossibleMoves(Board board): List<Point>
+}
+
+class Rook extends Piece {
+    +getPossibleMoves(Board board): List<Point>
+}
+
+class Bishop extends Piece {
+    +getPossibleMoves(Board board): List<Point>
+}
+
+class Queen extends Piece {
+    +getPossibleMoves(Board board): List<Point>
+}
+
+class Knight extends Piece {
+    +getPossibleMoves(Board board): List<Point>
+}
+
+class King extends Piece {
+    +getPossibleMoves(Board board): List<Point>
+}
+
+class Pawn extends Piece {
+    +getPossibleMoves(Board board): List<Point>
+}
+
+class Board {
+    -tiles: Tile[][]
+    -rowCount: int
+    -columnCount: int
+    +Board(rowCount: int, columnCount: int)
+    +getTile(position: Point): Tile
+    +movePiece(start: Point, end: Point): void
+}
+
+class Renderer {
+    -board: Board
+    +Renderer(Board board)
+    +render(SpriteBatch batch): void
+}
+
+class Controller {
+    -board: Board
+    -selectedPiece: Piece
+    +Controller(Board board)
+    +handleInput(Point start, Point end): void
+}
+
+class GameManager {
+    -board: Board
+    -gameState: GameStateInterface
+    +startGame(): void
+    +endGame(): void
+    +handleMove(Point start, Point end): void
+}
+
+interface GameStateInterface {
+    +update(float deltaTime): void
+    +render(SpriteBatch batch): void
+}
+
+class PlayingState implements GameStateInterface {
+    -controller: Controller
+    -renderer: Renderer
+    +update(float deltaTime): void
+    +render(SpriteBatch batch): void
+}
+
+class PausedState implements GameStateInterface {
+    +update(float deltaTime): void
+    +render(SpriteBatch batch): void
+}
+
+class GameOverState implements GameStateInterface {
+    +update(float deltaTime): void
+    +render(SpriteBatch batch): void
+}
+
+GameManager --> GameStateInterface
+PlayingState --> Renderer
+PlayingState --> Controller
+Renderer --> Board
+Controller --> Board
+Piece --> Point
+Tile --> Point
+Board --> Piece
+Tile --> Piece
+Board --> Observable
+Observer <|-- Board
+
+@enduml

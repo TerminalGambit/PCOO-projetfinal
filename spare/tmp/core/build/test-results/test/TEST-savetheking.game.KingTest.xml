@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="savetheking.game.KingTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2024-12-28T01:34:22" hostname="MacBookPro" time="0.003">
+  <properties/>
+  <testcase name="testKingCenterMoves()" classname="savetheking.game.KingTest" time="0.001"/>
+  <testcase name="testKingBlockedMoves()" classname="savetheking.game.KingTest" time="0.0"/>
+  <testcase name="testKingEdgeMoves()" classname="savetheking.game.KingTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

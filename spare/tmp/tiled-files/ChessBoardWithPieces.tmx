@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="8" height="8" tilewidth="64" tileheight="64" infinite="0" nextlayerid="5" nextobjectid="6">
+ <tileset firstgid="1" source="DarkGreenTileSet.tsx"/>
+ <tileset firstgid="10" source="LightWhiteTileSet.tsx"/>
+ <tileset firstgid="14" source="../assets/pieces/ChessPieces.tsx"/>
+ <tileset firstgid="26" source="../assets/pieces/ChessPieces2.tsx"/>
+ <layer id="1" name="Board Layer" width="8" height="8">
+  <data encoding="csv">
+10,2,10,2,10,2,10,2,
+2,10,2,10,2,10,2,10,
+10,2,10,2,10,2,10,2,
+2,10,2,10,2,10,2,10,
+10,2,10,2,10,2,10,2,
+2,10,2,10,2,10,2,10,
+10,2,10,2,10,2,10,2,
+2,10,2,10,2,10,2,10
+</data>
+ </layer>
+ <objectgroup id="4" name="Piece Layer">
+  <object id="1" gid="26" x="0" y="512" width="64" height="64">
+   <properties>
+    <property name="color" value="White"/>
+    <property name="id" type="int" value="1"/>
+    <property name="startPosition" value="0,0"/>
+    <property name="type" value="Queen"/>
+   </properties>
+  </object>
+  <object id="4" gid="30" x="128" y="512" width="64" height="64">
+   <properties>
+    <property name="color" value="White"/>
+    <property name="id" type="int" value="2"/>
+    <property name="startPosition" value="2,0"/>
+    <property name="type" value="Rook"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

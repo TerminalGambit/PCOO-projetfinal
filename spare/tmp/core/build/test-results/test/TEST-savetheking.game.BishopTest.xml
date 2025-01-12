@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="savetheking.game.BishopTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2024-12-28T01:34:22" hostname="MacBookPro" time="0.014">
+  <properties/>
+  <testcase name="testBishopCenterMoves()" classname="savetheking.game.BishopTest" time="0.011"/>
+  <testcase name="testBishopBlockedMoves()" classname="savetheking.game.BishopTest" time="0.001"/>
+  <testcase name="testBishopEdgeMoves()" classname="savetheking.game.BishopTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

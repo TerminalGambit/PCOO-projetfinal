@@ -1,6 +1,0 @@
-finish the javadoc and refactoring
-work to transform the test files into JUnit
-add the design patterns accordingly:
-- Strategy for the Minimax
-- Command for the Gamestate
-start configuring the GUI with LibGDX and Tiled

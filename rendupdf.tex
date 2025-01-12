@@ -1,0 +1,266 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2cm]{geometry}
+\usepackage{hyperref}
+\usepackage{lmodern}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+\titleformat{\section}{\bfseries\Large}{\thesection.}{1em}{}
+\titleformat{\subsection}{\bfseries\large}{\thesubsection.}{1em}{}
+\titleformat{\subsubsection}{\bfseries\normalsize}{\thesubsubsection.}{1em}{}
+
+\title{Rapport de Projet – Développement du Jeu Solo Chess avec LibGDX}
+\author{Jack Massey (Projet individuel)}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Section 1. Introduction}
+
+\subsection*{1.1 Contexte du Projet}
+Ce projet, intitulé \textbf{Solo Chess}, a pour objectif de proposer un jeu de réflexion stratégique inspiré des échecs, mais avec des règles simplifiées et une mécanique centrée sur la capture de pièces jusqu’à ce qu’il n’en reste plus qu’une seule. Le développement a été réalisé \textbf{en solo} par Jack Massey, ce qui implique que tous les rôles (conception, programmation, design, etc.) ont été assurés par une seule personne.
+
+\subsection*{1.2 Objectifs}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Objectif principal:}\\
+    Développer un jeu en 2D, basé sur LibGDX, permettant de jouer à une variante des échecs appelée “Solo Chess”.\\
+    \href{https://www.chess.com/solo-chess}{\texttt{Solo Chess - Lien du jeu sur chess.com}}
+
+    \item \textbf{Concevoir un code de qualité:}\\
+    Appliquer plusieurs \textbf{design patterns} (Observer, Factory, State, MVC) afin de produire un code propre, modulable et maintenable. Cela implique une réflexion constante sur l’architecture et la capacité à \textbf{s’adapter aux difficultés} rencontrées (ex. création ou suppression de classes inutiles, ajustements suite à l’évolution des besoins).
+
+    \item \textbf{Extensibilité et amélioration continue:}
+    \begin{itemize}
+        \item Mettre en place un \textbf{moteur de génération ou de configuration de positions} permettant d’ajouter aisément de nouvelles configurations/puzzles.
+        \item Prévoir des fonctionnalités d’\textbf{amélioration de l’interface} (ex. possibilité de revenir en arrière, ajout de boutons, améliorations graphiques…).
+        \item Faciliter la maintenance à long terme en veillant à ce que chaque module (moteur de jeu, affichage, contrôleur) reste \textbf{indépendant} et \textbf{extensible}.
+    \end{itemize}
+
+    \item \textbf{Gestion de projet et développement en solo:}
+    \begin{itemize}
+        \item Acquérir et démontrer la \textbf{capacité à piloter un projet} de bout en bout (depuis la phase de conception jusqu’à l’implémentation).
+        \item Développer un \textbf{savoir-faire} en gestion de code (choix de technologies, organisation du référentiel, documentation) et en conduite de projet (gestion du temps, prise de décisions, résolution de problèmes).
+    \end{itemize}
+\end{itemize}
+
+\subsection*{1.3 Règles du Jeu}
+Les règles principales de \textbf{Solo Chess} sont les suivantes:
+\begin{enumerate}[label=\arabic*.]
+    \item L’échiquier est initialisé avec plusieurs pièces, placées aléatoirement ou selon une configuration prédéfinie.
+    \item Chaque pièce peut se déplacer en respectant ses mouvements traditionnels aux échecs.
+    \item Une pièce ne peut effectuer que \textbf{deux mouvements} maximum. Après son deuxième mouvement, elle devient “noire”, immobile et inutilisable.
+    \item Les pièces peuvent \textbf{capturer} d’autres pièces.
+    \item Le jeu se termine lorsqu’il ne reste plus qu’une pièce :
+    \begin{itemize}
+        \item Si un \textbf{roi} est présent au départ, il doit être la dernière pièce restante.
+        \item Sinon, toute pièce restante peut conclure la partie.
+    \end{itemize}
+    \item Si toutes les pièces restantes sont “noires” avant d’en avoir une seule pièce libre à la fin, le joueur perd immédiatement.
+\end{enumerate}
+
+\subsection*{1.4 Design Patterns Utilisés}
+Pour structurer ce projet, plusieurs \emph{design patterns} de la programmation orientée objet ont été utilisés:
+
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Observer / Observable}\\
+    Permet la communication entre le modèle (\texttt{Board}) et les différentes vues (par ex. \texttt{Renderer}). La classe \texttt{Board} implémente l’interface \texttt{Observable} et notifie les \texttt{Observer} (ex. le renderer) lorsqu’il y a un changement d’état (déplacement de pièce, capture, etc.).
+
+    \item \textbf{Factory Pattern}\\
+    La classe \texttt{PieceFactory} est utilisée pour créer dynamiquement les différentes pièces (Roi, Dame, etc.). Cela facilite l’ajout de nouveaux types de pièces sans modifier la logique principale de création.
+
+    \item \textbf{State Pattern}\\
+    Gère les différents états du jeu : en cours (\texttt{PlayingState}), en pause (\texttt{PausedState}), terminé (\texttt{GameOverState}). Chaque état implémente une interface commune (ex. \texttt{GameStateInterface}) pour uniformiser leur gestion (mise à jour, rendu).
+
+    \item \textbf{Model-View-Controller (MVC)}\\
+    \begin{itemize}
+        \item \textbf{Modèle (\texttt{Board})} : gère les données et la logique métier (position des pièces, captures…).
+        \item \textbf{Vue (\texttt{Renderer})} : affiche l’état du jeu (pièces, échiquier).
+        \item \textbf{Contrôleur (\texttt{Controller})} : gère les interactions utilisateur, orchestre la communication entre modèle et vue.
+    \end{itemize}
+\end{enumerate}
+
+\section*{Section 2. Présentation du Projet}
+
+Cette section détaille l’approche technique adoptée pour \textbf{Solo Chess}, notamment l’utilisation de LibGDX, la gestion de l’affichage via Tiled et la structure générale du jeu.
+
+\subsection*{2.1 Technologies et Outils Utilisés}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{LibGDX}\\
+    Principal moteur de jeu 2D, utilisé pour gérer l’affichage (rendu graphique), la détection des entrées utilisateurs (clavier/souris) et le cycle de vie du jeu.
+
+    \item \textbf{Tiled}\\
+    Outil de conception de cartes 2D. Dans ce projet, Tiled a servi à élaborer la représentation visuelle de l’échiquier (en alternant des tuiles de deux couleurs) et à placer (via un calque spécifique) les différentes pièces d’échecs.
+
+    \item \textbf{Git}\\
+    Utilisé pour le versionnement du code et la gestion de différentes branches expérimentales.
+    \begin{itemize}
+        \item Par exemple, la branche \texttt{SaveTheKing} illustre une tentative d’implémenter un \textbf{algorithme Minimax} pour gérer les déplacements et décisions de l’IA. Contrainte par le temps, cette approche n’a pas été finalisée, et une solution plus adaptée a ensuite été privilégiée.
+        \item Une autre branche a expérimenté l’intégration de Tiled via un \emph{Tile Layer}, un \emph{Map Loader}, etc.
+    \end{itemize}
+
+    \item \textbf{IntelliJ}\\
+    Environnement de développement (IDE) pour écrire et organiser le code, compiler et exécuter facilement le projet.
+
+    \item \textbf{Gradle}\\
+    Outil d’automatisation et de gestion de dépendances. Il permet de configurer et de lancer rapidement le projet via des tâches dédiées (par exemple, \texttt{gradlew desktop:run} dans le cas d’un projet LibGDX classique).
+
+    \item \textbf{LLM / IA Assistants}
+    \begin{itemize}
+        \item \textbf{GitHub Copilot} : assisté à la génération de portions de code et à la suggestion de snippets.
+        \item \textbf{ChatGPT} : support dans la conception et la documentation, pour clarifier des choix d’architecture ou résoudre certains problèmes de conception.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{2.2 Fonctionnalités Implémentées}
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Déplacements de pièces}\\
+    Chaque pièce (roi, dame, tour, fou, cavalier, pion) suit ses règles de mouvement spécifiques, conformément aux règles traditionnelles des échecs.
+    \emph{Remarque : dans la version actuelle, l’animation graphique des déplacements n’est pas encore finalisée.}
+
+    \item \textbf{Captures}\\
+    Les captures sont possibles si une pièce peut se rendre sur la case occupée par une autre pièce (alliée ou ennemie, selon la configuration du puzzle). La pièce capturée est alors retirée de l’échiquier.
+    \emph{Remarque : la visualisation des pièces capturées reste basique (pas d’effet visuel avancé pour le moment).}
+
+    \item \textbf{Limitation à deux mouvements}\\
+    Après deux déplacements, la pièce devient “noire” et ne peut plus bouger ni capturer. Cette mécanique est centrale dans Solo Chess et confère au jeu son aspect puzzle.
+
+    \item \textbf{Condition de fin de partie}\\
+    Le jeu se termine lorsque :
+    \begin{enumerate}
+        \item Il ne reste plus qu’une seule pièce sur l’échiquier (roi obligatoire s’il était présent au départ).
+        \item Ou lorsque toutes les pièces encore présentes sont devenues “noires” (immobiles), rendant la situation sans issue.
+    \end{enumerate}
+\end{itemize}
+
+\subsection*{2.3 Configuration et Ajout de Contenu (Tiled)}
+
+Pour faciliter la création et la modification du plateau de jeu, \textbf{Tiled} a été utilisé :
+
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{Board Layer}
+    \begin{itemize}
+        \item Le plateau d’échecs est composé d’un calque (layer) contenant des tuiles de taille 64×64.
+        \item Les tuiles alternent entre deux couleurs (ex. \textbf{dark green} et \textbf{light white}) afin de reproduire un échiquier classique.
+        \item Dans le fichier \texttt{.tmx}, chaque tuile est identifiée par un ID (ou “GID”) représentant la couleur.
+    \end{itemize}
+
+    \item \textbf{Piece Layer}
+    \begin{itemize}
+        \item Un deuxième calque, dit “piece layer”, définit la position initiale des pièces.
+        \item Les différentes pièces sont référencées par des GID qui pointent vers un \textbf{tileset} associé (ex. un ensemble d’images représentant roi, dame, fou, etc.).
+        \item Chaque tuile du \texttt{piece layer} possède des \textbf{propriétés} (ex. nom de la pièce, couleur, etc.) qui sont lues au chargement pour instancier la bonne classe de pièce via la \texttt{PieceFactory}.
+    \end{itemize}
+
+    \item \textbf{Chargement de la carte}
+    \begin{itemize}
+        \item Une fois la carte \texttt{.tmx} créée, LibGDX et son \texttt{MapLoader} chargent les informations (calques, tuiles, propriétés).
+        \item Le code identifie la couche “Board Layer” (pour le visuel de l’échiquier) et la couche “Piece Layer” (pour instancier les pièces).
+        \item Les propriétés du tileset (couleur de la pièce, type de la pièce) sont analysées afin de créer les instances via le \textbf{\texttt{PieceFactory}} et de positionner les pièces correctement dans la matrice interne (\texttt{Board}).
+    \end{itemize}
+
+    \item \textbf{Retour d’expérience / Branches expérimentales}
+    \begin{itemize}
+        \item Une première tentative de gérer l’affichage et la logique entièrement via les \emph{Tile Layers} (avec un \texttt{TileLoader}, \texttt{TileMap}, etc.) n’a pas abouti. Cette approche s’est avérée trop complexe pour gérer à la fois l’état visuel et l’état logique du jeu.
+        \item Finalement, la gestion logique est confiée à une \textbf{matrice de \texttt{Tile}} (modèle interne) indépendante, tandis que Tiled sert surtout de source initiale pour positionner les pièces et styliser l’échiquier.
+    \end{itemize}
+\end{enumerate}
+
+Grâce à cette organisation, il est possible de \textbf{modifier aisément} la configuration du plateau (dimensions, placements, etc.) sans toucher au code Java, en ajustant simplement la carte \texttt{.tmx} ou le tileset associé.
+
+\section*{Section 3. Architecture Générale du Moteur de Jeu (Aperçu)}
+
+Le jeu suit une \textbf{architecture modulaire}, basée sur les \emph{design patterns} décrits précédemment. Les classes clés incluent :
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{\texttt{Point}} : représente les coordonnées sur l’échiquier.
+    \item \textbf{\texttt{Tile}} (classe abstraite) : spécialisations
+    \begin{itemize}
+        \item \texttt{EmptyTile}
+        \item \texttt{OccupiedTile}
+    \end{itemize}
+    \item \textbf{\texttt{Piece}} (classe abstraite) :
+    \begin{itemize}
+        \item \texttt{King}, \texttt{Queen}, \texttt{Bishop}, \texttt{Knight}, \texttt{Rook}, \texttt{Pawn}, etc.
+    \end{itemize}
+    \item \textbf{\texttt{Board}} : gère la logique métier (placements, déplacements, captures) et notifie les observateurs via l’interface \texttt{Observable}.
+    \item \textbf{\texttt{Renderer}} : se charge d’afficher l’échiquier et les pièces à l’écran (vue).
+    \item \textbf{\texttt{Controller}} : gère les interactions utilisateur, valide les actions et communique avec le modèle (\texttt{Board}) et la vue (\texttt{Renderer}).
+    \item \textbf{\texttt{GameStateInterface}} : définit l’interface commune pour les différents états du jeu (\texttt{PlayingState}, \texttt{PausedState}, \texttt{GameOverState}).
+\end{itemize}
+
+Pour consulter l’\textbf{UML complet} associé à ce projet :
+\begin{itemize}
+    \item Un répertoire \texttt{UML} se trouve à la racine du projet.
+    \item Vous y trouverez notamment :
+    \begin{itemize}
+        \item \textbf{\texttt{SoloChess.puml}} (UML principal, version actuelle).
+        \item \textbf{\texttt{SaveTheKing.puml}} (ancienne version, centrée sur une IA Minimax).
+        \item \textbf{\texttt{tsxtmxrelationships.puml}} (décrit les relations liées à Tiled).
+    \end{itemize}
+\end{itemize}
+
+Cette structuration, combinée aux patrons de conception (Observer, Factory, State, MVC), rend le moteur de jeu \textbf{extensible} et \textbf{maintenable}, tout en séparant clairement la logique de la présentation.
+
+\section*{Section 4. Conclusion et Perspectives}
+
+\subsection*{4.1 Bilan et Retour d’Expérience}
+
+La réalisation du projet \textbf{Solo Chess} s’est avérée être une \emph{expérience enrichissante} à plusieurs niveaux :
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Découverte et apprentissage de LibGDX}\\
+    Partir de zéro sur une librairie méconnue (LibGDX) a constitué un vrai défi. Il a fallu assimiler le fonctionnement du \emph{cycle de vie} d’un jeu (render, update, input), la configuration des projets avec Gradle, et les principes de gestion des assets (images, tuiles, etc.).
+
+    \item \textbf{Architecture et patrons de conception}\\
+    L’implémentation de \emph{design patterns} (Observer, Factory, State, MVC) s’est parfois faite \textbf{par tâtonnements}. Certaines idées (par exemple un \emph{Strategy Pattern} pour l’IA) ont été explorées puis écartées ou reportées, illustrant l’évolution naturelle d’un projet où l’on teste, on se trompe, et on apprend.
+
+    \item \textbf{Autonomie et gestion du projet en solo}\\
+    Mener ce projet seul a nécessité de \textbf{couvrir tous les rôles} (concepteur, développeur, testeur…) et de prendre des décisions rapides, tout en restant flexible. Ce processus a renforcé la capacité à \textbf{identifier les priorités} et à \textbf{faire face aux imprévus} (bugs, limitations techniques, etc.).
+
+    \item \textbf{Essais, erreurs et abandons}\\
+    Plusieurs pistes ont dû être abandonnées en cours de route:
+    \begin{itemize}
+        \item Une implémentation en JSON pour la configuration des pièces, finalement jugée superflue grâce à l’utilisation de Tiled.
+        \item Un algorithme Minimax pour gérer une IA “SaveTheKing”, qui n’a pas pu être finalisé dans le cadre temporel imparti.
+    \end{itemize}
+
+\end{itemize}
+
+Au final, la version actuelle du projet \textbf{n’est pas totalement achevée} : l’affichage graphique est encore minimal, il manque une interface plus conviviale (boutons, menus…) et des animations plus abouties. Toutefois, la base de la logique de Solo Chess (déplacements, captures, limites de mouvement) est solide et démontre la \textbf{faisabilité} du concept.
+
+\subsection*{4.2 Perspectives d’Amélioration}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Interface Utilisateur et Rendu}
+    \begin{itemize}
+        \item Améliorer l’affichage des pièces et ajouter des effets visuels (surbrillance des coups valides, animation de capture, etc.).
+        \item Intégrer des boutons et menus pour la navigation (revenir en arrière, réinitialiser la partie, etc.).
+    \end{itemize}
+
+    \item \textbf{Évolutions Techniques}
+    \begin{itemize}
+        \item Sauvegardes et chargements : utiliser éventuellement JSON (ou un autre format) pour stocker/reprendre l’état de la partie.
+        \item Gestion avancée de Tiled : approfondir l’intégration de Tiled pour définir différentes configurations plus facilement.
+        \item IA plus élaborée : adapter ou réintroduire le \emph{Strategy Pattern} (voire Minimax) pour proposer des défis dynamiques, ou générer automatiquement des puzzles plus complexes.
+    \end{itemize}
+
+    \item \textbf{Exploration de nouvelles voies}
+    \begin{itemize}
+        \item Poursuivre la logique de théorie des graphes appliquée aux positions d’échecs, afin d’automatiser la création de puzzles.
+    \end{itemize}
+\end{itemize}
+
+En somme, \textbf{Solo Chess} a été un terrain d’expérimentation vaste: il a permis de tester des \emph{concepts variés} (POO, design patterns, intégration d’assets via Tiled, versionnement Git), tout en soulignant l’importance d’\emph{apprendre par l’erreur} et d’\emph{itérer} pour faire évoluer la conception. Malgré les fonctionnalités manquantes et les limites actuelles, ce projet constitue un \textbf{socle} solide pour de futures améliorations et enrichissements.
+
+\section*{Section Annexe}
+\begin{itemize}[leftmargin=1.5em]
+    \item Lien vers le dépôt Git : \href{https://github.com/TerminalGambit/PCOO-projetfinal}{\texttt{https://github.com/TerminalGambit/PCOO-projetfinal}}
+\end{itemize}
+
+\end{document}

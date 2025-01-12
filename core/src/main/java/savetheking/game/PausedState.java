@@ -23,7 +23,7 @@ public class PausedState implements GameStateInterface {
 
     public PausedState() {
         stage = new Stage(new ScreenViewport());
-        backgroundTexture = new Texture(Gdx.files.internal("light_white.png"));
+        backgroundTexture = new Texture(Gdx.files.internal("light-white.png"));
         isPaused = true; // Game is paused by default when entering this state
         createPauseMenu();
     }

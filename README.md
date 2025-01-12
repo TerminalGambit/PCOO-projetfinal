@@ -6,7 +6,7 @@
 
 Ce projet, intitulé **Solo Chess**, a pour objectif de développer un jeu de réflexion stratégique basé sur des règles spécifiques simplifiées des échecs. L'objectif principal est de réduire l'échiquier à une seule pièce à la fin du jeu. Si un roi est présent, il doit impérativement être la dernière pièce restante. Si aucun roi n'est présent, toute pièce restante valide peut conclure la partie.
 
-Le développement de ce projet s'inscrit dans un cadre d'apprentissage individuel, avec toutes les étapes réalisées par **MasséJack**.
+Le développement de ce projet s'inscrit dans un cadre d'apprentissage individuel, avec toutes les étapes réalisées par **Massey Jack**.
 
 ### Règles du jeu
 
